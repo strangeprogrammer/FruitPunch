@@ -1,46 +1,46 @@
 #!/bin/python3
 
-import pygame
+import pygame as pg
 import math
 
-from sprites import drawnSprite, layerSprite
+from sprites import drawnSprite
 
-class redComp(layerSprite):
+class redComp(pg.sprite.DirtySprite):
 	def __init__(self, rel, *args, **kwargs):
 		self._rel = rel
-		image = pygame.image.load("./RedSquare.png")
-		super().__init__(image, image.get_rect(), *args, layer = 2, **kwargs)
-	
-	def update(self, time):
-		rel = self._rel.get_rect()
-		self.rect.center = (rel.center[0], rel.center[1] + 96 * math.sin(time / 250))
-
-class blueComp(layerSprite):
-	def __init__(self, rel, *args, **kwargs):
-		self._rel = rel
-		image = pygame.image.load("./BlueSquare.png")
-		super().__init__(image, image.get_rect(), *args, layer = 1, **kwargs)
-	
-	def update(self, time):
-		rel = self._rel.get_rect()
-		self.rect.center = (rel.center[0] + 96 * math.sin((time + 3141) / 250), rel.center[1])
-
-class basicBody(drawnSprite, pygame.sprite.Sprite):
-	def __init__(self, center, *args, **kwargs):
-		refSprite = layerSprite.initPath("./GreenSquare.png")
-		refSprite.get_rect().center = center
-		
-		red = redComp(refSprite)
-		blue = blueComp(refSprite)
-		
-		self._allsprites = pygame.sprite.LayeredUpdates(refSprite, red, blue)
+		self.image = pg.image.load("./RedSquare.png")
+		self.rect = self.image.get_rect()
+		self._layer = 2
 		super().__init__(*args, **kwargs)
 	
-	def update(self, *args):
-		self._allsprites.update(*args)
+	def update(self, time):
+		rel = self._rel.rect
+		self.rect.center = (rel.center[0], rel.center[1] + 96 * math.sin(time / 250))
+
+class blueComp(pg.sprite.DirtySprite):
+	def __init__(self, rel, *args, **kwargs):
+		self._rel = rel
+		self.image = pg.image.load("./BlueSquare.png")
+		self.rect = self.image.get_rect()
+		self._layer = 1
+		super().__init__(*args, **kwargs)
 	
-	def draw(self, surface):
-		return self._allsprites.draw(surface)
+	def update(self, time):
+		rel = self._rel.rect
+		self.rect.center = (rel.center[0] + 96 * math.sin((time + 3141) / 250), rel.center[1])
+
+class greenComp(pg.sprite.DirtySprite):
+	def __init__(self, *args, **kwargs):
+		self.image = pg.image.load("./GreenSquare.png")
+		self.rect = self.image.get_rect()
+		self._layer = 0
+		super().__init__(*args, **kwargs)
+
+def basicBody(center):
+	green = greenComp()
+	green.rect.center = center
 	
-	def clear(self, surface, bgd):
-		self._allsprites.clear(surface, bgd)
+	red = redComp(green)
+	blue = blueComp(green)
+	
+	return pg.sprite.LayeredUpdates(red, blue, green)

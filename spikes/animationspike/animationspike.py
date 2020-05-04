@@ -5,20 +5,24 @@ import math
 
 from bodyparts import basicBody
 
-def makeSprites():
+def makeBodies():
 	x = basicBody((500, 500))
 	y = basicBody((700, 300))
-	return pygame.sprite.Group(x, y)
+	return [x, y]
 
-def drawBodies(group, surface):
+def updateBodies(bodies, *args):
+	for group in bodies:
+		group.update(*args)
+
+def drawBodies(bodies, surface):
 	rects = []
-	for sprite in group:
-		rects += sprite.draw(surface)
+	for group in bodies:
+		rects += group.draw(surface)
 	return rects
 
-def clearBodies(group, surface, bgd):
-	for sprite in group:
-		sprite.clear(surface, bgd)
+def clearBodies(bodies, surface, bgd):
+	for group in bodies:
+		group.clear(surface, bgd)
 
 def main():
 	pygame.init()
@@ -27,13 +31,13 @@ def main():
 	screen.fill((255, 255, 255))
 	bgd = screen.copy()
 	pygame.display.flip()
-	sprites = makeSprites()
+	bodies = makeBodies()
 	
 	goflag = True
 	while goflag:
-		sprites.update(pygame.time.get_ticks())
-		pygame.display.update(drawBodies(sprites, screen))
-		clearBodies(sprites, screen, bgd)
+		updateBodies(bodies, pygame.time.get_ticks())
+		pygame.display.update(drawBodies(bodies, screen))
+		clearBodies(bodies, screen, bgd)
 		for e in pygame.event.get():
 			if e.type == pygame.QUIT:
 				goflag = False
