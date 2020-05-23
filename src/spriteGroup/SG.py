@@ -6,9 +6,9 @@ from pygame.sprite import Sprite, Group
 
 class handoffRender(Group):
 	"""Not optimized to remember old, affected regions (but,
-	then again, it doesn't need to since (I plea to you) it
-	should only be used with other Groups or Sprites that
-	clean up after themselves)."""
+	then again, it doesn't need to be since (I plea to you)
+	it should only be used with other Sprites or
+	SpriteGroups that clean up after themselves)."""
 	
 	def draw(self, surface):
 		rectangles = []

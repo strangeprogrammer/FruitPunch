@@ -2,7 +2,7 @@
 
 import math
 
-from baseBodies import relBody
+from .baseBodies import relBody
 
 class translationStrut(relBody):
 	"""A sprite that applies an offset from a parent sprite onto a child sprite."""

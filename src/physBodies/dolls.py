@@ -1,6 +1,6 @@
 #!/bin/python3
 
-from baseBodies import relBody
+from .baseBodies import relBody
 
 class flipDoll(flipBody, relBody):
 	"""A sprite that flips based upon the flip state of its parent."""
