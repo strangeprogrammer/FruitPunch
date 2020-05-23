@@ -14,12 +14,12 @@ class translationStrut(relBody):
 	
 	def update(self, *args):
 		super().update(*args)
-		self.rect.center = self._strut()
+		self.center = self._strut()
 	
 	def _strut(self, x = None, y = None, **kwargs):
 		x = x or self._xoffset
 		y = y or self._yoffset
-		rc = self.rel.rect.center
+		rc = self.rel.center
 		return (rc[0] + x, rc[1] + y)
 	
 	@property

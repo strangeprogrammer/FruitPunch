@@ -13,15 +13,17 @@ class baseBody(pg.sprite.DirtySprite):
 		self.origImage = self.image = image
 		
 		rect = rect or image.get_rect()
-		rect.center = center or rect.center
+		self.center = center or rect.center # We must have an independent notion of the center since it could be a float instead of an integer number of pixels
+		rect.center = list(map(int, self.center))
 		self.rect = rect
 		
 		self._layer = layer
 	
 	def update(self, *args): # Preserves the center of the rect across updates (so that we don't have to implicity rely upon 'translationStrut' all the time)
-		oldCenter = self.rect.center
+		oldCenter = self.center
 		(self.image, self.rect) = self._body()
-		self.rect.center = oldCenter
+		self.center = oldCenter
+		self.rect.center = tuple(map(int, self.center))
 	
 	def _body(self, origImage = None, **kwargs):
 		origImage = origImage or self.origImage
