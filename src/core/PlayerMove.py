@@ -9,20 +9,27 @@ from . import G
 from . import Component
 from . import Events
 
-"""
-Every time an important button is pressed, the following SQL is run (with X and Y based upon what button's been pressed):
+from .Systems import Velocity
 
-	UPDATE	VelocityComp
-	SET	VelX = VelX + X, VelY = VelY + Y
-	WHERE	VelocityComp.RectID IN (
-		SELECT RectID
-		FROM PlayerComp INNER JOIN RectComp );
+"""
+Every time an important button is pressed, the velocity of all player-controlled entities is updated according to the key pressed.
 """
 
-velUpdate = None
+def init():
+	Events.register(pg.KEYDOWN, keyDownHandler)
 
-@Component.require("VelocityComp")
-def moveHandler(VC, e):
+def keyDownHandler(e):
+	if e.key in [
+		pg.K_UP,
+		pg.K_DOWN,
+		pg.K_LEFT,
+		pg.K_RIGHT,
+	]:
+		moveHandler(e)
+
+@Component.require("VelComp")
+@Component.require("PlayerComp")
+def moveHandler(PC, VC, e):
 	(X, Y) = (0, 0)
 	
 	if e.key == pg.K_UP:
@@ -34,20 +41,6 @@ def moveHandler(VC, e):
 	elif e.key == pg.K_RIGHT:
 		X += 0.1
 	
-	global velUpdate
-	G.CONN.execute(velUpdate.values(VelX = VC.c.VelX + X, VelY = VC.c.VelY + Y))
-
-@Component.require("VelocityComp")
-@Component.require("RectComp")
-@Component.require("PlayerComp")
-def init(PC, RC, VC):
-	Events.register(pg.KEYDOWN, moveHandler)
-	
-	global velUpdate
-	velUpdate = VC.update().where(VC.c.RectID.in_(
-		sqa.select(
-			[RC.c.RectID]
-		).select_from(
-			RC.join(PC, RC.c.EntID == PC.c.EntID))
-		)
-	)
+	for (player,) in G.CONN.execute(PC.select()).fetchall():
+		oldX, oldY = Velocity.get(player)
+		Velocity.set(player, oldX + X, oldY + Y)

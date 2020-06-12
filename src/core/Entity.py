@@ -8,6 +8,8 @@ from . import Component
 from . import Resource
 from . import G
 
+from .Systems import Velocity
+
 entCounter = None
 rectCounter = None
 imageCounter = None
@@ -18,15 +20,14 @@ def init():
 
 @Resource.require("RectRes")
 @Resource.require("ImageRes")
-@Component.require("VelocityComp")
-@Component.require("PositionComp")
+@Component.require("PosComp")
 @Component.require("RectComp")
 @Component.require("ImageComp")
 @Component.require("AllMove")
 @Component.require("AllRects")
 @Component.require("AllImages")
 @Component.require("AllEnts")
-def create(E, I, R, M, IC, RC, PC, VC, IR, RR, image, rect, center, velocity):
+def create(E, I, R, M, IC, RC, PC, IR, RR, image, rect, center, velocity):
 	rect.center = center
 	
 	global entCounter
@@ -37,12 +38,13 @@ def create(E, I, R, M, IC, RC, PC, VC, IR, RR, image, rect, center, velocity):
 	G.CONN.execute(E.insert().values(EntID = EntID))
 	G.CONN.execute(I.insert().values(ImageID = ImageID))
 	G.CONN.execute(R.insert().values(RectID = RectID))
-	G.CONN.execute(M.insert().values(EntID = EntID))
 	
 	G.CONN.execute(IC.insert().values(EntID = EntID, ImageID = ImageID))
 	G.CONN.execute(RC.insert().values(EntID = EntID, RectID = RectID))
-	G.CONN.execute(PC.insert().values(RectID = RectID, PosX = center[0], PosY = center[1]))
-	G.CONN.execute(VC.insert().values(RectID = RectID, VelX = velocity[0], VelY = velocity[1]))
+	G.CONN.execute(PC.insert().values(EntID = EntID, PosX = center[0], PosY = center[1]))
+	
+	Velocity.register(EntID)
+	Velocity.set(EntID, velocity[0], velocity[1])
 	
 	return EntID, RectID, ImageID
 

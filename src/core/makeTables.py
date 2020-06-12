@@ -33,13 +33,6 @@ def makeTables():
 		PKC("RectID"),
 	)
 	
-	Table( # List of all moving objects
-		"AllMove", G.DB,
-		Column("EntID", Integer),
-		PKC("EntID"),
-		FKC(["EntID"], ["AllEnts.EntID"]),
-	)
-	
 	Table( # Entity-rectangle link table
 		"RectComp", G.DB,
 		Column("EntID", Integer),
@@ -67,22 +60,22 @@ def makeTables():
 		FKC(["ImageID"], ["AllImages.ImageID"]),
 	)
 	
-	Table( # Real centers of all rectangles (useful for fine-grained velocity calculations)
-		"PositionComp", G.DB,
-		Column("RectID", Integer),
+	Table( # Real centers of all entities (useful for fine-grained velocity calculations)
+		"PosComp", G.DB,
+		Column("EntID", Integer),
 		Column("PosX", REAL),
 		Column("PosY", REAL),
-		PKC("RectID"),
-		FKC(["RectID"], ["AllRects.RectID"]),
+		PKC("EntID"),
+		FKC(["EntID"], ["AllEnts.EntID"]),
 	)
 	
-	Table( # Velocities of all rectangels
-		"VelocityComp", G.DB,
-		Column("RectID", Integer),
+	Table( # Velocities of all entities
+		"VelComp", G.DB,
+		Column("EntID", Integer),
 		Column("VelX", REAL),
 		Column("VelY", REAL),
-		PKC("RectID"),
-		FKC(["RectID"], ["AllRects.RectID"]),
+		PKC("EntID"),
+		FKC(["EntID"], ["AllEnts.EntID"]),
 	)
 	
 	Table( # All player-controlled entities

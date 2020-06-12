@@ -7,41 +7,72 @@ import sqlalchemy as sqa
 
 from .. import G
 from .. import Component
+from ..Component import require
 from .. import Resource
 
 movingQuery = None
 
-@Component.require("VelocityComp")
-@Component.require("PositionComp")
-@Component.require("RectComp")
-@Component.require("AllMove")
-def init(M, RC, PC, VC):
+@require("VelComp")
+@require("PosComp")
+@require("RectComp")
+def init(RC, PC, VC):
 	global movingQuery
+	
 	movingQuery = sqa.select([
+		RC.c.EntID,
 		RC.c.RectID,
 		PC.c.PosX,
 		PC.c.PosY,
 		VC.c.VelX,
 		VC.c.VelY,
 	]).select_from(
-		M	.join(RC, M.c.EntID == RC.c.EntID) \
-			.join(PC, RC.c.RectID == PC.c.RectID) \
-			.join(VC, PC.c.RectID == VC.c.RectID)
+		RC	.join(PC, RC.c.EntID == PC.c.EntID) \
+			.join(VC, PC.c.EntID == VC.c.EntID)
 	).compile()
 
+@require("VelComp")
+def register(VC, EntID):
+	G.CONN.execute(
+		VC.insert().values(EntID = EntID, VelX = 0, VelY = 0)
+	)
+
+@require("VelComp")
+def deregister(VC, EntID):
+	G.CONN.execute(
+		VC.delete().where(VC.c.EntID == EntID)
+	)
+
+@require("VelComp")
+def get(VC, EntID):
+	return G.CONN.execute(
+		sqa	.select([VC.c.VelX, VC.c.VelY]) \
+			.select_from(VC) \
+			.where(VC.c.EntID == EntID)
+	).fetchone()
+
+@require("VelComp")
+def set(VC, EntID, VelX, VelY):
+	G.CONN.execute(
+		VC	.update() \
+			.where(VC.c.EntID == EntID) \
+			.values(VelX = VelX, VelY = VelY)
+	)
+
 @Resource.require("RectRes")
-@Component.require("PositionComp")
+@require("PosComp")
 def update(PC, RR, dt):
 	global movingQuery
-	for RectID, PosX, PosY, VelX, VelY in G.CONN.execute(movingQuery).fetchall():
+	for EntID, RectID, PosX, PosY, VelX, VelY in G.CONN.execute(movingQuery).fetchall():
 		newX = PosX + VelX * dt
 		newY = PosY + VelY * dt
+		
 		G.CONN.execute(
 			PC.update().where(
-				PC.c.RectID == RectID,
+				PC.c.EntID == EntID,
 			).values(
 				PosX = newX,
 				PosY = newY,
 			)
 		)
+		
 		RR[RectID].center = (newX, newY)
