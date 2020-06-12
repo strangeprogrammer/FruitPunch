@@ -27,7 +27,7 @@ def init():
 @Component.require("AllRects")
 @Component.require("AllImages")
 @Component.require("AllEnts")
-def create(E, I, R, M, IC, RC, PC, IR, RR, image, rect, center, velocity):
+def create(E, I, R, M, IC, RC, PC, IR, RR, image, rect, center):
 	rect.center = center
 	
 	global entCounter
@@ -43,12 +43,10 @@ def create(E, I, R, M, IC, RC, PC, IR, RR, image, rect, center, velocity):
 	G.CONN.execute(RC.insert().values(EntID = EntID, RectID = RectID))
 	G.CONN.execute(PC.insert().values(EntID = EntID, PosX = center[0], PosY = center[1]))
 	
-	Velocity.register(EntID)
-	Velocity.set(EntID, velocity[0], velocity[1])
-	
-	return EntID, RectID, ImageID
+	return EntID, ImageID, RectID
 
 @Component.require("PlayerComp")
-def createPlayer(PC, image, rect, center, velocity):
-	EntID = create(image, rect, center, velocity)[0]
+def createPlayer(PC, image, rect, center):
+	EntID, ImageID, RectID = create(image, rect, center)
 	G.CONN.execute(PC.insert().values(EntID = EntID))
+	return EntID, ImageID, RectID

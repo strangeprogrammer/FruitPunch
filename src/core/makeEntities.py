@@ -7,7 +7,47 @@ from pygame.image import load as LD
 from . import Entity
 from . import G
 
+from .Systems import Flip
+from .Systems import Velocity
+
 def makeEntities():
-	redImage = LD("./RESOURCES/RedSquare.png")
-	redRect = redImage.get_rect()
-	Entity.createPlayer(redImage, redRect, (200, 200), (0, 0))
+	makeVelFlip()
+	makeVel()
+	makeFlip()
+	makeNone()
+
+def makeVelFlip():
+	FImage = LD("./RESOURCES/F.png")
+	FRect = FImage.get_rect()
+	
+	EntID, ImageID, RectID = Entity.createPlayer(FImage, FRect, (200, 200))
+	
+	Velocity.register(EntID)
+	Velocity.set(EntID, 0, 0)
+	
+	Flip.register(EntID)
+	Flip.registerImage(ImageID)
+
+def makeVel():
+	TwoImage = LD("./RESOURCES/2.png")
+	TwoRect = TwoImage.get_rect()
+	
+	EntID, ImageID, RectID = Entity.createPlayer(TwoImage, TwoRect, (400, 200))
+	
+	Velocity.register(EntID)
+	Velocity.set(EntID, 0, 0)
+
+def makeFlip():
+	FiveImage = LD("./RESOURCES/5.png")
+	FiveRect = FiveImage.get_rect()
+	
+	EntID, ImageID, RectID = Entity.createPlayer(FiveImage, FiveRect, (200, 400))
+	
+	Flip.register(EntID)
+	Flip.registerImage(ImageID)
+
+def makeNone():
+	NoneImage = LD("./RESOURCES/7.png")
+	NoneRect = NoneImage.get_rect()
+	
+	EntID, ImageID, RectID = Entity.createPlayer(NoneImage, NoneRect, (400, 400))

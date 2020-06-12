@@ -37,6 +37,12 @@ def register(VC, EntID):
 	)
 
 @require("VelComp")
+def numregistered(VC, EntID):
+	return len(G.CONN.execute(
+		VC.select().where(VC.c.EntID == EntID)
+	).fetchall())
+
+@require("VelComp")
 def deregister(VC, EntID):
 	G.CONN.execute(
 		VC.delete().where(VC.c.EntID == EntID)

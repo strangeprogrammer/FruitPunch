@@ -6,6 +6,7 @@ from sqlalchemy import (
 	Table,
 	Column,
 	Integer,
+	Boolean,
 	REAL,
 	PrimaryKeyConstraint as PKC,
 	ForeignKeyConstraint as FKC,
@@ -83,6 +84,27 @@ def makeTables():
 		Column("EntID", Integer),
 		PKC("EntID"),
 		FKC(["EntID"], ["AllEnts.EntID"]),
+	)
+	
+	Table( # All entities that have an image flip applied to them
+		"FlipComp", G.DB,
+		Column("EntID", Integer),
+		Column("FlipX", Boolean),
+		Column("FlipY", Boolean),
+		PKC("EntID"),
+		FKC(["EntID"], ["AllEnts.EntID"]),
+	)
+	
+	Table( # Images and their flipped equivalents
+		"FlipImages", G.DB,
+		Column("InImageID", Integer),
+		Column("FlipX", Boolean),
+		Column("FlipY", Boolean),
+		Column("OutImageID", Integer),
+		PKC("InImageID", "FlipX", "FlipY"),
+		UC("OutImageID"),
+		FKC(["InImageID"], ["AllImages.ImageID"]),
+		FKC(["OutImageID"], ["AllImages.ImageID"]),
 	)
 	
 	G.DB.create_all(G.ENGINE)
