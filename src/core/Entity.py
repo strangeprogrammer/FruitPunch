@@ -1,6 +1,8 @@
-#!/bin/sed -e 3q;d
+#!/bin/sed -e 3q;d;
 
 # DO NOT RUN THIS FILE - import it instead
+
+from itertools import count
 
 from . import Component
 from . import Resource
@@ -11,11 +13,8 @@ rectCounter = None
 imageCounter = None
 
 def init():
-	global entCounter, rectCounter, imageCounter
-	from itertools import count
+	global entCounter
 	entCounter = count()
-	rectCounter = count()
-	imageCounter = count()
 
 @Resource.require("RectRes")
 @Resource.require("ImageRes")
@@ -30,10 +29,10 @@ def init():
 def create(E, I, R, M, IC, RC, PC, VC, IR, RR, image, rect, center, velocity):
 	rect.center = center
 	
-	global entCounter, rectCounter, imageCounter
+	global entCounter
 	EntID = next(entCounter)
-	RectID = next(rectCounter)
-	ImageID = next(imageCounter)
+	ImageID = IR.append(image)
+	RectID = RR.append(rect)
 	
 	G.CONN.execute(E.insert().values(EntID = EntID))
 	G.CONN.execute(I.insert().values(ImageID = ImageID))
@@ -44,9 +43,6 @@ def create(E, I, R, M, IC, RC, PC, VC, IR, RR, image, rect, center, velocity):
 	G.CONN.execute(RC.insert().values(EntID = EntID, RectID = RectID))
 	G.CONN.execute(PC.insert().values(RectID = RectID, PosX = center[0], PosY = center[1]))
 	G.CONN.execute(VC.insert().values(RectID = RectID, VelX = velocity[0], VelY = velocity[1]))
-	
-	IR[ImageID] = image
-	RR[RectID] = rect
 	
 	return EntID, RectID, ImageID
 

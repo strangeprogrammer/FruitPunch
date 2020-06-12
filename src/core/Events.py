@@ -1,4 +1,4 @@
-#!/bin/sed -e 3q;d
+#!/bin/sed -e 3q;d;
 
 # DO NOT RUN THIS FILE - import it instead
 

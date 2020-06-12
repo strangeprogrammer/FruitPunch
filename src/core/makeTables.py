@@ -1,4 +1,4 @@
-#!/bin/sed -e 3q;d
+#!/bin/sed -e 3q;d;
 
 # DO NOT RUN THIS FILE - import it instead
 
@@ -15,32 +15,32 @@ from sqlalchemy import (
 from . import G
 
 def makeTables():
-	Table(
+	Table( # List of all entity ID's
 		"AllEnts", G.DB,
 		Column("EntID", Integer),
 		PKC("EntID"),
 	)
 	
-	Table(
+	Table( # List of all image ID's
 		"AllImages", G.DB,
 		Column("ImageID", Integer),
 		PKC("ImageID"),
 	)
 	
-	Table(
+	Table( # List of all rectangle ID's
 		"AllRects", G.DB,
 		Column("RectID", Integer),
 		PKC("RectID"),
 	)
 	
-	Table(
+	Table( # List of all moving objects
 		"AllMove", G.DB,
 		Column("EntID", Integer),
 		PKC("EntID"),
 		FKC(["EntID"], ["AllEnts.EntID"]),
 	)
 	
-	Table(
+	Table( # Entity-rectangle link table
 		"RectComp", G.DB,
 		Column("EntID", Integer),
 		Column("RectID", Integer),
@@ -49,7 +49,7 @@ def makeTables():
 		FKC(["RectID"], ["AllRects.RectID"]),
 	)
 	
-	Table(
+	Table( # Entity-image link table for the base image of an entity
 		"ImageComp", G.DB,
 		Column("EntID", Integer),
 		Column("ImageID", Integer),
@@ -58,7 +58,16 @@ def makeTables():
 		FKC(["ImageID"], ["AllImages.ImageID"]),
 	)
 	
-	Table(
+	Table( # Entity-image link table for the renderable image of an entity
+		"DrawComp", G.DB,
+		Column("EntID", Integer),
+		Column("ImageID", Integer),
+		PKC("EntID"),
+		FKC(["EntID"], ["AllEnts.EntID"]),
+		FKC(["ImageID"], ["AllImages.ImageID"]),
+	)
+	
+	Table( # Real centers of all rectangles (useful for fine-grained velocity calculations)
 		"PositionComp", G.DB,
 		Column("RectID", Integer),
 		Column("PosX", REAL),
@@ -67,7 +76,7 @@ def makeTables():
 		FKC(["RectID"], ["AllRects.RectID"]),
 	)
 	
-	Table(
+	Table( # Velocities of all rectangels
 		"VelocityComp", G.DB,
 		Column("RectID", Integer),
 		Column("VelX", REAL),
@@ -76,7 +85,7 @@ def makeTables():
 		FKC(["RectID"], ["AllRects.RectID"]),
 	)
 	
-	Table(
+	Table( # All player-controlled entities
 		"PlayerComp", G.DB,
 		Column("EntID", Integer),
 		PKC("EntID"),

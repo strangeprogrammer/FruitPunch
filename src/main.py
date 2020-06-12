@@ -23,6 +23,9 @@ def update():
 	global elapsed
 	
 	Events.update()
+	
+	Draw.render()
+	
 	Velocity.update(elapsed)
 	
 	Draw.update(G.SCREEN)

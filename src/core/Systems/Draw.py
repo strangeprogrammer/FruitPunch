@@ -1,4 +1,4 @@
-#!/bin/sed -e 3q;d
+#!/bin/sed -e 3q;d;
 
 # DO NOT RUN THIS FILE - import it instead
 
@@ -7,15 +7,17 @@ import sqlalchemy as sqa
 
 from .. import G
 from .. import Component
+from ..Component import require as require
 from .. import Resource
 
-# We don't have to keep track of the dirty regions assuming that 'ImageComp' and 'RectComp' aren't modified between the 'update' and 'clear' calls
+# We don't have to keep track of the dirty regions assuming that 'ImageComp', 'DrawComp' and 'RectComp' aren't modified between the 'update' and 'clear' calls
 
 drawQuery = None
+renderSteps = []
 
-@Component.require("RectComp")
-@Component.require("ImageComp")
-def init(IC, RC):
+@require("RectComp")
+@require("DrawComp")
+def init(DC, RC):
 	G.SCREEN = pg.display.set_mode()
 	G.SCREEN.fill( (255, 255, 255) )
 	
@@ -24,22 +26,40 @@ def init(IC, RC):
 	
 	global drawQuery
 	drawQuery = sqa.select([
-		IC.c.ImageID,
+		DC.c.ImageID,
 		RC.c.RectID,
 	]).select_from(
-		IC.join(RC,
-			IC.c.EntID == RC.c.EntID,
+		DC.join(RC,
+			DC.c.EntID == RC.c.EntID,
 		)
 	).compile()
+
+def addRenderStep(step):
+	global renderSteps
+	renderSteps.append(step)
+
+@require("DrawComp")
+def _updateDrawComp(DC, values):
+	G.CONN.execute(DC.delete())		# Empty the drawing table
+	G.CONN.execute(DC.insert(), values)	# Repopulate the table with the given values
+
+@require("ImageComp")
+def _resetDrawComp(IC):
+	_updateDrawComp(G.CONN.execute(IC.select()).fetchall())
+
+def render():
+	_resetDrawComp()
+	global renderSteps
+	for step in renderSteps:
+		_updateDrawComp(step())
 
 @Resource.require("RectRes")
 @Resource.require("ImageRes")
 def update(IR, RR, screen):
 	global drawQuery
-	drawables = G.CONN.execute(drawQuery).fetchall()
 	
 	result = []
-	for ImageID, RectID in drawables:
+	for ImageID, RectID in G.CONN.execute(drawQuery).fetchall():
 		rect = RR[RectID]
 		screen.blit(IR[ImageID], rect)
 		result.append(rect)
@@ -47,7 +67,7 @@ def update(IR, RR, screen):
 	return result
 
 @Resource.require("RectRes")
-@Component.require("AllRects")
+@require("AllRects")
 def clear(R, RR, screen, bgd):
 	for (RectID, ) in G.CONN.execute(sqa.select([R.c.RectID]).select_from(R)).fetchall():
 		screen.blit(bgd, RR[RectID], RR[RectID])

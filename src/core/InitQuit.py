@@ -1,11 +1,12 @@
-#!/bin/sed -e 3q;d
+#!/bin/sed -e 3q;d;
 
 # DO NOT RUN THIS FILE - import it instead
 
 import pygame as pg
+from sys import exit
 
 from . import G
-from . import Backend
+from . import Component
 from . import makeTables
 from . import makeResources
 
@@ -20,7 +21,7 @@ from . import makeEntities
 def init():
 	pg.init()
 	
-	Backend.DBInit()
+	Component.DBInit()
 	makeTables.makeTables()
 	makeResources.makeResources()
 	
@@ -37,5 +38,4 @@ def init():
 def quit():
 	pg.quit()
 	
-	import sys
-	sys.exit(0)
+	exit(0)

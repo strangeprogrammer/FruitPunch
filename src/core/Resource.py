@@ -1,14 +1,35 @@
-#!/bin/sed -e 3q;d
+#!/bin/sed -e 3q;d;
 
 # DO NOT RUN THIS FILE - import it instead
 
 from inspect import ismethod
+from itertools import count
 
 allResources = {}
 
+class resPack():
+	def __init__(self):
+		self.members = {}
+		
+		self.counter = count()
+	
+	def append(self, value):
+		index = next(self.counter)
+		self.members[index] = value
+		return index
+	
+	def __getitem__(self, key):
+		return self.members[key]
+	
+	def __setitem__(self, key, value):
+		self.members[key] = value
+	
+	def __delitem__(self, key):
+		del self.members[key]
+
 def create(resName):
 	global allResources
-	allResources[resName] = {}
+	allResources[resName] = resPack()
 
 def retrieve(resName):
 	global allResources
