@@ -13,6 +13,7 @@ from . import makeResources
 from . import Entity
 from .Systems import Draw
 from .Systems import Flip
+from .Systems import Rotation
 from .Systems import Velocity
 
 from . import PlayerMove
@@ -29,9 +30,11 @@ def init():
 	Entity.init()
 	Draw.init()
 	Flip.init()
+	Rotation.init()
 	Velocity.init()
 	
 	Draw.addRenderStep(Flip.render)
+	Draw.addRenderStep(Rotation.render)
 	
 	PlayerMove.init()
 	

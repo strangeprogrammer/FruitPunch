@@ -55,7 +55,7 @@ def register(FC, EntID):
 	)
 
 @require("FlipComp")
-def numregistered(FC, EntID):
+def instances(FC, EntID):
 	return len(G.CONN.execute(
 		FC.select().where(FC.c.EntID == EntID)
 	).fetchall())

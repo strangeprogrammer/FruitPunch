@@ -16,25 +16,25 @@ from sqlalchemy import (
 from . import G
 
 def makeTables():
-	Table( # List of all entity ID's
+	Table(	# List of all entity ID's
 		"AllEnts", G.DB,
 		Column("EntID", Integer),
 		PKC("EntID"),
 	)
 	
-	Table( # List of all image ID's
+	Table(	# List of all image ID's
 		"AllImages", G.DB,
 		Column("ImageID", Integer),
 		PKC("ImageID"),
 	)
 	
-	Table( # List of all rectangle ID's
+	Table(	# List of all rectangle ID's
 		"AllRects", G.DB,
 		Column("RectID", Integer),
 		PKC("RectID"),
 	)
 	
-	Table( # Entity-rectangle link table
+	Table(	# Entity-rectangle link table
 		"RectComp", G.DB,
 		Column("EntID", Integer),
 		Column("RectID", Integer),
@@ -43,7 +43,7 @@ def makeTables():
 		FKC(["RectID"], ["AllRects.RectID"]),
 	)
 	
-	Table( # Entity-image link table for the base image of an entity
+	Table(	# Entity-image link table for the base image of an entity
 		"ImageComp", G.DB,
 		Column("EntID", Integer),
 		Column("ImageID", Integer),
@@ -52,7 +52,7 @@ def makeTables():
 		FKC(["ImageID"], ["AllImages.ImageID"]),
 	)
 	
-	Table( # Entity-image link table for the renderable image of an entity
+	Table(	# Entity-image link table for the renderable image of an entity
 		"DrawComp", G.DB,
 		Column("EntID", Integer),
 		Column("ImageID", Integer),
@@ -61,7 +61,7 @@ def makeTables():
 		FKC(["ImageID"], ["AllImages.ImageID"]),
 	)
 	
-	Table( # Real centers of all entities (useful for fine-grained velocity calculations)
+	Table(	# Real centers of all entities (useful for fine-grained velocity calculations)
 		"PosComp", G.DB,
 		Column("EntID", Integer),
 		Column("PosX", REAL),
@@ -70,7 +70,7 @@ def makeTables():
 		FKC(["EntID"], ["AllEnts.EntID"]),
 	)
 	
-	Table( # Velocities of all entities
+	Table(	# Velocities of all entities
 		"VelComp", G.DB,
 		Column("EntID", Integer),
 		Column("VelX", REAL),
@@ -79,14 +79,14 @@ def makeTables():
 		FKC(["EntID"], ["AllEnts.EntID"]),
 	)
 	
-	Table( # All player-controlled entities
+	Table(	# All player-controlled entities
 		"PlayerComp", G.DB,
 		Column("EntID", Integer),
 		PKC("EntID"),
 		FKC(["EntID"], ["AllEnts.EntID"]),
 	)
 	
-	Table( # All entities that have an image flip applied to them
+	Table(	# All entities that have an image flip applied to them
 		"FlipComp", G.DB,
 		Column("EntID", Integer),
 		Column("FlipX", Boolean),
@@ -95,7 +95,7 @@ def makeTables():
 		FKC(["EntID"], ["AllEnts.EntID"]),
 	)
 	
-	Table( # Images and their flipped equivalents
+	Table(	# Images and their flipped equivalents
 		"FlipImages", G.DB,
 		Column("InImageID", Integer),
 		Column("FlipX", Boolean),
@@ -105,6 +105,14 @@ def makeTables():
 		UC("OutImageID"),
 		FKC(["InImageID"], ["AllImages.ImageID"]),
 		FKC(["OutImageID"], ["AllImages.ImageID"]),
+	)
+	
+	Table(	# All entities that have an angle applied to them
+		"RotationComp", G.DB,
+		Column("EntID", Integer),
+		Column("Theta", REAL),
+		PKC("EntID"),
+		FKC(["EntID"], ["AllEnts.EntID"]),
 	)
 	
 	G.DB.create_all(G.ENGINE)

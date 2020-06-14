@@ -41,7 +41,7 @@ def addRenderStep(step):
 @require("DrawComp")
 def _updateDrawComp(DC, values):
 	G.CONN.execute(DC.delete())		# Empty the drawing table
-	G.CONN.execute(DC.insert(), values)	# Repopulate the table with the given values
+	G.CONN.execute(DC.insert(), values)	# Repopulate the table with the given values (must be dict-like (have Key-Value pairs), such as a row proxy)
 
 @require("ImageComp")
 def _resetDrawComp(IC):
@@ -70,4 +70,4 @@ def update(IR, RR, screen):
 @require("AllRects")
 def clear(R, RR, screen, bgd):
 	for (RectID, ) in G.CONN.execute(sqa.select([R.c.RectID]).select_from(R)).fetchall():
-		screen.blit(bgd, RR[RectID], RR[RectID])
+		screen.blit(bgd, RR[RectID])

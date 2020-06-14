@@ -37,7 +37,7 @@ def register(VC, EntID):
 	)
 
 @require("VelComp")
-def numregistered(VC, EntID):
+def instances(VC, EntID):
 	return len(G.CONN.execute(
 		VC.select().where(VC.c.EntID == EntID)
 	).fetchall())

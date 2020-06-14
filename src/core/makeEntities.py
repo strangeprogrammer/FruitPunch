@@ -8,34 +8,32 @@ from . import Entity
 from . import G
 
 from .Systems import Flip
-from .Systems import Velocity
+from .Systems import Rotation
 
 def makeEntities():
-	makeVelFlip()
-	makeVel()
+	makeFlipRot()
+	makeRot()
 	makeFlip()
 	makeNone()
 
-def makeVelFlip():
+def makeFlipRot():
 	FImage = LD("./RESOURCES/F.png")
 	FRect = FImage.get_rect()
 	
 	EntID, ImageID, RectID = Entity.createPlayer(FImage, FRect, (200, 200))
 	
-	Velocity.register(EntID)
-	Velocity.set(EntID, 0, 0)
-	
 	Flip.register(EntID)
 	Flip.registerImage(ImageID)
+	
+	Rotation.register(EntID)
 
-def makeVel():
+def makeRot():
 	TwoImage = LD("./RESOURCES/2.png")
 	TwoRect = TwoImage.get_rect()
 	
 	EntID, ImageID, RectID = Entity.createPlayer(TwoImage, TwoRect, (400, 200))
 	
-	Velocity.register(EntID)
-	Velocity.set(EntID, 0, 0)
+	Rotation.register(EntID)
 
 def makeFlip():
 	FiveImage = LD("./RESOURCES/5.png")

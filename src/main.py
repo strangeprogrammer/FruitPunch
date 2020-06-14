@@ -5,6 +5,7 @@ import pygame as pg
 import core.Events as Events
 import core.Systems.Draw as Draw
 import core.Systems.Velocity as Velocity
+import core.Systems.Rotation as Rotation
 import core.InitQuit as InitQuit
 
 import core.G as G
@@ -31,6 +32,8 @@ def update():
 	Draw.update(G.SCREEN)
 	pg.display.flip()
 	Draw.clear(G.SCREEN, G.BGD)
+	
+	Rotation.collect()
 	
 	elapsed = G.CLOCK.tick(60)
 
