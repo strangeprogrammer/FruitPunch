@@ -13,6 +13,7 @@ from .. import Resource
 # We don't have to keep track of the dirty regions assuming that 'ImageComp', 'DrawComp' and 'RectComp' aren't modified between the 'update' and 'clear' calls
 
 drawQuery = None
+RIPairsQuery = None
 renderSteps = []
 
 @require("RectComp")
@@ -24,7 +25,8 @@ def init(DC, RC):
 	G.BGD = G.SCREEN.copy()
 	pg.display.flip()
 	
-	global drawQuery
+	global drawQuery, RIPairsQuery
+	
 	drawQuery = sqa.select([
 		DC.c.ImageID,
 		RC.c.RectID,
@@ -32,6 +34,13 @@ def init(DC, RC):
 		DC.join(RC,
 			DC.c.EntID == RC.c.EntID,
 		)
+	).compile()
+	
+	RIPairsQuery = sqa.select([
+		RC.c.RectID,
+		DC.c.ImageID,
+	]).select_from(
+		DC.join(RC, DC.c.EntID == RC.c.EntID)
 	).compile()
 
 def addRenderStep(step):
@@ -47,11 +56,26 @@ def _updateDrawComp(DC, values):
 def _resetDrawComp(IC):
 	_updateDrawComp(G.CONN.execute(IC.select()).fetchall())
 
+@Resource.require("RectRes")
+@Resource.require("ImageRes")
+def _updateRects(IR, RR):
+	global RIPairsQuery
+	
+	# Center-preserving update of all rectangles
+	for RectID, ImageID in G.CONN.execute(RIPairsQuery).fetchall():
+		oldRect = RR[RectID]
+		newRect = IR[ImageID].get_rect()
+		newRect.center = oldRect.center
+		RR[RectID] = newRect
+
 def render():
 	_resetDrawComp()
+	
 	global renderSteps
 	for step in renderSteps:
 		_updateDrawComp(step())
+	
+	_updateRects()
 
 @Resource.require("RectRes")
 @Resource.require("ImageRes")
