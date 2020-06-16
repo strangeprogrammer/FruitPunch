@@ -35,6 +35,11 @@ def keyDownHandler(e):
 		pg.K_RIGHT,
 	]:
 		moveHandler(e)
+	elif e.key in [
+		pg.K_s,
+		pg.K_a,
+	]:
+		rotHandler(e)
 
 @require("PlayerComp")
 def flipHandler(PC, e):
@@ -65,3 +70,14 @@ def moveHandler(PC, e):
 	for (player,) in G.CONN.execute(PC.select()).fetchall():
 		(VelX, VelY) = Velocity.get(player)
 		Velocity.set(player, VelX + dx, VelY + dy)
+
+@require("PlayerComp")
+def rotHandler(PC, e):
+	if e.key == pg.K_s:
+		dTheta = -math.tau / 64
+	elif e.key == pg.K_a:
+		dTheta = math.tau / 64
+	
+	for (player,) in G.CONN.execute(PC.select()).fetchall():
+		Theta = Rotation.get(player)
+		Rotation.set(player, Theta + dTheta)

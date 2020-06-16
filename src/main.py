@@ -7,6 +7,7 @@ import core.Systems.Draw as Draw
 import core.Systems.Velocity as Velocity
 import core.Systems.Rotation as Rotation
 import core.Systems.FlipDoll as FlipDoll
+import core.Systems.RotDoll as RotDoll
 import core.InitQuit as InitQuit
 
 import core.G as G
@@ -30,6 +31,7 @@ def update():
 	
 	Draw.render()
 	FlipDoll.update()
+	RotDoll.update()
 	
 	Draw.update(G.SCREEN)
 	pg.display.flip()

@@ -16,6 +16,7 @@ from .Systems import Flip
 from .Systems import Rotation
 from .Systems import Velocity
 from .Systems import FlipDoll
+from .Systems import RotDoll
 
 from . import PlayerMove
 
@@ -34,6 +35,7 @@ def init():
 	Rotation.init()
 	Velocity.init()
 	FlipDoll.init()
+	RotDoll.init()
 	
 	Draw.addRenderStep(Flip.render)
 	Draw.addRenderStep(Rotation.render)

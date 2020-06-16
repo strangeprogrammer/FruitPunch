@@ -127,4 +127,14 @@ def makeTables():
 		FKC(["EntID"], ["AllEnts.EntID"]),
 	)
 	
+	Table(	# Entities that have an angle applied to them
+		"RotDollComp", G.DB,
+		Column("EntID", Integer),
+		Column("ChildID", Integer),
+		Column("dTheta", REAL),
+		PKC("ChildID"),
+		FKC(["ChildID"], ["AllEnts.EntID"]),
+		FKC(["EntID"], ["AllEnts.EntID"]),
+	)
+	
 	G.DB.create_all(G.ENGINE)

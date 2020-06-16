@@ -2,7 +2,6 @@
 
 # DO NOT RUN THIS FILE - import it instead
 
-import pygame as pg
 import sqlalchemy as sqa
 
 from .. import G
@@ -29,7 +28,7 @@ def init(FC, FDC):
 
 @require("FlipDollComp")
 def register(FDC, EntID, ChildID):
-	# Find out whether or not the entity being registered is in a chain of dolls, and assign to it its generation number as appropriate
+	# TODO: Find out whether or not the entity being registered is in a chain of dolls, and assign to it its generation number as appropriate
 	# The entity being registered should already be registered with the Flip System
 #	try:
 #		Generation = G.CONN.execute(
