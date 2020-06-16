@@ -6,9 +6,7 @@ import pygame as pg
 import sqlalchemy as sqa
 
 from .. import G
-from .. import Component
 from ..Component import require
-from .. import Resource
 
 movingQuery = None
 
@@ -64,9 +62,8 @@ def set(VC, EntID, VelX, VelY):
 			.values(VelX = VelX, VelY = VelY)
 	)
 
-@Resource.require("RectRes")
 @require("PosComp")
-def update(PC, RR, dt):
+def update(PC, dt):
 	global movingQuery
 	for EntID, RectID, PosX, PosY, VelX, VelY in G.CONN.execute(movingQuery).fetchall():
 		newX = PosX + VelX * dt
@@ -80,5 +77,3 @@ def update(PC, RR, dt):
 				PosY = newY,
 			)
 		)
-		
-		RR[RectID].center = (newX, newY)

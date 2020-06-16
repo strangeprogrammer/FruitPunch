@@ -6,7 +6,6 @@ import pygame as pg
 import sqlalchemy as sqa
 
 from .. import G
-from .. import Component
 from ..Component import require as require
 from .. import Resource
 
@@ -17,9 +16,10 @@ RIPairsQuery = None
 renderSteps = []
 erased = []
 
+@require("PosComp")
 @require("RectComp")
 @require("DrawComp")
-def init(DC, RC):
+def init(DC, RC, PC):
 	G.SCREEN = pg.display.set_mode()
 	G.SCREEN.fill( (255, 255, 255) )
 	
@@ -40,8 +40,11 @@ def init(DC, RC):
 	RIPairsQuery = sqa.select([
 		RC.c.RectID,
 		DC.c.ImageID,
+		PC.c.PosX,
+		PC.c.PosY,
 	]).select_from(
-		DC.join(RC, DC.c.EntID == RC.c.EntID)
+		DC	.join(RC, DC.c.EntID == RC.c.EntID) \
+			.join(PC, DC.c.EntID == PC.c.EntID)
 	).compile()
 
 def addRenderStep(step):
@@ -62,12 +65,9 @@ def _resetDrawComp(IC):
 def _updateRects(IR, RR):
 	global RIPairsQuery
 	
-	# Center-preserving update of all rectangles
-	for RectID, ImageID in G.CONN.execute(RIPairsQuery).fetchall():
-		oldRect = RR[RectID]
-		newRect = IR[ImageID].get_rect()
-		newRect.center = oldRect.center
-		RR[RectID] = newRect
+	for RectID, ImageID, PosX, PosY in G.CONN.execute(RIPairsQuery).fetchall():
+		RR[RectID] = IR[ImageID].get_rect()
+		RR[RectID].center = (PosX, PosY)
 
 def render():
 	_resetDrawComp()
