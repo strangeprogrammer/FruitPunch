@@ -29,12 +29,11 @@ def update():
 	
 	Velocity.update(elapsed)
 	
-	Draw.render()
 	FlipDoll.update()
 	RotDoll.update()
 	
-	Draw.update(G.SCREEN)
-	pg.display.flip()
+	Draw.render()
+	pg.display.update(Draw.update(G.SCREEN))
 	Draw.clear(G.SCREEN, G.BGD)
 	
 	Rotation.collect()

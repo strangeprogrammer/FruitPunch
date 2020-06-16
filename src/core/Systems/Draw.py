@@ -15,6 +15,7 @@ from .. import Resource
 drawQuery = None
 RIPairsQuery = None
 renderSteps = []
+erased = []
 
 @require("RectComp")
 @require("DrawComp")
@@ -80,18 +81,24 @@ def render():
 @Resource.require("RectRes")
 @Resource.require("ImageRes")
 def update(IR, RR, screen):
-	global drawQuery
+	global drawQuery, erased
 	
-	result = []
+	newRects = []
 	for ImageID, RectID in G.CONN.execute(drawQuery).fetchall():
 		rect = RR[RectID]
 		screen.blit(IR[ImageID], rect)
-		result.append(rect)
+		newRects.append(rect)
+	
+	result = newRects + erased
+	erased = []
 	
 	return result
 
 @Resource.require("RectRes")
-@require("AllRects")
-def clear(R, RR, screen, bgd):
-	for (RectID, ) in G.CONN.execute(sqa.select([R.c.RectID]).select_from(R)).fetchall():
+@require("RectComp")
+def clear(RC, RR, screen, bgd):
+	global erased
+	
+	for (RectID,) in G.CONN.execute(sqa.select([RC.c.RectID]).select_from(RC)).fetchall():
 		screen.blit(bgd, RR[RectID])
+		erased.append(RR[RectID].copy()) # The 'copy' part is important since the rectangle could be modified and not represent the region that needs to be erased upon the next draw
