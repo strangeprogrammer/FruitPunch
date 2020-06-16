@@ -7,16 +7,18 @@ from pygame.image import load as LD
 from . import Entity
 from . import G
 
+from .Systems import Velocity
 from .Systems import Flip
-from .Systems import Rotation
+from .Systems import FlipDoll
+
+FEntID = None
 
 def makeEntities():
-	makeFlipRot()
-	makeRot()
-	makeFlip()
+	makeVelFlip()
+	makeFlipDoll()
 	makeNone()
 
-def makeFlipRot():
+def makeVelFlip():
 	FImage = LD("./RESOURCES/F.png")
 	FRect = FImage.get_rect()
 	
@@ -25,27 +27,26 @@ def makeFlipRot():
 	Flip.register(EntID)
 	Flip.registerImage(ImageID)
 	
-	Rotation.register(EntID)
-
-def makeRot():
-	TwoImage = LD("./RESOURCES/2.png")
-	TwoRect = TwoImage.get_rect()
+	Velocity.register(EntID)
 	
-	EntID, ImageID, RectID = Entity.createPlayer(TwoImage, TwoRect, (400, 200))
-	
-	Rotation.register(EntID)
+	global FEntID
+	FEntID = EntID
 
-def makeFlip():
+def makeFlipDoll():
 	FiveImage = LD("./RESOURCES/5.png")
 	FiveRect = FiveImage.get_rect()
 	
-	EntID, ImageID, RectID = Entity.createPlayer(FiveImage, FiveRect, (200, 400))
+	EntID, ImageID, RectID = Entity.create(FiveImage, FiveRect, (200, 400))
 	
 	Flip.register(EntID)
 	Flip.registerImage(ImageID)
+	
+	global FEntID
+	FlipDoll.register(FEntID, EntID)
+	FlipDoll.set(EntID, True, True)
 
 def makeNone():
 	NoneImage = LD("./RESOURCES/7.png")
 	NoneRect = NoneImage.get_rect()
 	
-	EntID, ImageID, RectID = Entity.createPlayer(NoneImage, NoneRect, (400, 400))
+	Entity.create(NoneImage, NoneRect, (400, 400))

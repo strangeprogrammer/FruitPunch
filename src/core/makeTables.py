@@ -79,14 +79,14 @@ def makeTables():
 		FKC(["EntID"], ["AllEnts.EntID"]),
 	)
 	
-	Table(	# All player-controlled entities
+	Table(	# Player-controlled entities
 		"PlayerComp", G.DB,
 		Column("EntID", Integer),
 		PKC("EntID"),
 		FKC(["EntID"], ["AllEnts.EntID"]),
 	)
 	
-	Table(	# All entities that have an image flip applied to them
+	Table(	# Entities that have an image flip applied to them
 		"FlipComp", G.DB,
 		Column("EntID", Integer),
 		Column("FlipX", Boolean),
@@ -107,11 +107,23 @@ def makeTables():
 		FKC(["OutImageID"], ["AllImages.ImageID"]),
 	)
 	
-	Table(	# All entities that have an angle applied to them
+	Table(	# Entities that have an angle applied to them
 		"RotationComp", G.DB,
 		Column("EntID", Integer),
 		Column("Theta", REAL),
 		PKC("EntID"),
+		FKC(["EntID"], ["AllEnts.EntID"]),
+	)
+	
+	Table(	# Entities that use the flip state of the parent to determine their own flip state
+		"FlipDollComp", G.DB,
+		Column("EntID", Integer),
+		Column("ChildID", Integer),
+#		Column("Generation", Integer),
+		Column("OffX", Boolean),
+		Column("OffY", Boolean),
+		PKC("ChildID"),
+		FKC(["ChildID"], ["AllEnts.EntID"]),
 		FKC(["EntID"], ["AllEnts.EntID"]),
 	)
 	

@@ -5,6 +5,7 @@
 from itertools import count
 
 from . import Component
+from .Component import require
 from . import Resource
 from . import G
 
@@ -20,13 +21,13 @@ def init():
 
 @Resource.require("RectRes")
 @Resource.require("ImageRes")
-@Component.require("PosComp")
-@Component.require("RectComp")
-@Component.require("ImageComp")
-@Component.require("AllMove")
-@Component.require("AllRects")
-@Component.require("AllImages")
-@Component.require("AllEnts")
+@require("PosComp")
+@require("RectComp")
+@require("ImageComp")
+@require("AllMove")
+@require("AllRects")
+@require("AllImages")
+@require("AllEnts")
 def create(E, I, R, M, IC, RC, PC, IR, RR, image, rect, center):
 	rect.center = center
 	
@@ -45,7 +46,7 @@ def create(E, I, R, M, IC, RC, PC, IR, RR, image, rect, center):
 	
 	return EntID, ImageID, RectID
 
-@Component.require("PlayerComp")
+@require("PlayerComp")
 def createPlayer(PC, image, rect, center):
 	EntID, ImageID, RectID = create(image, rect, center)
 	G.CONN.execute(PC.insert().values(EntID = EntID))
