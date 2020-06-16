@@ -70,11 +70,27 @@ def makeTables():
 		FKC(["EntID"], ["AllEnts.EntID"]),
 	)
 	
+	Table(	# Entities that have an angle applied to them
+		"RotationComp", G.DB,
+		Column("EntID", Integer),
+		Column("Theta", REAL),
+		PKC("EntID"),
+		FKC(["EntID"], ["AllEnts.EntID"]),
+	)
+	
 	Table(	# Velocities of all entities
 		"VelComp", G.DB,
 		Column("EntID", Integer),
 		Column("VelX", REAL),
 		Column("VelY", REAL),
+		PKC("EntID"),
+		FKC(["EntID"], ["AllEnts.EntID"]),
+	)
+	
+	Table(	# Angular velocities of all entities
+		"RotVelComp", G.DB,
+		Column("EntID", Integer),
+		Column("Omega", REAL),
 		PKC("EntID"),
 		FKC(["EntID"], ["AllEnts.EntID"]),
 	)
@@ -105,14 +121,6 @@ def makeTables():
 		UC("OutImageID"),
 		FKC(["InImageID"], ["AllImages.ImageID"]),
 		FKC(["OutImageID"], ["AllImages.ImageID"]),
-	)
-	
-	Table(	# Entities that have an angle applied to them
-		"RotationComp", G.DB,
-		Column("EntID", Integer),
-		Column("Theta", REAL),
-		PKC("EntID"),
-		FKC(["EntID"], ["AllEnts.EntID"]),
 	)
 	
 	Table(	# Entities that use the flip state of the parent to determine their own flip state

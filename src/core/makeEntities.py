@@ -9,17 +9,13 @@ from . import Entity
 from . import G
 
 from .Systems import Velocity
-from .Systems import Flip
 from .Systems import Rotation
-from .Systems import FlipDoll
-from .Systems import RotDoll
-
-FEntID = None
+from .Systems import RotVel
 
 def makeEntities():
 	makeAllEnt()
-	makeFlipDoll()
-	makeRotDoll()
+	makeVelocity()
+	makeRotVel()
 	makeNone()
 
 def makeAllEnt():
@@ -28,41 +24,29 @@ def makeAllEnt():
 	
 	EntID, ImageID, RectID = Entity.createPlayer(FImage, FRect, (200, 200))
 	
-	Flip.register(EntID)
-	Flip.registerImage(ImageID)
 	Velocity.register(EntID)
 	Rotation.register(EntID)
-	
-	global FEntID
-	FEntID = EntID
+	RotVel.register(EntID)
 
-def makeFlipDoll():
+def makeVelocity():
 	FiveImage = LD("./RESOURCES/5.png")
 	FiveRect = FiveImage.get_rect()
 	
-	EntID, ImageID, RectID = Entity.create(FiveImage, FiveRect, (400, 200))
+	EntID, ImageID, RectID = Entity.createPlayer(FiveImage, FiveRect, (400, 200))
 	
-	Flip.register(EntID)
-	Flip.registerImage(ImageID)
-	
-	global FEntID
-	FlipDoll.register(FEntID, EntID)
-	FlipDoll.set(EntID, True, True)
+	Velocity.register(EntID)
 
-def makeRotDoll():
+def makeRotVel():
 	TwoImage = LD("./RESOURCES/2.png")
 	TwoRect = TwoImage.get_rect()
 	
-	EntID, ImageID, RectID = Entity.create(TwoImage, TwoRect, (200, 400))
+	EntID, ImageID, RectID = Entity.createPlayer(TwoImage, TwoRect, (200, 400))
 	
 	Rotation.register(EntID)
-	
-	global FEntID
-	RotDoll.register(FEntID, EntID)
-	RotDoll.set(EntID, math.tau / 4)
+	RotVel.register(EntID)
 
 def makeNone():
 	NoneImage = LD("./RESOURCES/7.png")
 	NoneRect = NoneImage.get_rect()
 	
-	Entity.create(NoneImage, NoneRect, (400, 400))
+	Entity.createPlayer(NoneImage, NoneRect, (400, 400))

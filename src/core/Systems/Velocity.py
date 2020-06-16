@@ -2,7 +2,6 @@
 
 # DO NOT RUN THIS FILE - import it instead
 
-import pygame as pg
 import sqlalchemy as sqa
 
 from .. import G
@@ -12,20 +11,17 @@ movingQuery = None
 
 @require("VelComp")
 @require("PosComp")
-@require("RectComp")
-def init(RC, PC, VC):
+def init(PC, VC):
 	global movingQuery
 	
 	movingQuery = sqa.select([
-		RC.c.EntID,
-		RC.c.RectID,
+		PC.c.EntID,
 		PC.c.PosX,
 		PC.c.PosY,
 		VC.c.VelX,
 		VC.c.VelY,
 	]).select_from(
-		RC	.join(PC, RC.c.EntID == PC.c.EntID) \
-			.join(VC, PC.c.EntID == VC.c.EntID)
+			PC.join(VC, PC.c.EntID == VC.c.EntID)
 	).compile()
 
 @require("VelComp")
@@ -63,9 +59,10 @@ def set(VC, EntID, VelX, VelY):
 	)
 
 @require("PosComp")
-def update(PC, dt):
+def update(PC, dt): # TODO: Re-write this using an execute-many style
 	global movingQuery
-	for EntID, RectID, PosX, PosY, VelX, VelY in G.CONN.execute(movingQuery).fetchall():
+	
+	for EntID, PosX, PosY, VelX, VelY in G.CONN.execute(movingQuery).fetchall():
 		newX = PosX + VelX * dt
 		newY = PosY + VelY * dt
 		

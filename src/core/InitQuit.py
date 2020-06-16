@@ -15,6 +15,7 @@ from .Systems import Draw
 from .Systems import Flip
 from .Systems import Rotation
 from .Systems import Velocity
+from .Systems import RotVel
 from .Systems import FlipDoll
 from .Systems import RotDoll
 
@@ -34,6 +35,7 @@ def init():
 	Flip.init()
 	Rotation.init()
 	Velocity.init()
+	RotVel.init()
 	FlipDoll.init()
 	RotDoll.init()
 	
