@@ -24,11 +24,10 @@ def init():
 @require("PosComp")
 @require("RectComp")
 @require("ImageComp")
-@require("AllMove")
 @require("AllRects")
 @require("AllImages")
 @require("AllEnts")
-def create(E, I, R, M, IC, RC, PC, IR, RR, image, rect, center):
+def create(E, I, R, IC, RC, PC, IR, RR, image, rect, center):
 	rect.center = center
 	
 	global entCounter

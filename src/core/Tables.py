@@ -15,7 +15,7 @@ from sqlalchemy import (
 
 from . import G
 
-def makeTables():
+def init():
 	Table(	# List of all entity ID's
 		"AllEnts", G.DB,
 		Column("EntID", Integer),
@@ -140,6 +140,28 @@ def makeTables():
 		Column("EntID", Integer),
 		Column("ChildID", Integer),
 		Column("dTheta", REAL),
+		PKC("ChildID"),
+		FKC(["ChildID"], ["AllEnts.EntID"]),
+		FKC(["EntID"], ["AllEnts.EntID"]),
+	)
+	
+	Table(	# Base strut offsets of all affected entities
+		"StrutBaseComp", G.DB,
+		Column("EntID", Integer),
+		Column("ChildID", Integer),
+		Column("OffX", REAL),
+		Column("OffY", REAL),
+		PKC("ChildID"),
+		FKC(["ChildID"], ["AllEnts.EntID"]),
+		FKC(["EntID"], ["AllEnts.EntID"]),
+	)
+	
+	Table(	# Strut offsets of all affected entities
+		"StrutComp", G.DB,
+		Column("EntID", Integer),
+		Column("ChildID", Integer),
+		Column("OffX", REAL),
+		Column("OffY", REAL),
 		PKC("ChildID"),
 		FKC(["ChildID"], ["AllEnts.EntID"]),
 		FKC(["EntID"], ["AllEnts.EntID"]),

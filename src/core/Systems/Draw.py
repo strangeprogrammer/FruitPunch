@@ -53,8 +53,9 @@ def addRenderStep(step):
 
 @require("DrawComp")
 def _updateDrawComp(DC, values):
-	G.CONN.execute(DC.delete())		# Empty the drawing table
-	G.CONN.execute(DC.insert(), values)	# Repopulate the table with the given values (must be dict-like (have Key-Value pairs), such as a row proxy)
+	G.CONN.execute(DC.delete())			# Empty the drawing table
+	if 0 < len(values):
+		G.CONN.execute(DC.insert(), values)	# Repopulate the table with the given values (must be dict-like (have Key-Value pairs), such as a row proxy)
 
 @require("ImageComp")
 def _resetDrawComp(IC):

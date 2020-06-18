@@ -7,7 +7,7 @@ from sys import exit
 
 from . import G
 from . import Component
-from . import makeTables
+from . import Tables
 from . import makeResources
 
 from . import Entity
@@ -18,6 +18,7 @@ from .Systems import Velocity
 from .Systems import RotVel
 from .Systems import FlipDoll
 from .Systems import RotDoll
+from .Systems import Strut
 
 from . import PlayerMove
 
@@ -27,7 +28,7 @@ def init():
 	pg.init()
 	
 	Component.DBInit()
-	makeTables.makeTables()
+	Tables.init()
 	makeResources.makeResources()
 	
 	Entity.init()
@@ -38,6 +39,7 @@ def init():
 	RotVel.init()
 	FlipDoll.init()
 	RotDoll.init()
+	Strut.init()
 	
 	Draw.addRenderStep(Flip.render)
 	Draw.addRenderStep(Rotation.render)

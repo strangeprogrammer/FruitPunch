@@ -2,16 +2,21 @@
 
 import pygame as pg
 
-import core.Events as Events
-import core.Systems.Draw as Draw
-import core.Systems.Velocity as Velocity
-import core.Systems.RotVel as RotVel
-import core.Systems.Rotation as Rotation
-import core.Systems.FlipDoll as FlipDoll
-import core.Systems.RotDoll as RotDoll
-import core.InitQuit as InitQuit
+from core.Systems import (
+	Draw as Draw,
+	Velocity as Velocity,
+	RotVel as RotVel,
+	Rotation as Rotation,
+	FlipDoll as FlipDoll,
+	RotDoll as RotDoll,
+	Strut as Strut,
+)
 
-import core.G as G
+from core import (
+	Events as Events,
+	InitQuit as InitQuit,
+	G as G,
+)
 
 def init():
 	InitQuit.init()
@@ -33,6 +38,7 @@ def update():
 	
 	FlipDoll.update()
 	RotDoll.update()
+	Strut.update()
 	
 	Draw.render()
 	pg.display.update(Draw.update(G.SCREEN))
