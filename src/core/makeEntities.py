@@ -19,10 +19,10 @@ def makeEntities():
 	makeRotVel()
 	makeNone()
 
-global FEntID
+FEntID = None
 
 def makeAllEnt():
-	FImage = LD("./RESOURCES/F.png")
+	FImage = LD("./RESOURCES/F.png").convert_alpha()
 	FRect = FImage.get_rect()
 	
 	EntID, ImageID, RectID = Entity.createPlayer(FImage, FRect, (200, 200))
@@ -35,7 +35,7 @@ def makeAllEnt():
 	FEntID = EntID
 
 def makeRotVelStrut():
-	FiveImage = LD("./RESOURCES/5.png")
+	FiveImage = LD("./RESOURCES/5.png").convert_alpha()
 	FiveRect = FiveImage.get_rect()
 	
 	EntID, ImageID, RectID = Entity.create(FiveImage, FiveRect, (400, 200))
@@ -51,7 +51,7 @@ def makeRotVelStrut():
 	Strut.set(EntID, 200, 0)
 
 def makeRotVel():
-	TwoImage = LD("./RESOURCES/2.png")
+	TwoImage = LD("./RESOURCES/2.png").convert_alpha()
 	TwoRect = TwoImage.get_rect()
 	
 	EntID, ImageID, RectID = Entity.createPlayer(TwoImage, TwoRect, (200, 400))
@@ -60,7 +60,7 @@ def makeRotVel():
 	RotVel.register(EntID)
 
 def makeNone():
-	NoneImage = LD("./RESOURCES/7.png")
+	NoneImage = LD("./RESOURCES/7.png").convert_alpha()
 	NoneRect = NoneImage.get_rect()
 	
 	Entity.createPlayer(NoneImage, NoneRect, (400, 400))

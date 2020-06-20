@@ -2,20 +2,20 @@
 
 import pygame as pg
 
-from core.Systems import (
-	Draw as Draw,
-	Velocity as Velocity,
-	RotVel as RotVel,
-	Rotation as Rotation,
-	FlipDoll as FlipDoll,
-	RotDoll as RotDoll,
-	Strut as Strut,
+from core import (
+	InitQuit,
+	Events,
+	G,
 )
 
-from core import (
-	Events as Events,
-	InitQuit as InitQuit,
-	G as G,
+from core.Systems import (
+	Draw,
+	Velocity,
+	RotVel,
+	Rotation,
+	FlipDoll,
+	RotDoll,
+	Strut,
 )
 
 def init():

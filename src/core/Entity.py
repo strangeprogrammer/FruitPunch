@@ -4,9 +4,6 @@
 
 from itertools import count
 
-from . import Component
-from .Component import require
-from . import Resource
 from . import G
 
 from .Systems import Velocity
@@ -15,38 +12,32 @@ entCounter = None
 rectCounter = None
 imageCounter = None
 
+from . import Component as C
+from . import Resource as R
+
 def init():
 	global entCounter
 	entCounter = count()
 
-@Resource.require("RectRes")
-@Resource.require("ImageRes")
-@require("PosComp")
-@require("RectComp")
-@require("ImageComp")
-@require("AllRects")
-@require("AllImages")
-@require("AllEnts")
-def create(E, I, R, IC, RC, PC, IR, RR, image, rect, center):
+def create(image, rect, center):
 	rect.center = center
 	
 	global entCounter
 	EntID = next(entCounter)
-	ImageID = IR.append(image)
-	RectID = RR.append(rect)
+	ImageID = R.IR.append(image)
+	RectID = R.RR.append(rect)
 	
-	G.CONN.execute(E.insert().values(EntID = EntID))
-	G.CONN.execute(I.insert().values(ImageID = ImageID))
-	G.CONN.execute(R.insert().values(RectID = RectID))
+	G.CONN.execute(C.E.insert().values(EntID = EntID))
+	G.CONN.execute(C.I.insert().values(ImageID = ImageID))
+	G.CONN.execute(C.R.insert().values(RectID = RectID))
 	
-	G.CONN.execute(IC.insert().values(EntID = EntID, ImageID = ImageID))
-	G.CONN.execute(RC.insert().values(EntID = EntID, RectID = RectID))
-	G.CONN.execute(PC.insert().values(EntID = EntID, PosX = center[0], PosY = center[1]))
+	G.CONN.execute(C.IC.insert().values(EntID = EntID, ImageID = ImageID))
+	G.CONN.execute(C.RECC.insert().values(EntID = EntID, RectID = RectID))
+	G.CONN.execute(C.POSC.insert().values(EntID = EntID, PosX = center[0], PosY = center[1]))
 	
 	return EntID, ImageID, RectID
 
-@require("PlayerComp")
-def createPlayer(PC, image, rect, center):
+def createPlayer(image, rect, center):
 	EntID, ImageID, RectID = create(image, rect, center)
-	G.CONN.execute(PC.insert().values(EntID = EntID))
+	G.CONN.execute(C.PLYC.insert().values(EntID = EntID))
 	return EntID, ImageID, RectID

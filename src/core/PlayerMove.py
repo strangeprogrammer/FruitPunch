@@ -7,7 +7,6 @@ import sqlalchemy as sqa
 import math
 
 from . import G
-from .Component import require
 from . import Events
 
 from .Systems import Velocity
@@ -17,6 +16,8 @@ from .Systems import RotVel
 """
 Every time an important button is pressed, the flip state or rotation of all player-controlled entities is updated according to the key pressed.
 """
+
+from . import Component as C
 
 def init():
 	Events.register(pg.KEYDOWN, keyDownHandler)
@@ -35,8 +36,7 @@ def keyDownHandler(e):
 	]:
 		moveHandler(e)
 
-@require("PlayerComp")
-def moveHandler(PC, e):
+def moveHandler(e):
 	(dx, dy) = (0, 0)
 	
 	if e.key == pg.K_UP:
@@ -48,18 +48,17 @@ def moveHandler(PC, e):
 	elif e.key == pg.K_RIGHT:
 		dx += 0.2
 	
-	for (player,) in G.CONN.execute(PC.select()).fetchall():
+	for (player,) in G.CONN.execute(C.PLYC.select()).fetchall():
 		if 0 < Velocity.instances(player):
 			(VelX, VelY) = Velocity.get(player)
 			Velocity.set(player, VelX + dx, VelY + dy)
 
-@require("PlayerComp")
-def rotHandler(PC, e):
+def rotHandler(e):
 	if e.key == pg.K_f:
 		dOmega = -math.tau / 16 / 1000
 	elif e.key == pg.K_d:
 		dOmega = math.tau / 16 / 1000
 	
-	for (player,) in G.CONN.execute(PC.select()).fetchall():
+	for (player,) in G.CONN.execute(C.PLYC.select()).fetchall():
 		if 0 < RotVel.instances(player):
 			RotVel.set(player, RotVel.get(player) + dOmega)

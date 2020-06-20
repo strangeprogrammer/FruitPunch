@@ -8,100 +8,86 @@ import math
 
 from .. import G
 
-from .. import Component
-from ..Component import require as require
-from .. import Resource
-
 exemptQuery = None
 rotateQuery = None
 collectable = []
 
-@require("RotationComp")
-@require("DrawComp")
-def init(DC, RC):
+from .. import Component as C
+from .. import Resource as R
+
+def init():
 	global exemptQuery, rotateQuery
 	
-	exemptQuery = DC.select().where(
-		DC.c.EntID.notin_(
-			sqa.select([RC.c.EntID]).select_from(RC)
+	exemptQuery = C.DC.select().where(
+		C.DC.c.EntID.notin_(
+			sqa.select([C.ROTC.c.EntID]).select_from(C.ROTC)
 		)
 	).compile()
 	
 	rotateQuery = sqa.select([
-		DC.c.EntID,
-		DC.c.ImageID,
-		RC.c.Theta,
+		C.DC.c.EntID,
+		C.DC.c.ImageID,
+		C.ROTC.c.Theta,
 	]).select_from(
-		DC.join(RC, DC.c.EntID == RC.c.EntID)
+		C.DC.join(C.ROTC, C.DC.c.EntID == C.ROTC.c.EntID)
 	).compile()
 
-@require("RotationComp")
-def register(RC, EntID):
+def register(EntID):
 	G.CONN.execute(
-		RC.insert(), {
+		C.ROTC.insert(), {
 			"EntID": EntID,
 			"Theta": 0,
 		}
 	)
 
-@require("RotationComp")
-def instances(RC, EntID):
+def instances(EntID):
 	return len(G.CONN.execute(
-		RC.select().where(RC.c.EntID == EntID)
+		C.ROTC.select().where(C.ROTC.c.EntID == EntID)
 	).fetchall())
 
-@require("RotationComp")
-def deregister(RC, EntID):
+def deregister(EntID):
 	G.CONN.execute(
-		RC	.delete()
-			.where(RC.EntID == EntID)
+		C.ROTC	.delete() \
+			.where(C.ROTC.EntID == EntID)
 	)
 
-@require("RotationComp")
-def get(RC, EntID):
+def get(EntID):
 	return G.CONN.execute(
-		sqa	.select([RC.c.Theta]) \
-			.select_from(RC) \
-			.where(RC.c.EntID == EntID)
+		sqa	.select([C.ROTC.c.Theta]) \
+			.select_from(C.ROTC) \
+			.where(C.ROTC.c.EntID == EntID)
 	).fetchone()[0] * math.tau / 360
 
-@require("RotationComp")
-def set(RC, EntID, Theta):
+def set(EntID, Theta):
 	G.CONN.execute(
-		RC.update().where(
-			RC.c.EntID == EntID
+		C.ROTC.update().where(
+			C.ROTC.c.EntID == EntID
 		), {"Theta": Theta * 360 / math.tau}
 	)
 
-@Resource.require("ImageRes")
-@require("AllImages")
-def collect(I, IR):
+def collect():
 	global collectable
 	for rotateID in collectable:
-		del IR[rotateID]
+		del R.IR[rotateID]
 		G.CONN.execute(
-			I	.delete() \
-				.where(I.c.ImageID == rotateID)
+			C.I	.delete() \
+				.where(C.I.c.ImageID == rotateID)
 		)
 	
 	collectable = []
 
-@Resource.require("ImageRes")
-@require("RotationComp")
-@require("DrawComp")
-@require("AllImages")
-def render(I, DC, RC, IR):
+def render():
 	global exemptQuery, rotateQuery, collectable
 	
 	result = G.CONN.execute(exemptQuery).fetchall()
 	
 	for EntID, ImageID, Theta in G.CONN.execute(rotateQuery).fetchall():
-		rotateID = IR.append(
-			pg.transform.rotate(IR[ImageID], Theta)
+		rotateID = R.IR.append(
+			pg.transform.rotate(R.IR[ImageID], Theta)
 		)
 		
 		G.CONN.execute(
-			I.insert(),
+			C.I.insert(),
 			{"ImageID": rotateID}
 		)
 		

@@ -6,70 +6,63 @@ import sqlalchemy as sqa
 import math
 
 from .. import G
-from ..Component import require
 
 rotateQuery = None
 
-@require("RotVelComp")
-@require("RotationComp")
-def init(RC, RVC):
+from .. import Component as C
+
+def init():
 	global rotateQuery
 	
 	rotateQuery = sqa.select([
-		RC.c.EntID,
-		RC.c.Theta,
-		RVC.c.Omega,
+		C.ROTC.c.EntID,
+		C.ROTC.c.Theta,
+		C.RVC.c.Omega,
 	]).select_from(
-		RC.join(RVC, RC.c.EntID == RVC.c.EntID)
+		C.ROTC.join(C.RVC, C.ROTC.c.EntID == C.RVC.c.EntID)
 	).compile()
 
-@require("RotVelComp")
-def register(RVC, EntID):
+def register(EntID):
 	G.CONN.execute(
-		RVC.insert(), {
+		C.RVC.insert(), {
 			"EntID": EntID,
 			"Omega": 0,
 		}
 	)
 
-@require("RotVelComp")
-def instances(RVC, EntID):
+def instances(EntID):
 	return len(G.CONN.execute(
-		RVC.select().where(RVC.c.EntID == EntID)
+		C.RVC.select().where(C.RVC.c.EntID == EntID)
 	).fetchall())
 
-@require("RotVelComp")
-def deregister(RVC, EntID):
+def deregister(EntID):
 	G.CONN.execute(
-		RVC.delete().where(RVC.c.EntID == EntID)
+		C.RVC.delete().where(C.RVC.c.EntID == EntID)
 	)
 
-@require("RotVelComp")
-def get(RVC, EntID):
+def get(EntID):
 	return G.CONN.execute(
-		sqa	.select([RVC.c.Omega]) \
-			.select_from(RVC) \
-			.where(RVC.c.EntID == EntID)
+		sqa	.select([C.RVC.c.Omega]) \
+			.select_from(C.RVC) \
+			.where(C.RVC.c.EntID == EntID)
 	).fetchone()[0] * math.tau / 360
 
-@require("RotVelComp")
-def set(RVC, EntID, Omega):
+def set(EntID, Omega):
 	G.CONN.execute(
-		RVC.update().where(RVC.c.EntID == EntID), {
+		C.RVC.update().where(C.RVC.c.EntID == EntID), {
 			"Omega": Omega * 360 / math.tau,
 		}
 	)
 
-@require("RotationComp")
-def update(RC, dt): # TODO: Re-write this using an execute-many style
+def update(dt): # TODO: Re-write this using an execute-many style
 	global rotateQuery
 	
 	for EntID, Theta, Omega in G.CONN.execute(rotateQuery).fetchall():
 		newTheta = Theta + Omega * dt
 		
 		G.CONN.execute(
-			RC.update().where(
-				RC.c.EntID == EntID,
+			C.ROTC.update().where(
+				C.ROTC.c.EntID == EntID,
 			).values(
 				Theta = newTheta
 			)

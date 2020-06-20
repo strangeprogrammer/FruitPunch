@@ -5,28 +5,27 @@
 import sqlalchemy as sqa
 
 from .. import G
-from ..Component import require
 
 updateQuery = None
 
-@require("StrutBaseComp")
-@require("PosComp")
-def init(PC, SBC):
+from .. import Component as C
+
+def init():
 	global updateQuery
+	
 	updateQuery = sqa.select([
-		SBC.c.ChildID,
-		PC.c.PosX,
-		PC.c.PosY,
-		SBC.c.OffX,
-		SBC.c.OffY,
+		C.SBC.c.ChildID,
+		C.POSC.c.PosX,
+		C.POSC.c.PosY,
+		C.SBC.c.OffX,
+		C.SBC.c.OffY,
 	]).select_from(
-		PC.join(SBC, PC.c.EntID == SBC.c.EntID)
+		C.POSC.join(C.SBC, C.POSC.c.EntID == C.SBC.c.EntID)
 	).compile()
 
-@require("StrutBaseComp")
-def register(SBC, EntID, ChildID):
+def register(EntID, ChildID):
 	G.CONN.execute(
-		SBC.insert(), {
+		C.SBC.insert(), {
 			"EntID": EntID,
 			"ChildID": ChildID,
 			"OffX": 0,
@@ -34,59 +33,52 @@ def register(SBC, EntID, ChildID):
 		}
 	)
 
-@require("StrutBaseComp")
-def instances(SBC, ChildID):
+def instances(ChildID):
 	return len(G.CONN.execute(
-		SBC.select().where(SBC.c.ChildID == ChildID)
+		C.SBC.select().where(C.SBC.c.ChildID == ChildID)
 	).fetchall())
 
-@require("StrutBaseComp")
-def deregister(SBC, ChildID):
+def deregister(ChildID):
 	G.CONN.execute(
-		SBC.delete().where(SBC.c.ChildID == ChildID)
+		C.SBC.delete().where(C.SBC.c.ChildID == ChildID)
 	)
 
-@require("StrutBaseComp")
-def get(SBC, EntID):
+def get(EntID):
 	return G.CONN.execute(
-		sqa	.select([SBC.c.OffX, SBC.c.OffY]) \
-			.select_from(SBC) \
-			.where(SBC.c.ChildID == ChildID)
+		sqa	.select([C.SBC.c.OffX, C.SBC.c.OffY]) \
+			.select_from(C.SBC) \
+			.where(C.SBC.c.ChildID == ChildID)
 	).fetchone()
 
-@require("StrutBaseComp")
-def set(SBC, ChildID, OffX, OffY):
+def set(ChildID, OffX, OffY):
 	G.CONN.execute(
-		SBC.update().where(
-			SBC.c.ChildID == ChildID,
+		C.SBC.update().where(
+			C.SBC.c.ChildID == ChildID,
 		), {
 			"OffX": OffX,
 			"OffY": OffY,
 		}
 	)
 
-@require("StrutComp")
-def _updateStrutComp(SC, values):
-	G.CONN.execute(SC.delete())
+def _updateStrutComp(values):
+	G.CONN.execute(C.SC.delete())
 	if 0 < len(values):
-		G.CONN.execute(SC.insert(), values)
+		G.CONN.execute(C.SC.insert(), values)
 
-@require("StrutBaseComp")
-def _resetStrutComp(SBC):
+def _resetStrutComp():
 	_updateStrutComp(
 		G.CONN.execute(
-			SBC.select()
+			C.SBC.select()
 		).fetchall()
 	)
 
-@require("PosComp")
-def update(PC):
+def update():
 	_resetStrutComp()
 	
 	global updateQuery
 	for ChildID, PosX, PosY, OffX, OffY in G.CONN.execute(updateQuery).fetchall():
 		G.CONN.execute(
-			PC.update().where(PC.c.EntID == ChildID ), {
+			C.POSC.update().where(C.POSC.c.EntID == ChildID), {
 				"PosX": PosX + OffX,
 				"PosY": PosY + OffY,
 			}

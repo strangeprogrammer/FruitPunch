@@ -6,31 +6,27 @@ import sqlalchemy as sqa
 import math
 
 from .. import G
-from .. import Component
-from ..Component import require as require
-from .. import Resource
 
 toDollQuery = None
 
-@require("RotDollComp")
-@require("RotationComp")
-def init(RC, RDC):
+from .. import Component as C
+
+def init():
 	global toDollQuery
 	
 	toDollQuery = sqa.select([
-		RDC.c.ChildID,
-		RC.c.Theta,
-		RDC.c.dTheta,
+		C.RDC.c.ChildID,
+		C.ROTC.c.Theta,
+		C.RDC.c.dTheta,
 	]).select_from(
-		RC.join(RDC, RC.c.EntID == RDC.c.EntID)
+		C.ROTC.join(C.RDC, C.ROTC.c.EntID == C.RDC.c.EntID)
 	).compile()
 
-@require("RotDollComp")
-def register(RDC, EntID, ChildID):
+def register(EntID, ChildID):
 	# TODO: Find out whether or not the entity being registered is in a chain of dolls, and assign to it its generation number as appropriate
 	# The entity being registered should already be registered with the Rotation System
 	G.CONN.execute(
-		RDC.insert(), {
+		C.RDC.insert(), {
 			"EntID": EntID,
 			"ChildID": ChildID,
 #			"Generation": Generation,
@@ -38,42 +34,37 @@ def register(RDC, EntID, ChildID):
 		}
 	)
 
-@require("RotDollComp")
-def instances(RDC, ChildID):
+def instances(ChildID):
 	return len(G.CONN.execute(
-		RDC.select().where(RDC.c.ChildID == ChildID)
+		C.RDC.select().where(C.RDC.c.ChildID == ChildID)
 	).fetchall())
 
-@require("RotDollComp")
-def deregister(RDC, ChildID):
+def deregister(ChildID):
 	G.CONN.execute(
-		RDC.delete().where(RDC.c.ChildID == ChildID)
+		C.RDC.delete().where(C.RDC.c.ChildID == ChildID)
 	)
 
-@require("RotDollComp")
-def get(RDC, ChildID):
+def get(ChildID):
 	return G.CONN.execute(
 		sqa.select([
-			RDC.c.dTheta,
-		]).select_from(RDC).where(
-			RDC.c.ChildID == ChildID
+			C.RDC.c.dTheta,
+		]).select_from(C.RDC).where(
+			C.RDC.c.ChildID == ChildID
 		)
 	).fetchone()[0] * math.tau / 360
 
-@require("RotDollComp")
-def set(RDC, ChildID, dTheta):
+def set(ChildID, dTheta):
 	G.CONN.execute(
-		RDC.update().where(RDC.c.ChildID == ChildID), {
+		C.RDC.update().where(C.RDC.c.ChildID == ChildID), {
 			"dTheta": dTheta * 360 / math.tau
 		}
 	)
 
-@require("RotationComp")
-def update(RC):
+def update():
 	# TODO: Implement update in phases based upon generation number
 	for ChildID, Theta, dTheta in G.CONN.execute(toDollQuery).fetchall():
 		G.CONN.execute(
-			RC.update().where(RC.c.EntID == ChildID),
+			C.ROTC.update().where(C.ROTC.c.EntID == ChildID),
 			{
 				"Theta": Theta + dTheta
 			}

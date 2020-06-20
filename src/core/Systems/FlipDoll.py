@@ -5,44 +5,40 @@
 import sqlalchemy as sqa
 
 from .. import G
-from .. import Component
-from ..Component import require as require
-from .. import Resource
 
 toDollQuery = None
 
-@require("FlipDollComp")
-@require("FlipComp")
-def init(FC, FDC):
+from .. import Component as C
+
+def init():
 	global toDollQuery
 	
 	toDollQuery = sqa.select([
-		FDC.c.ChildID,
-		FC.c.FlipX,
-		FC.c.FlipY,
-		FDC.c.OffX,
-		FDC.c.OffY,
+		C.FDC.c.ChildID,
+		C.FC.c.FlipX,
+		C.FC.c.FlipY,
+		C.FDC.c.OffX,
+		C.FDC.c.OffY,
 	]).select_from(
-		FC.join(FDC, FC.c.EntID == FDC.c.EntID)
+		C.FC.join(C.FDC, C.FC.c.EntID == C.FDC.c.EntID)
 	).compile()
 
-@require("FlipDollComp")
-def register(FDC, EntID, ChildID):
+def register(EntID, ChildID):
 	# TODO: Find out whether or not the entity being registered is in a chain of dolls, and assign to it its generation number as appropriate
 	# The entity being registered should already be registered with the Flip System
 #	try:
 #		Generation = G.CONN.execute(
 #			sqa.select([
-#				FDC.c.Generation
-#			]).select_from(FDC).where(
-#				FDC.c.ChildID == EntID
+#				C.FDC.c.Generation
+#			]).select_from(C.FDC).where(
+#				C.FDC.c.ChildID == EntID
 #			)
 #		).fetchone()[0]
 #	except Exception:
 #		Generation = 0
 	
 	G.CONN.execute(
-		FDC.insert(), {
+		C.FDC.insert(), {
 			"EntID": EntID,
 			"ChildID": ChildID,
 #			"Generation": Generation,
@@ -51,44 +47,39 @@ def register(FDC, EntID, ChildID):
 		}
 	)
 
-@require("FlipDollComp")
-def instances(FDC, ChildID):
+def instances(ChildID):
 	return len(G.CONN.execute(
-		FDC.select().where(FDC.c.ChildID == ChildID)
+		C.FDC.select().where(C.FDC.c.ChildID == ChildID)
 	).fetchall())
 
-@require("FlipDollComp")
-def deregister(FDC, ChildID):
+def deregister(ChildID):
 	G.CONN.execute(
-		FDC.delete().where(FDC.c.ChildID == ChildID)
+		C.FDC.delete().where(C.FDC.c.ChildID == ChildID)
 	)
 
-@require("FlipDollComp")
-def get(FDC, ChildID):
+def get(ChildID):
 	return G.CONN.execute(
 		sqa.select([
-			FDC.c.OffX,
-			FDC.c.OffY,
-		]).select_from(FDC).where(
-			FDC.c.ChildID == ChildID
+			C.FDC.c.OffX,
+			C.FDC.c.OffY,
+		]).select_from(C.FDC).where(
+			C.FDC.c.ChildID == ChildID
 		)
 	).fetchone()
 
-@require("FlipDollComp")
-def set(FDC, ChildID, OffX, OffY):
+def set(ChildID, OffX, OffY):
 	G.CONN.execute(
-		FDC.update().where(FDC.c.ChildID == ChildID), {
+		C.FDC.update().where(C.FDC.c.ChildID == ChildID), {
 			"OffX": OffX,
 			"OffY": OffY,
 		}
 	)
 
-@require("FlipComp")
-def update(FC):
+def update():
 	# TODO: Implement update in phases based upon generation number
 	for ChildID, FlipX, FlipY, OffX, OffY in G.CONN.execute(toDollQuery).fetchall():
 		G.CONN.execute(
-			FC.update().where(FC.c.EntID == ChildID),
+			C.FC.update().where(C.FC.c.EntID == ChildID),
 			{
 				"FlipX": bool(FlipX) ^ bool(OffX),
 				"FlipY": bool(FlipY) ^ bool(OffY),

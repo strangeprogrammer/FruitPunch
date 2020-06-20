@@ -6,8 +6,6 @@ import pygame as pg
 import sqlalchemy as sqa
 
 from .. import G
-from ..Component import require as require
-from .. import Resource
 
 # We don't have to keep track of the dirty regions assuming that 'ImageComp', 'DrawComp' and 'RectComp' aren't modified between the 'update' and 'clear' calls
 
@@ -16,10 +14,10 @@ RIPairsQuery = None
 renderSteps = []
 erased = []
 
-@require("PosComp")
-@require("RectComp")
-@require("DrawComp")
-def init(DC, RC, PC):
+from .. import Component as C
+from .. import Resource as R
+
+def init():
 	G.SCREEN = pg.display.set_mode()
 	G.SCREEN.fill( (255, 255, 255) )
 	
@@ -29,46 +27,42 @@ def init(DC, RC, PC):
 	global drawQuery, RIPairsQuery
 	
 	drawQuery = sqa.select([
-		DC.c.ImageID,
-		RC.c.RectID,
+		C.DC.c.ImageID,
+		C.RECC.c.RectID,
 	]).select_from(
-		DC.join(RC,
-			DC.c.EntID == RC.c.EntID,
+		C.DC.join(C.RECC,
+			C.DC.c.EntID == C.RECC.c.EntID,
 		)
 	).compile()
 	
 	RIPairsQuery = sqa.select([
-		RC.c.RectID,
-		DC.c.ImageID,
-		PC.c.PosX,
-		PC.c.PosY,
+		C.RECC.c.RectID,
+		C.DC.c.ImageID,
+		C.POSC.c.PosX,
+		C.POSC.c.PosY,
 	]).select_from(
-		DC	.join(RC, DC.c.EntID == RC.c.EntID) \
-			.join(PC, DC.c.EntID == PC.c.EntID)
+		C.DC	.join(C.RECC, C.DC.c.EntID == C.RECC.c.EntID) \
+			.join(C.POSC, C.DC.c.EntID == C.POSC.c.EntID)
 	).compile()
 
 def addRenderStep(step):
 	global renderSteps
 	renderSteps.append(step)
 
-@require("DrawComp")
-def _updateDrawComp(DC, values):
-	G.CONN.execute(DC.delete())			# Empty the drawing table
+def _updateDrawComp(values):
+	G.CONN.execute(C.DC.delete())			# Empty the drawing table
 	if 0 < len(values):
-		G.CONN.execute(DC.insert(), values)	# Repopulate the table with the given values (must be dict-like (have Key-Value pairs), such as a row proxy)
+		G.CONN.execute(C.DC.insert(), values)	# Repopulate the table with the given values (must be dict-like (have Key-Value pairs), such as a row proxy)
 
-@require("ImageComp")
-def _resetDrawComp(IC):
-	_updateDrawComp(G.CONN.execute(IC.select()).fetchall())
+def _resetDrawComp():
+	_updateDrawComp(G.CONN.execute(C.IC.select()).fetchall())
 
-@Resource.require("RectRes")
-@Resource.require("ImageRes")
-def _updateRects(IR, RR):
+def _updateRects():
 	global RIPairsQuery
 	
 	for RectID, ImageID, PosX, PosY in G.CONN.execute(RIPairsQuery).fetchall():
-		RR[RectID] = IR[ImageID].get_rect()
-		RR[RectID].center = (PosX, PosY)
+		R.RR[RectID] = R.IR[ImageID].get_rect()
+		R.RR[RectID].center = (PosX, PosY)
 
 def render():
 	_resetDrawComp()
@@ -79,15 +73,13 @@ def render():
 	
 	_updateRects()
 
-@Resource.require("RectRes")
-@Resource.require("ImageRes")
-def update(IR, RR, screen):
+def update(screen):
 	global drawQuery, erased
 	
 	newRects = []
 	for ImageID, RectID in G.CONN.execute(drawQuery).fetchall():
-		rect = RR[RectID]
-		screen.blit(IR[ImageID], rect)
+		rect = R.RR[RectID]
+		screen.blit(R.IR[ImageID], rect)
 		newRects.append(rect)
 	
 	result = newRects + erased
@@ -95,11 +87,9 @@ def update(IR, RR, screen):
 	
 	return result
 
-@Resource.require("RectRes")
-@require("RectComp")
-def clear(RC, RR, screen, bgd):
+def clear(screen, bgd):
 	global erased
 	
-	for (RectID,) in G.CONN.execute(sqa.select([RC.c.RectID]).select_from(RC)).fetchall():
-		screen.blit(bgd, RR[RectID])
-		erased.append(RR[RectID].copy()) # The 'copy' part is important since the rectangle could be modified and not represent the region that needs to be erased upon the next draw
+	for (RectID,) in G.CONN.execute(sqa.select([C.RECC.c.RectID]).select_from(C.RECC)).fetchall():
+		screen.blit(bgd, R.RR[RectID])
+		erased.append(R.RR[RectID].copy()) # The 'copy' part is important since the rectangle could be modified and not represent the region that needs to be erased upon the next draw

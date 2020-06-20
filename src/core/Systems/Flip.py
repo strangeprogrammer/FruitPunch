@@ -7,79 +7,70 @@ import sqlalchemy as sqa
 
 from .. import G
 
-from .. import Component
-from ..Component import require as require
-from .. import Resource
-
 renderQuery = None
 
-@require("FlipImages")
-@require("FlipComp")
-@require("DrawComp")
-def init(DC, FC, FI):
+from .. import Component as C
+from .. import Resource as R
+
+def init():
 	global renderQuery
 	
-	exempt = DC.select().where(
-		DC.c.EntID.notin_(
-			sqa.select([FC.c.EntID]).select_from(FC)
+	exempt = C.DC.select().where(
+		C.DC.c.EntID.notin_(
+			sqa.select([C.FC.c.EntID]).select_from(C.FC)
 		)
 	)
 	
 	doFlips = sqa.select([
-		DC.c.EntID,
-		FI.c.OutImageID,
+		C.DC.c.EntID,
+		C.FI.c.OutImageID,
 	]).select_from(
-		DC.join(
-			FC,
-			DC.c.EntID == FC.c.EntID
+		C.DC.join(
+			C.FC,
+			C.DC.c.EntID == C.FC.c.EntID
 		).join(
-			FI,
+			C.FI,
 			sqa.and_(
-				DC.c.ImageID == FI.c.InImageID,
-				FC.c.FlipX == FI.c.FlipX,
-				FC.c.FlipY == FI.c.FlipY,
+				C.DC.c.ImageID == C.FI.c.InImageID,
+				C.FC.c.FlipX == C.FI.c.FlipX,
+				C.FC.c.FlipY == C.FI.c.FlipY,
 			)
 		)
 	)
 	
 	renderQuery = exempt.union(doFlips).compile()
 
-@require("FlipComp")
-def register(FC, EntID):
+def register(EntID):
 	G.CONN.execute(
-		FC.insert(), {
+		C.FC.insert(), {
 			"EntID": EntID,
 			"FlipX": False,
 			"FlipY": False,
 		}
 	)
 
-@require("FlipComp")
-def instances(FC, EntID):
+def instances(EntID):
 	return len(G.CONN.execute(
-		FC.select().where(FC.c.EntID == EntID)
+		C.FC.select().where(C.FC.c.EntID == EntID)
 	).fetchall())
 
-@require("FlipComp")
-def deregister(FC, EntID):
+def deregister(EntID):
 	G.CONN.execute(
-		FC	.delete()
-			.where(FC.EntID == EntID)
+		C.FC	.delete()
+			.where(C.FC.EntID == EntID)
 	)
 
-@require("FlipComp")
-def get(FC, EntID):
+def get(EntID):
 	return G.CONN.execute(
-		sqa	.select([FC.c.FlipX, FC.c.FlipY]) \
-			.select_from(FC) \
-			.where(FC.c.EntID == EntID)
+		sqa	.select([C.FC.c.FlipX, C.FC.c.FlipY]) \
+			.select_from(C.FC) \
+			.where(C.FC.c.EntID == EntID)
 	).fetchone()
 
-@require("FlipComp")
-def set(FC, EntID, FlipX, FlipY):
+def set(EntID, FlipX, FlipY):
 	G.CONN.execute(
-		FC.update().where(
-			FC.c.EntID == EntID
+		C.FC.update().where(
+			C.FC.c.EntID == EntID
 		), {
 			"FlipX": FlipX,
 			"FlipY": FlipY,
@@ -87,23 +78,20 @@ def set(FC, EntID, FlipX, FlipY):
 	)
 
 # TODO: Make this function obsolete by automatically registering images whenever an entity is registered
-@Resource.require("ImageRes")
-@require("FlipImages")
-@require("AllImages")
-def registerImage(I, FI, IR, ImageID):
+def registerImage(ImageID):
 	noflipped = ImageID
-	xflipped = IR.append(
-		pg.transform.flip(IR[ImageID], True, False)
+	xflipped = R.IR.append(
+		pg.transform.flip(R.IR[ImageID], True, False)
 	)
-	yflipped = IR.append(
-		pg.transform.flip(IR[ImageID], False, True)
+	yflipped = R.IR.append(
+		pg.transform.flip(R.IR[ImageID], False, True)
 	)
-	xyflipped = IR.append(
-		pg.transform.flip(IR[ImageID], True, True)
+	xyflipped = R.IR.append(
+		pg.transform.flip(R.IR[ImageID], True, True)
 	)
 	
 	G.CONN.execute(
-		FI.insert(), [
+		C.FI.insert(), [
 			{"InImageID": ImageID, "FlipX": False,	"FlipY": False,	"OutImageID": ImageID},
 			{"InImageID": ImageID, "FlipX": True,	"FlipY": False,	"OutImageID": xflipped},
 			{"InImageID": ImageID, "FlipX": False,	"FlipY": True,	"OutImageID": yflipped},
@@ -112,7 +100,7 @@ def registerImage(I, FI, IR, ImageID):
 	)
 	
 	G.CONN.execute(
-		I.insert(), [
+		C.I.insert(), [
 			# We assume 'ImageID' has already been registered
 			{"ImageID": xflipped},
 			{"ImageID": yflipped},
