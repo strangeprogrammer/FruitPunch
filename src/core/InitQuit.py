@@ -20,6 +20,7 @@ from .Systems import (
 	FlipDoll,
 	RotDoll,
 	Strut,
+	Collision,
 )
 
 from . import PlayerMove
@@ -41,6 +42,7 @@ def init():
 	FlipDoll.init()
 	RotDoll.init()
 	Strut.init()
+	Collision.init()
 	
 	Draw.addRenderStep(Flip.render)
 	Draw.addRenderStep(Rotation.render)

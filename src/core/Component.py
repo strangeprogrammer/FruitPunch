@@ -15,10 +15,10 @@ from sqlalchemy import (
 
 from . import G
 
-E = I = R = RECC = IC = DC = POSC = ROTC = VC = RVC = PLYC = FC = FI = FDC = RDC = SBC = SC = None
+E = I = R = RECC = IC = DC = POSC = ROTC = VC = RVC = PLYC = FC = FI = FDC = RDC = SBC = SC = CC = None
 
 def init():
-	global E, I, R, RECC, IC, DC, POSC, ROTC, VC, RVC, PLYC, FC, FI, FDC, RDC, SBC, SC
+	global E, I, R, RECC, IC, DC, POSC, ROTC, VC, RVC, PLYC, FC, FI, FDC, RDC, SBC, SC, CC
 	
 	E = Table( # List of all entity ID's
 		"AllEnts", G.DB,
@@ -168,6 +168,15 @@ def init():
 		Column("OffY", REAL),
 		PKC("ChildID"),
 		FKC(["ChildID"], ["AllEnts.EntID"]),
+		FKC(["EntID"], ["AllEnts.EntID"]),
+	)
+	
+	CC = Table( # All entities that can collide with other entities
+		"CollComp", G.DB,
+		Column("EntID", Integer),
+		Column("OnColl", Integer),
+		Column("OffColl", Integer),
+		PKC("EntID"),
 		FKC(["EntID"], ["AllEnts.EntID"]),
 	)
 	

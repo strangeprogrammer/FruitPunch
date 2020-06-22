@@ -16,6 +16,7 @@ from core.Systems import (
 	FlipDoll,
 	RotDoll,
 	Strut,
+	Collision,
 )
 
 def init():
@@ -41,6 +42,9 @@ def update():
 	Strut.update()
 	
 	Draw.render()
+	
+	Collision.update()
+	
 	pg.display.update(Draw.update(G.SCREEN))
 	Draw.clear(G.SCREEN, G.BGD)
 	
