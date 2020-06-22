@@ -6,20 +6,21 @@ import sqlalchemy as sqa
 import math
 
 from .. import G
+from .. import Misc
 
 rotateQuery = None
 
 from .. import Component as C
+from . import Rotation
 
 def init():
 	global rotateQuery
 	
 	rotateQuery = sqa.select([
-		C.ROTC.c.EntID,
-		C.ROTC.c.Theta,
+		C.RVC.c.EntID,
 		C.RVC.c.Omega,
 	]).select_from(
-		C.ROTC.join(C.RVC, C.ROTC.c.EntID == C.RVC.c.EntID)
+		C.RVC
 	).compile()
 
 def register(EntID):
@@ -41,29 +42,25 @@ def deregister(EntID):
 	)
 
 def get(EntID):
-	return G.CONN.execute(
-		sqa	.select([C.RVC.c.Omega]) \
-			.select_from(C.RVC) \
-			.where(C.RVC.c.EntID == EntID)
-	).fetchone()[0] * math.tau / 360
+	return Misc.degToRad(
+		G.CONN.execute(
+			sqa	.select([C.RVC.c.Omega]) \
+				.select_from(C.RVC) \
+				.where(C.RVC.c.EntID == EntID)
+		).fetchone()[0]
+	)
 
 def set(EntID, Omega):
 	G.CONN.execute(
 		C.RVC.update().where(C.RVC.c.EntID == EntID), {
-			"Omega": Omega * 360 / math.tau,
+			"Omega": Misc.radToDeg(Omega),
 		}
 	)
 
 def update(dt): # TODO: Re-write this using an execute-many style
 	global rotateQuery
 	
-	for EntID, Theta, Omega in G.CONN.execute(rotateQuery).fetchall():
-		newTheta = Theta + Omega * dt
-		
-		G.CONN.execute(
-			C.ROTC.update().where(
-				C.ROTC.c.EntID == EntID,
-			).values(
-				Theta = newTheta
-			)
-		)
+	for EntID, Omega in G.CONN.execute(rotateQuery).fetchall():
+		Theta = Rotation.get(EntID)
+		newTheta = Theta + Misc.degToRad(Omega) * dt
+		Rotation.set(EntID, newTheta)

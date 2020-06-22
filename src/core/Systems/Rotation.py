@@ -7,6 +7,7 @@ import sqlalchemy as sqa
 import math
 
 from .. import G
+from .. import Misc
 
 exemptQuery = None
 rotateQuery = None
@@ -52,17 +53,21 @@ def deregister(EntID):
 	)
 
 def get(EntID):
-	return G.CONN.execute(
-		sqa	.select([C.ROTC.c.Theta]) \
-			.select_from(C.ROTC) \
-			.where(C.ROTC.c.EntID == EntID)
-	).fetchone()[0] * math.tau / 360
+	return Misc.degToRad(
+		G.CONN.execute(
+			sqa	.select([C.ROTC.c.Theta]) \
+				.select_from(C.ROTC) \
+				.where(C.ROTC.c.EntID == EntID)
+		).fetchone()[0]
+	)
 
 def set(EntID, Theta):
 	G.CONN.execute(
 		C.ROTC.update().where(
 			C.ROTC.c.EntID == EntID
-		), {"Theta": Theta * 360 / math.tau}
+		), {
+			"Theta": Misc.radToDeg(Theta)
+		}
 	)
 
 def collect():
