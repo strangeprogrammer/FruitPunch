@@ -15,6 +15,8 @@ imageCounter = None
 from . import Component as C
 from . import Resource as R
 
+from .Systems import Position
+
 def init():
 	global entCounter
 	entCounter = count()
@@ -33,7 +35,8 @@ def create(image, rect, center):
 	
 	G.CONN.execute(C.IC.insert().values(EntID = EntID, ImageID = ImageID))
 	G.CONN.execute(C.RECC.insert().values(EntID = EntID, RectID = RectID))
-	G.CONN.execute(C.POSC.insert().values(EntID = EntID, PosX = center[0], PosY = center[1]))
+	Position.register(EntID)
+	Position.set(EntID, center[0], center[1])
 	
 	return EntID, ImageID, RectID
 

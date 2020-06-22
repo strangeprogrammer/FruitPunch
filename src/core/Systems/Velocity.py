@@ -10,17 +10,17 @@ movingQuery = None
 
 from .. import Component as C
 
+from . import Position
+
 def init():
 	global movingQuery
 	
 	movingQuery = sqa.select([
-		C.POSC.c.EntID,
-		C.POSC.c.PosX,
-		C.POSC.c.PosY,
+		C.VC.c.EntID,
 		C.VC.c.VelX,
 		C.VC.c.VelY,
 	]).select_from(
-		C.POSC.join(C.VC, C.POSC.c.EntID == C.VC.c.EntID)
+		C.VC,
 	).compile()
 
 def register(EntID):
@@ -52,18 +52,11 @@ def set(EntID, VelX, VelY):
 			.values(VelX = VelX, VelY = VelY)
 	)
 
-def update(dt): # TODO: Re-write this using an execute-many style
+def update(dt):
 	global movingQuery
 	
-	for EntID, PosX, PosY, VelX, VelY in G.CONN.execute(movingQuery).fetchall():
+	for EntID, VelX, VelY in G.CONN.execute(movingQuery).fetchall():
+		(PosX, PosY) = Position.get(EntID)
 		newX = PosX + VelX * dt
 		newY = PosY + VelY * dt
-		
-		G.CONN.execute(
-			C.POSC.update().where(
-				C.POSC.c.EntID == EntID,
-			).values(
-				PosX = newX,
-				PosY = newY,
-			)
-		)
+		Position.set(EntID, newX, newY)

@@ -14,6 +14,7 @@ from . import Entity
 from .Systems import (
 	Draw,
 	Flip,
+	Position,
 	Rotation,
 	Velocity,
 	RotVel,
@@ -36,6 +37,7 @@ def init():
 	Entity.init()
 	Draw.init()
 	Flip.init()
+	Position.init()
 	Rotation.init()
 	Velocity.init()
 	RotVel.init()

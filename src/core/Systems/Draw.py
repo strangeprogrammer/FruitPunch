@@ -38,11 +38,8 @@ def init():
 	RIPairsQuery = sqa.select([
 		C.RECC.c.RectID,
 		C.DC.c.ImageID,
-		C.POSC.c.PosX,
-		C.POSC.c.PosY,
 	]).select_from(
-		C.DC	.join(C.RECC, C.DC.c.EntID == C.RECC.c.EntID) \
-			.join(C.POSC, C.DC.c.EntID == C.POSC.c.EntID)
+		C.DC.join(C.RECC, C.DC.c.EntID == C.RECC.c.EntID)
 	).compile()
 
 def addRenderStep(step):
@@ -60,9 +57,8 @@ def _resetDrawComp():
 def _updateRects():
 	global RIPairsQuery
 	
-	for RectID, ImageID, PosX, PosY in G.CONN.execute(RIPairsQuery).fetchall():
+	for RectID, ImageID in G.CONN.execute(RIPairsQuery).fetchall():
 		R.RR[RectID] = R.IR[ImageID].get_rect()
-		R.RR[RectID].center = (PosX, PosY)
 
 def render():
 	_resetDrawComp()

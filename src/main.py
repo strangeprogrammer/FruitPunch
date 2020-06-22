@@ -10,9 +10,10 @@ from core import (
 
 from core.Systems import (
 	Draw,
+	Position,
+	Rotation,
 	Velocity,
 	RotVel,
-	Rotation,
 	FlipDoll,
 	RotDoll,
 	Strut,
@@ -43,6 +44,7 @@ def update():
 	
 	Draw.render()
 	
+	Position.update()
 	Collision.update()
 	
 	pg.display.update(Draw.update(G.SCREEN))
