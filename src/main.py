@@ -42,12 +42,13 @@ def update():
 	
 	FlipDoll.update()
 	RotDoll.update()
-	Strut.update()
 	
 	Draw.render()
 	
 	Position.update()
 	Collision.update()
+	Strut.update()
+	Position.update() # I hate double-updating the positions, but this is the best way that I know of right now to make 'bumping' work smoothly with struts
 	
 	pg.display.update(Draw.update(G.SCREEN))
 	Draw.clear(G.SCREEN, G.BGD)

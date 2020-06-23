@@ -18,10 +18,12 @@ collQuery = None
 prevCollisions = set()
 
 def init():
-	R.YCR[0] = lambda x, y: None	# Default on and off collision handlers do nothing
-	R.NCR[0] = lambda x, y: None	#
-	next(R.YCR.counter)		# Adjust resource indeces so we don't accidentally overwrite default handlers
-	next(R.NCR.counter)		#
+	R.YCR[0] = lambda E1, E2, R1, R2: None	# Default on and off collision handlers do nothing
+	R.NCR[0] = lambda E1, E2, R1, R2: None	#
+	R.WCR[0] = lambda E1, E2, R1, R2: None	#
+	next(R.YCR.counter)			# Adjust resource indeces so we don't accidentally overwrite default handlers
+	next(R.NCR.counter)			#
+	next(R.WCR.counter)			#
 	
 	global collQuery
 	
@@ -36,6 +38,7 @@ def init():
 		C.RECC.c.RectID,
 		RECC2.c.RectID,
 		C.CC.c.OnColl,
+		C.CC.c.WhileColl,
 		C.CC.c.OffColl,
 	]).select_from(
 		t1.join(t2, sqa.literal(True))
@@ -48,6 +51,7 @@ def register(EntID):
 		C.CC.insert(), {
 			"EntID": EntID,
 			"OnColl": 0,
+			"WhileColl": 0,
 			"OffColl": 0,
 		}
 	)
@@ -64,15 +68,15 @@ def deregister(EntID):
 
 def get(EntID):
 	return G.CONN.execute(
-		sqa	.select([C.CC.c.OnColl, C.CC.c.OffColl]) \
-			.select_from(C.CC) \
+		C.CC	.select() \
 			.where(C.CC.c.EntID == EntID)
-	).fetchone()[0]
+	).fetchone()
 
-def setState(EntID, OnColl, OffColl):
+def setState(EntID, OnColl, WhileColl, OffColl):
 	G.CONN.execute(
 		C.CC.update().where(C.CC.c.EntID == EntID), {
 			"OnColl": OnColl,
+			"WhileColl": WhileColl,
 			"OffColl": OffColl,
 		}
 	)
@@ -81,10 +85,10 @@ def _getCollisions():
 	collisions = set()
 	
 	global collQuery
-	for EntID, Ent2ID, RectID, Rect2ID, OnColl, OffColl in G.CONN.execute(collQuery).fetchall():
+	for EntID, Ent2ID, RectID, Rect2ID, OnColl, WhileColl, OffColl in G.CONN.execute(collQuery).fetchall():
 		if R.RR[RectID].colliderect(R.RR[Rect2ID]):
 			# TODO: Check for 'collide by mask' as well
-			collisions |= {(EntID, Ent2ID, OnColl, OffColl)} # We add in the collision handler indeces so that we don't have to perform another query at (1)
+			collisions |= {(EntID, Ent2ID, RectID, Rect2ID, OnColl, WhileColl, OffColl)} # We add in the collision handler indeces so that we don't have to perform another query at (1)
 	
 	return collisions
 
@@ -94,14 +98,19 @@ def update():
 	collisions = _getCollisions()
 	
 	newCollisions = collisions - prevCollisions
+	curCollisions = collisions & prevCollisions
 	oldCollisions = prevCollisions - collisions
 	
 	prevCollisions = collisions
 	
 	# (1)
-	for EntID, Ent2ID, OnColl, OffColl, in newCollisions:
-		R.YCR[OnColl](EntID, Ent2ID)
+	for EntID, Ent2ID, RectID, Rect2ID, OnColl, WhileColl, OffColl in newCollisions:
+		R.YCR[OnColl](EntID, Ent2ID, RectID, Rect2ID)
 	
-	# Also (1)
-	for EntID, Ent2ID, OnColl, OffColl, in oldCollisions:
-		R.NCR[OffColl](EntID, Ent2ID)
+	# (1)
+	for EntID, Ent2ID, RectID, Rect2ID, OnColl, WhileColl, OffColl in curCollisions:
+		R.WCR[WhileColl](EntID, Ent2ID, RectID, Rect2ID)
+	
+	# (1)
+	for EntID, Ent2ID, RectID, Rect2ID, OnColl, WhileColl, OffColl in oldCollisions:
+		R.NCR[OffColl](EntID, Ent2ID, RectID, Rect2ID)

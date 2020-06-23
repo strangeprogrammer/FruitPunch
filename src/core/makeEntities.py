@@ -21,11 +21,12 @@ from .Systems import Collision
 def makeEntities():
 	
 	BYH = R.YCR.append(expelUp)
+	BWH = R.WCR.append(expelUp)
 	BNH = 0
 	
 	makeAllEnt()
 	makeRotVelStrut()
-	makeGround(BYH, BNH)
+	makeGround(BYH, BWH, BNH)
 
 FEntID = None
 
@@ -56,30 +57,20 @@ def makeRotVelStrut():
 	RotVel.register(EntID)
 	RotVel.set(EntID, math.tau / 32 / 1000)
 	
-	Collision.register(EntID)
-	
 	global FEntID
 	Strut.register(FEntID, EntID)
 	Strut.set(EntID, 200, 0)
 
-def makeGround(BYH, BNH):
+def makeGround(BYH, BWH, BNH):
 	BlueImage = LD("./RESOURCES/BlueSquare.png").convert_alpha()
 	BlueRect = BlueImage.get_rect()
 	
 	EntID, ImageID, RectID = Entity.create(BlueImage, BlueRect, (200, 400))
 	
 	Collision.register(EntID)
-	Collision.setState(EntID, BYH, BNH)
+	Collision.setState(EntID, BYH, BWH, BNH)
 
-def expelUp(EntID, Ent2ID):
-	RectID = G.CONN.execute(
-		C.RECC.select().where(C.RECC.c.EntID == EntID)
-	).fetchone()[1]
-	
-	Rect2ID = G.CONN.execute(
-		C.RECC.select().where(C.RECC.c.EntID == Ent2ID)
-	).fetchone()[1]
-	
+def expelUp(EntID, Ent2ID, RectID, Rect2ID):
 	Rect1 = R.RR[RectID]
 	Rect2 = R.RR[Rect2ID]
 	

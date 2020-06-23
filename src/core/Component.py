@@ -184,6 +184,7 @@ def init():
 		"CollComp", G.DB,
 		Column("EntID", Integer),
 		Column("OnColl", Integer),
+		Column("WhileColl", Integer),
 		Column("OffColl", Integer),
 		PKC("EntID"),
 		FKC(["EntID"], ["AllEnts.EntID"]),

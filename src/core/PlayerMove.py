@@ -49,13 +49,13 @@ def moveHandler(e):
 	(dx, dy) = (0, 0)
 	
 	if e.key == pg.K_UP:
-		dy -= 0.25
-	elif e.key == pg.K_DOWN:
-		dy += 0.25
+		dy -= 0.5
+#	elif e.key == pg.K_DOWN:
+#		dy += 0.5
 	elif e.key == pg.K_LEFT:
-		dx -= 0.25
+		dx -= 0.5
 	elif e.key == pg.K_RIGHT:
-		dx += 0.25
+		dx += 0.5
 	
 	for (player,) in G.CONN.execute(C.PLYC.select()).fetchall():
 		if 0 < Velocity.instances(player):
@@ -65,14 +65,14 @@ def moveHandler(e):
 def unMoveHandler(e):
 	(dx, dy) = (0, 0)
 	
-	if e.key == pg.K_UP:
-		dy += 0.25
-	elif e.key == pg.K_DOWN:
-		dy -= 0.25
-	elif e.key == pg.K_LEFT:
-		dx += 0.25
+#	if e.key == pg.K_UP:
+#		dy += 0.5
+#	elif e.key == pg.K_DOWN:
+#		dy -= 0.5
+	if e.key == pg.K_LEFT:
+		dx += 0.5
 	elif e.key == pg.K_RIGHT:
-		dx -= 0.25
+		dx -= 0.5
 	
 	for (player,) in G.CONN.execute(C.PLYC.select()).fetchall():
 		if 0 < Velocity.instances(player):
