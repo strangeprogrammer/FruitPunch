@@ -18,6 +18,7 @@ from .Systems import (
 	Rotation,
 	Velocity,
 	RotVel,
+	Accel,
 	FlipDoll,
 	RotDoll,
 	Strut,
@@ -37,13 +38,17 @@ def init():
 	Entity.init()
 	Draw.init()
 	Flip.init()
+	
 	Position.init()
 	Rotation.init()
 	Velocity.init()
 	RotVel.init()
+	Accel.init()
+	
 	FlipDoll.init()
 	RotDoll.init()
 	Strut.init()
+	
 	Collision.init()
 	
 	Draw.addRenderStep(Flip.render)

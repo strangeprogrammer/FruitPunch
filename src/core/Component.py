@@ -15,10 +15,10 @@ from sqlalchemy import (
 
 from . import G
 
-E = I = R = RECC = IC = DC = POSC = ROTC = VC = RVC = PLYC = FC = FI = FDC = RDC = SBC = SC = CC = None
+E = I = R = RECC = IC = DC = POSC = ROTC = VC = RVC = AC = PLYC = FC = FI = FDC = RDC = SBC = SC = CC = None
 
 def init():
-	global E, I, R, RECC, IC, DC, POSC, ROTC, VC, RVC, PLYC, FC, FI, FDC, RDC, SBC, SC, CC
+	global E, I, R, RECC, IC, DC, POSC, ROTC, VC, RVC, AC, PLYC, FC, FI, FDC, RDC, SBC, SC, CC
 	
 	E = Table( # List of all entity ID's
 		"AllEnts", G.DB,
@@ -95,6 +95,15 @@ def init():
 		"RotVelComp", G.DB,
 		Column("EntID", Integer),
 		Column("Omega", REAL),
+		PKC("EntID"),
+		FKC(["EntID"], ["AllEnts.EntID"]),
+	)
+	
+	AC = Table( # Velocities of all entities
+		"AccelComp", G.DB,
+		Column("EntID", Integer),
+		Column("AccX", REAL),
+		Column("AccY", REAL),
 		PKC("EntID"),
 		FKC(["EntID"], ["AllEnts.EntID"]),
 	)

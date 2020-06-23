@@ -11,6 +11,7 @@ from . import Entity
 from . import G
 
 from .Systems import Velocity
+from .Systems import Accel
 from .Systems import Rotation
 from .Systems import RotVel
 from .Systems import Strut
@@ -45,6 +46,7 @@ def makeAllEnt():
 	
 	EntID, ImageID, RectID = Entity.createPlayer(FImage, FRect, (200, 200))
 	
+	Accel.register(EntID)
 	Velocity.register(EntID)
 	Rotation.register(EntID)
 	RotVel.register(EntID)
@@ -59,8 +61,6 @@ def makeRotVelStrut():
 	FiveRect = FiveImage.get_rect()
 	
 	EntID, ImageID, RectID = Entity.create(FiveImage, FiveRect, (400, 200))
-	
-	Velocity.register(EntID)
 	
 	Rotation.register(EntID)
 	RotVel.register(EntID)
@@ -109,7 +109,7 @@ def bumpNHandle(EntID, Ent2ID):
 def makeBump1(BYH, BNH, BlueImage):
 	BlueRect = BlueImage.get_rect()
 	
-	EntID, ImageID, RectID = Entity.createPlayer(BlueImage, BlueRect, (200, 400))
+	EntID, ImageID, RectID = Entity.create(BlueImage, BlueRect, (200, 400))
 	
 	Collision.register(EntID)
 	Collision.setState(EntID, BYH, BNH)
@@ -120,7 +120,7 @@ def makeBump1(BYH, BNH, BlueImage):
 def makeBump2(BYH, BNH, BlueImage):
 	BlueRect = BlueImage.get_rect()
 	
-	EntID, ImageID, RectID = Entity.createPlayer(BlueImage, BlueRect, (400, 400))
+	EntID, ImageID, RectID = Entity.create(BlueImage, BlueRect, (400, 400))
 	
 	Collision.register(EntID)
 	Collision.setState(EntID, BYH, BNH)

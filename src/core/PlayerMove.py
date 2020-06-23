@@ -9,7 +9,7 @@ import math
 from . import G
 from . import Events
 
-from .Systems import Velocity
+from .Systems import Accel
 from .Systems import Rotation
 from .Systems import RotVel
 
@@ -37,21 +37,21 @@ def keyDownHandler(e):
 		moveHandler(e)
 
 def moveHandler(e):
-	(dx, dy) = (0, 0)
+	(X, Y) = (0, 0)
 	
 	if e.key == pg.K_UP:
-		dy -= 0.2
+		Y -= 0.2 / 1000
 	elif e.key == pg.K_DOWN:
-		dy += 0.2
+		Y += 0.2 / 1000
 	elif e.key == pg.K_LEFT:
-		dx -= 0.2
+		X -= 0.2 / 1000
 	elif e.key == pg.K_RIGHT:
-		dx += 0.2
+		X += 0.2 / 1000
 	
 	for (player,) in G.CONN.execute(C.PLYC.select()).fetchall():
-		if 0 < Velocity.instances(player):
-			(VelX, VelY) = Velocity.get(player)
-			Velocity.set(player, VelX + dx, VelY + dy)
+		if 0 < Accel.instances(player):
+			(AccX, AccY) = Accel.get(player)
+			Accel.set(player, AccX + X, AccY + Y)
 
 def rotHandler(e):
 	if e.key == pg.K_f:

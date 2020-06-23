@@ -14,6 +14,7 @@ from core.Systems import (
 	Rotation,
 	Velocity,
 	RotVel,
+	Accel,
 	FlipDoll,
 	RotDoll,
 	Strut,
@@ -35,6 +36,7 @@ def update():
 	
 	Events.update()
 	
+	Accel.update(elapsed)
 	Velocity.update(elapsed)
 	RotVel.update(elapsed)
 	
