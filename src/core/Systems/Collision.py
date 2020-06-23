@@ -18,12 +18,8 @@ collQuery = None
 prevCollisions = set()
 
 def init():
-	R.YCR[0] = lambda E1, E2, R1, R2: None	# Default on and off collision handlers do nothing
-	R.NCR[0] = lambda E1, E2, R1, R2: None	#
-	R.WCR[0] = lambda E1, E2, R1, R2: None	#
-	next(R.YCR.counter)			# Adjust resource indeces so we don't accidentally overwrite default handlers
-	next(R.NCR.counter)			#
-	next(R.WCR.counter)			#
+	R.CR[0] = lambda E1, E2, R1, R2: None	# Default collision handler does nothing
+	next(R.CR.counter)			# Adjust resource index so we don't accidentally overwrite default handler
 	
 	global collQuery
 	
@@ -105,12 +101,12 @@ def update():
 	
 	# (1)
 	for EntID, Ent2ID, RectID, Rect2ID, OnColl, WhileColl, OffColl in newCollisions:
-		R.YCR[OnColl](EntID, Ent2ID, RectID, Rect2ID)
+		R.CR[OnColl](EntID, Ent2ID, RectID, Rect2ID)
 	
 	# (1)
 	for EntID, Ent2ID, RectID, Rect2ID, OnColl, WhileColl, OffColl in curCollisions:
-		R.WCR[WhileColl](EntID, Ent2ID, RectID, Rect2ID)
+		R.CR[WhileColl](EntID, Ent2ID, RectID, Rect2ID)
 	
 	# (1)
 	for EntID, Ent2ID, RectID, Rect2ID, OnColl, WhileColl, OffColl in oldCollisions:
-		R.NCR[OffColl](EntID, Ent2ID, RectID, Rect2ID)
+		R.CR[OffColl](EntID, Ent2ID, RectID, Rect2ID)

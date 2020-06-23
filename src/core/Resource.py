@@ -4,13 +4,11 @@
 
 from .ResPack import create
 
-IR = RR = YCR = WCR = NCR = None
+IR = RR = CR = None
 
 def init():
-	global IR, RR, YCR, WCR, NCR
+	global IR, RR, CR
 	
 	IR = create("ImageRes")
 	RR = create("RectRes")
-	YCR = create("OnCollRes")
-	WCR = create("WhileCollRes")
-	NCR = create("OffCollRes")
+	CR = create("CollRes")

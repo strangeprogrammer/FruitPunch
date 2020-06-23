@@ -50,8 +50,6 @@ def moveHandler(e):
 	
 	if e.key == pg.K_UP:
 		dy -= 0.5
-#	elif e.key == pg.K_DOWN:
-#		dy += 0.5
 	elif e.key == pg.K_LEFT:
 		dx -= 0.5
 	elif e.key == pg.K_RIGHT:
@@ -63,21 +61,10 @@ def moveHandler(e):
 			Velocity.set(player, VelX + dx, VelY + dy)
 
 def unMoveHandler(e):
-	(dx, dy) = (0, 0)
-	
-#	if e.key == pg.K_UP:
-#		dy += 0.5
-#	elif e.key == pg.K_DOWN:
-#		dy -= 0.5
-	if e.key == pg.K_LEFT:
-		dx += 0.5
-	elif e.key == pg.K_RIGHT:
-		dx -= 0.5
-	
 	for (player,) in G.CONN.execute(C.PLYC.select()).fetchall():
 		if 0 < Velocity.instances(player):
 			(VelX, VelY) = Velocity.get(player)
-			Velocity.set(player, VelX + dx, VelY + dy)
+			Velocity.set(player, 0, VelY)
 
 def rotHandler(e):
 	if e.key == pg.K_f:
