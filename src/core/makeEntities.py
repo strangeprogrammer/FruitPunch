@@ -10,6 +10,7 @@ from . import Resource as R
 from . import Entity
 from . import G
 
+from .Systems import Position
 from .Systems import Velocity
 from .Systems import Accel
 from .Systems import Rotation
@@ -17,26 +18,14 @@ from .Systems import RotVel
 from .Systems import Strut
 from .Systems import Collision
 
-BlueImage = GreenImage = YellowImage = BI = GI = YI = None
-
 def makeEntities():
-	global BlueImage, GreenImage, YellowImage, BI, GI, YI
 	
-	BYH = R.YCR.append(bumpYHandle)
-	BNH = R.NCR.append(bumpNHandle)
-	
-	BlueImage = LD("./RESOURCES/BlueSquare.png").convert_alpha()
-	GreenImage = LD("./RESOURCES/GreenSquare.png").convert_alpha()
-	YellowImage = LD("./RESOURCES/YellowSquare.png").convert_alpha()
-	
-	BI = R.IR.append(BlueImage)
-	GI = R.IR.append(GreenImage)
-	YI = R.IR.append(YellowImage)
+	BYH = R.YCR.append(expelUp)
+	BNH = 0
 	
 	makeAllEnt()
 	makeRotVelStrut()
-	makeBump1(BYH, BNH, BlueImage)
-	makeBump2(BYH, BNH, BlueImage)
+	makeGround(BYH, BNH)
 
 FEntID = None
 
@@ -46,8 +35,9 @@ def makeAllEnt():
 	
 	EntID, ImageID, RectID = Entity.createPlayer(FImage, FRect, (200, 200))
 	
-	Accel.register(EntID)
 	Velocity.register(EntID)
+	Accel.register(EntID)
+	Accel.set(0, 0, 0.4 / 1000)
 	Rotation.register(EntID)
 	RotVel.register(EntID)
 	
@@ -72,58 +62,30 @@ def makeRotVelStrut():
 	Strut.register(FEntID, EntID)
 	Strut.set(EntID, 200, 0)
 
-numbumps = 0
-bumpents = set()
-
-def imageChooser():
-	global BI, GI, YI, numbumps, bumpents
-	
-	if numbumps == 0:
-		ImageID = BI
-	elif numbumps == 1:
-		ImageID = GI
-	elif numbumps == 2:
-		ImageID = YI
-	
-	for EntID in bumpents:
-		G.CONN.execute(
-			C.IC.update().where(C.IC.c.EntID == EntID), {
-				"ImageID": ImageID,
-			}
-		)
-
-def bumpYHandle(EntID, Ent2ID):
-	global numbumps
-	
-	numbumps += 1
-	
-	imageChooser()
-
-def bumpNHandle(EntID, Ent2ID):
-	global numbumps
-	
-	numbumps -= 1
-	
-	imageChooser()
-
-def makeBump1(BYH, BNH, BlueImage):
+def makeGround(BYH, BNH):
+	BlueImage = LD("./RESOURCES/BlueSquare.png").convert_alpha()
 	BlueRect = BlueImage.get_rect()
 	
 	EntID, ImageID, RectID = Entity.create(BlueImage, BlueRect, (200, 400))
 	
 	Collision.register(EntID)
 	Collision.setState(EntID, BYH, BNH)
-	
-	global bumpents
-	bumpents.add(EntID)
 
-def makeBump2(BYH, BNH, BlueImage):
-	BlueRect = BlueImage.get_rect()
+def expelUp(EntID, Ent2ID):
+	RectID = G.CONN.execute(
+		C.RECC.select().where(C.RECC.c.EntID == EntID)
+	).fetchone()[1]
 	
-	EntID, ImageID, RectID = Entity.create(BlueImage, BlueRect, (400, 400))
+	Rect2ID = G.CONN.execute(
+		C.RECC.select().where(C.RECC.c.EntID == Ent2ID)
+	).fetchone()[1]
 	
-	Collision.register(EntID)
-	Collision.setState(EntID, BYH, BNH)
+	Rect1 = R.RR[RectID]
+	Rect2 = R.RR[Rect2ID]
 	
-	global bumpents
-	bumpents.add(EntID)
+	# if Rect1.colliderect(Rect2): # We assume this is true
+	Rect2.bottom = Rect1.top
+	Position.set(Ent2ID, Rect2.centerx, Rect2.centery)
+	
+	(VelX, VelY) = Velocity.get(Ent2ID)
+	Velocity.set(Ent2ID, VelX, min(0, VelY))

@@ -9,8 +9,7 @@ import math
 from . import G
 from . import Events
 
-from .Systems import Accel
-from .Systems import Rotation
+from .Systems import Velocity
 from .Systems import RotVel
 
 """
@@ -21,6 +20,7 @@ from . import Component as C
 
 def init():
 	Events.register(pg.KEYDOWN, keyDownHandler)
+	Events.register(pg.KEYUP, keyUpHandler)
 
 def keyDownHandler(e):
 	if e.key in [
@@ -36,22 +36,48 @@ def keyDownHandler(e):
 	]:
 		moveHandler(e)
 
+def keyUpHandler(e):
+	if e.key in [
+		pg.K_UP,
+		pg.K_DOWN,
+		pg.K_LEFT,
+		pg.K_RIGHT,
+	]:
+		unMoveHandler(e)
+
 def moveHandler(e):
-	(X, Y) = (0, 0)
+	(dx, dy) = (0, 0)
 	
 	if e.key == pg.K_UP:
-		Y -= 0.2 / 1000
+		dy -= 0.25
 	elif e.key == pg.K_DOWN:
-		Y += 0.2 / 1000
+		dy += 0.25
 	elif e.key == pg.K_LEFT:
-		X -= 0.2 / 1000
+		dx -= 0.25
 	elif e.key == pg.K_RIGHT:
-		X += 0.2 / 1000
+		dx += 0.25
 	
 	for (player,) in G.CONN.execute(C.PLYC.select()).fetchall():
-		if 0 < Accel.instances(player):
-			(AccX, AccY) = Accel.get(player)
-			Accel.set(player, AccX + X, AccY + Y)
+		if 0 < Velocity.instances(player):
+			(VelX, VelY) = Velocity.get(player)
+			Velocity.set(player, VelX + dx, VelY + dy)
+
+def unMoveHandler(e):
+	(dx, dy) = (0, 0)
+	
+	if e.key == pg.K_UP:
+		dy += 0.25
+	elif e.key == pg.K_DOWN:
+		dy -= 0.25
+	elif e.key == pg.K_LEFT:
+		dx += 0.25
+	elif e.key == pg.K_RIGHT:
+		dx -= 0.25
+	
+	for (player,) in G.CONN.execute(C.PLYC.select()).fetchall():
+		if 0 < Velocity.instances(player):
+			(VelX, VelY) = Velocity.get(player)
+			Velocity.set(player, VelX + dx, VelY + dy)
 
 def rotHandler(e):
 	if e.key == pg.K_f:
