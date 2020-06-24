@@ -18,12 +18,6 @@ from .. import Component as C
 from .. import Resource as R
 
 def init():
-	G.SCREEN = pg.display.set_mode()
-	G.SCREEN.fill( (255, 255, 255) )
-	
-	G.BGD = G.SCREEN.copy()
-	pg.display.flip()
-	
 	global drawQuery, RIPairsQuery
 	
 	drawQuery = sqa.select([

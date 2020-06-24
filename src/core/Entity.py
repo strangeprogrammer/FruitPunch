@@ -9,8 +9,6 @@ from . import G
 from .Systems import Velocity
 
 entCounter = None
-rectCounter = None
-imageCounter = None
 
 from . import Component as C
 from . import Resource as R

@@ -46,7 +46,7 @@ def makeAllEnt():
 	
 	Velocity.register(EntID)
 	Accel.register(EntID)
-	Accel.set(0, 0, 0.4 / 1000)
+	Accel.set(EntID, 0, 0.4 / 1000)
 	Rotation.register(EntID)
 	RotVel.register(EntID)
 	

@@ -12,6 +12,7 @@ from . import Resource
 
 from . import Entity
 from .Systems import (
+	Camera,
 	Draw,
 	Flip,
 	Position,
@@ -53,6 +54,8 @@ def init():
 	
 	Draw.addRenderStep(Flip.render)
 	Draw.addRenderStep(Rotation.render)
+	
+	Camera.init()
 	
 	PlayerMove.init()
 	
