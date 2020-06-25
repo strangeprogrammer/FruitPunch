@@ -13,6 +13,7 @@ drawQuery = None
 RIPairsQuery = None
 renderSteps = []
 erased = []
+borderWidth = 0
 
 from .. import Component as C
 from .. import Resource as R
@@ -63,23 +64,38 @@ def render():
 	
 	_updateRects()
 
-def update(screen):
+def _drawBorder(screen):
+	global borderWidth
+	if 0 < borderWidth:
+		origRect = screen.get_rect()
+		rect = origRect.copy()
+		rect.height -= borderWidth
+		rect.width -= borderWidth
+		rect.center = origRect.center
+		pg.draw.rect(screen, (255, 0, 255), rect, borderWidth)
+
+def update(screen, camRect):
 	global drawQuery, erased
 	
 	newRects = []
 	for ImageID, RectID in G.CONN.execute(drawQuery).fetchall():
 		rect = R.RR[RectID]
-		screen.blit(R.IR[ImageID], rect)
-		newRects.append(rect)
+		if rect.colliderect(camRect):
+			screen.blit(R.IR[ImageID], rect)
+			newRects.append(rect)
 	
 	result = newRects + erased
 	erased = []
 	
+	_drawBorder(screen)
+	
 	return result
 
-def clear(screen, bgd):
+def clear(screen, bgd, camRect):
 	global erased
 	
 	for (RectID,) in G.CONN.execute(sqa.select([C.RECC.c.RectID]).select_from(C.RECC)).fetchall():
-		screen.blit(bgd, R.RR[RectID])
-		erased.append(R.RR[RectID].copy()) # The 'copy' part is important since the rectangle could be modified and not represent the region that needs to be erased upon the next draw
+		rect = R.RR[RectID]
+		if rect.colliderect(camRect):
+			screen.blit(bgd, rect)
+			erased.append(rect.copy()) # The 'copy' part is important since the rectangle could be modified and not represent the region that needs to be erased upon the next draw

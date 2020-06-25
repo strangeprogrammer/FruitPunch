@@ -59,13 +59,13 @@ def camHandler(e):
 	(VelX, VelY) = Velocity.get(EntID)
 	
 	if e.key == pg.K_i:
-		Velocity.set(EntID, VelX, VelY + 0.5)
-	elif e.key == pg.K_k:
 		Velocity.set(EntID, VelX, VelY - 0.5)
+	elif e.key == pg.K_k:
+		Velocity.set(EntID, VelX, VelY + 0.5)
 	elif e.key == pg.K_j:
-		Velocity.set(EntID, VelX + 0.5, VelY)
-	elif e.key == pg.K_l:
 		Velocity.set(EntID, VelX - 0.5, VelY)
+	elif e.key == pg.K_l:
+		Velocity.set(EntID, VelX + 0.5, VelY)
 
 def moveHandler(e):
 	(dx, dy) = (0, 0)

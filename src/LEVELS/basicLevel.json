@@ -1,0 +1,31 @@
+{
+	"player": {
+		"image": "./RESOURCES/F.png",
+		"x": 200,
+		"y": 300
+	}, "ceilings": [
+		{
+			"image": "./RESOURCES/RedSquare.png",
+			"x": 200,
+			"y": 200
+		}
+	], "floors": [
+		{
+			"image": "./RESOURCES/YellowSquare.png",
+			"x": 200,
+			"y": 500
+		}
+	], "leftWalls": [
+		{
+			"image": "./RESOURCES/GreenSquare.png",
+			"x": 100,
+			"y": 400
+		}
+	], "rightWalls": [
+		{
+			"image": "./RESOURCES/BlueSquare.png",
+			"x": 300,
+			"y": 400
+		}
+	]
+}

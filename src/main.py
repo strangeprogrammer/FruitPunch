@@ -8,6 +8,8 @@ from core import (
 	G,
 )
 
+from core import Resource as R
+
 from core.Systems import (
 	Camera,
 	Draw,
@@ -37,8 +39,11 @@ def init():
 	
 	Events.register(pg.QUIT, lambda e: InitQuit.quit())
 	
+	Draw.borderWidth = 4
 
 elapsed = 0
+import itertools
+counter = itertools.count()
 
 def update():
 	global elapsed
@@ -61,13 +66,17 @@ def update():
 	
 	global scene
 	
-	Draw.update(scene)
+	Draw.update(scene, R.RR[Camera.RectID])
 	Camera.update(scene)
-	Draw.clear(scene, G.BGD)
+	Draw.clear(scene, G.BGD, R.RR[Camera.RectID])
 	
 	Rotation.collect()
 	
 	elapsed = G.CLOCK.tick(60)
+	
+	global counter
+	if next(counter) % 60 == 0:
+		print(G.CLOCK.get_fps())
 
 def main():
 	init()

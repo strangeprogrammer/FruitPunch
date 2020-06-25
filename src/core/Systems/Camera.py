@@ -21,7 +21,9 @@ def init():
 	pg.display.flip()
 	
 	global EntID, RectID
-	RectID = R.RR.append(pg.Rect(0, 0, 0, 0))
+	rect = G.SCREEN.get_rect()
+	(rect.x, rect.y) = (0, 0)
+	RectID = R.RR.append(rect)
 	
 	from .. import Entity
 	EntID = next(Entity.entCounter)
@@ -54,7 +56,8 @@ def set(left, top):
 
 def update(scene):
 	global RectID
-	rect = R.RR[RectID]
-	G.SCREEN.fill( (0, 0, 0) )
+	rect = R.RR[RectID].copy()
+	rect.x = -rect.x
+	rect.y = -rect.y
 	G.SCREEN.blit(scene, rect)
 	pg.display.flip()
