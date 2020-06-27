@@ -8,7 +8,4 @@ ENGINE	= None
 DB	= None
 CONN	= None
 
-SCREEN	= None
-BGD	= None
-
 CLOCK	= None

@@ -28,7 +28,6 @@ from .Systems import (
 
 from . import PlayerMove
 from . import CollHandLib
-from . import Level
 
 def init():
 	pg.init()
@@ -61,7 +60,6 @@ def init():
 	PlayerMove.init()
 	
 	CollHandLib.init()
-	Level.load("./LEVELS/basicLevel.json")
 	
 	G.CLOCK = pg.time.Clock()
 

@@ -7,12 +7,9 @@ import sqlalchemy as sqa
 
 from .. import G
 
-# We don't have to keep track of the dirty regions assuming that 'ImageComp', 'DrawComp' and 'RectComp' aren't modified between the 'update' and 'clear' calls
-
 drawQuery = None
 RIPairsQuery = None
 renderSteps = []
-erased = []
 borderWidth = 0
 
 from .. import Component as C
@@ -64,38 +61,32 @@ def render():
 	
 	_updateRects()
 
-def _drawBorder(screen):
+def _drawBorder(scene):
 	global borderWidth
 	if 0 < borderWidth:
-		origRect = screen.get_rect()
+		origRect = scene.get_rect()
 		rect = origRect.copy()
 		rect.height -= borderWidth
 		rect.width -= borderWidth
 		rect.center = origRect.center
-		pg.draw.rect(screen, (255, 0, 255), rect, borderWidth)
+		pg.draw.rect(scene, (255, 0, 255), rect, borderWidth)
 
-def update(screen, camRect):
-	global drawQuery, erased
+def update(scene, camRect):
+	global drawQuery
 	
-	newRects = []
+	result = []
 	for ImageID, RectID in G.CONN.execute(drawQuery).fetchall():
 		rect = R.RR[RectID]
 		if rect.colliderect(camRect):
-			screen.blit(R.IR[ImageID], rect)
-			newRects.append(rect)
+			scene.blit(R.IR[ImageID], rect)
+			result.append(rect)
 	
-	result = newRects + erased
-	erased = []
-	
-	_drawBorder(screen)
+	_drawBorder(scene)
 	
 	return result
 
-def clear(screen, bgd, camRect):
-	global erased
-	
+def clear(scene, bgd, camRect):
 	for (RectID,) in G.CONN.execute(sqa.select([C.RECC.c.RectID]).select_from(C.RECC)).fetchall():
 		rect = R.RR[RectID]
 		if rect.colliderect(camRect):
-			screen.blit(bgd, rect)
-			erased.append(rect.copy()) # The 'copy' part is important since the rectangle could be modified and not represent the region that needs to be erased upon the next draw
+			scene.blit(bgd, rect, rect)

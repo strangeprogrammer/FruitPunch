@@ -1,0 +1,126 @@
+{
+	"player": {
+		"image": "./RESOURCES/F.png",
+		"x": 200,
+		"y": 300
+	}, "background": "./RESOURCES/2000Grid.png",
+	"floors": [
+		{
+			"image": "./RESOURCES/YellowSquare.png",
+			"x": 200,
+			"y": 500
+		}, {
+			"image": "./RESOURCES/YellowSquare.png",
+			"x": 300,
+			"y": 500
+		}, {
+			"image": "./RESOURCES/YellowSquare.png",
+			"x": 400,
+			"y": 500
+		}, {
+			"image": "./RESOURCES/YellowSquare.png",
+			"x": 500,
+			"y": 500
+		}, {
+			"image": "./RESOURCES/YellowSquare.png",
+			"x": 600,
+			"y": 500
+		}, {
+			"image": "./RESOURCES/YellowSquare.png",
+			"x": 700,
+			"y": 500
+		}, {
+			"image": "./RESOURCES/YellowSquare.png",
+			"x": 800,
+			"y": 500
+		}, {
+			"image": "./RESOURCES/YellowSquare.png",
+			"x": 900,
+			"y": 500
+		}, {
+			"image": "./RESOURCES/YellowSquare.png",
+			"x": 1000,
+			"y": 500
+		}, {
+			"image": "./RESOURCES/YellowSquare.png",
+			"x": 1100,
+			"y": 500
+		}, {
+			"image": "./RESOURCES/YellowSquare.png",
+			"x": 1200,
+			"y": 500
+		}, {
+			"image": "./RESOURCES/YellowSquare.png",
+			"x": 1300,
+			"y": 500
+		}, {
+			"image": "./RESOURCES/YellowSquare.png",
+			"x": 1400,
+			"y": 500
+		}, {
+			"image": "./RESOURCES/YellowSquare.png",
+			"x": 1500,
+			"y": 500
+		},
+		
+		
+		
+		{
+			"image": "./RESOURCES/YellowSquare.png",
+			"x": 400,
+			"y": 400
+		},
+		
+		
+		
+		{
+			"image": "./RESOURCES/YellowSquare.png",
+			"x": 600,
+			"y": 300
+		},
+		
+		
+		
+		{
+			"image": "./RESOURCES/YellowSquare.png",
+			"x": 800,
+			"y": 400
+		}, {
+			"image": "./RESOURCES/YellowSquare.png",
+			"x": 800,
+			"y": 300
+		}, {
+			"image": "./RESOURCES/YellowSquare.png",
+			"x": 800,
+			"y": 200
+		},
+		
+		
+		
+		{
+			"image": "./RESOURCES/GreenSquare.png",
+			"x": 1200,
+			"y": 400
+		}, {
+			"image": "./RESOURCES/GreenSquare.png",
+			"x": 1200,
+			"y": 300
+		},
+		
+		
+		
+		{
+			"image": "./RESOURCES/YellowSquare.png",
+			"x": 1300,
+			"y": 400
+		}, {
+			"image": "./RESOURCES/YellowSquare.png",
+			"x": 1300,
+			"y": 300
+		}, {
+			"image": "./RESOURCES/YellowSquare.png",
+			"x": 1300,
+			"y": 200
+		}
+	]
+}

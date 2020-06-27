@@ -6,9 +6,9 @@ from core import (
 	InitQuit,
 	Events,
 	G,
+	Resource as R,
+	Level,
 )
-
-from core import Resource as R
 
 from core.Systems import (
 	Camera,
@@ -24,18 +24,16 @@ from core.Systems import (
 	Collision,
 )
 
-scene = None
+scene = bgd = None
 
 def init():
 	InitQuit.init()
 	
-	global scene
-	G.SCREEN.fill( (255, 255, 255) )
-	G.BGD = G.SCREEN.copy()
-	scene = G.SCREEN.copy()
-	Camera.set(100, 100)
+	global scene, bgd
+	scene = Level.load("./LEVELS/tutorial.json")
+	bgd = scene.copy()
 	
-	pg.display.flip()
+	Camera.set(0, 0)
 	
 	Events.register(pg.QUIT, lambda e: InitQuit.quit())
 	
@@ -64,11 +62,10 @@ def update():
 	Strut.update()
 	Position.update() # I hate double-updating the positions, but this is the best way that I know of right now to make 'bumping' work smoothly with struts
 	
-	global scene
-	
+	global scene, bgd
 	Draw.update(scene, R.RR[Camera.RectID])
 	Camera.update(scene)
-	Draw.clear(scene, G.BGD, R.RR[Camera.RectID])
+	Draw.clear(scene, bgd, R.RR[Camera.RectID])
 	
 	Rotation.collect()
 	

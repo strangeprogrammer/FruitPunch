@@ -12,16 +12,13 @@ from .. import G
 from . import Position
 from . import Velocity
 
-EntID = RectID = None
+screen = EntID = RectID = None
 
 def init():
-	G.SCREEN = pg.display.set_mode()
+	global screen, EntID, RectID
 	
-	G.BGD = G.SCREEN.copy()
-	pg.display.flip()
-	
-	global EntID, RectID
-	rect = G.SCREEN.get_rect()
+	screen = pg.display.set_mode()
+	rect = screen.get_rect()
 	(rect.x, rect.y) = (0, 0)
 	RectID = R.RR.append(rect)
 	
@@ -55,9 +52,9 @@ def set(left, top):
 	rect.top = top
 
 def update(scene):
-	global RectID
+	global screen, RectID
 	rect = R.RR[RectID].copy()
 	rect.x = -rect.x
 	rect.y = -rect.y
-	G.SCREEN.blit(scene, rect)
+	screen.blit(scene, rect)
 	pg.display.flip()
