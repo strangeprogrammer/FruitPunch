@@ -34,7 +34,7 @@ def create(image, rect, center):
 	G.CONN.execute(C.IC.insert().values(EntID = EntID, ImageID = ImageID))
 	G.CONN.execute(C.RECC.insert().values(EntID = EntID, RectID = RectID))
 	Position.register(EntID)
-	Position.set(EntID, center[0], center[1])
+	Position.store(EntID, center[0], center[1])
 	
 	return EntID, ImageID, RectID
 

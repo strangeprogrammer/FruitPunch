@@ -44,7 +44,7 @@ def deregister(ChildID):
 		C.RDC.delete().where(C.RDC.c.ChildID == ChildID)
 	)
 
-def get(ChildID):
+def fetch(ChildID):
 	return G.CONN.execute(
 		sqa.select([
 			C.RDC.c.dTheta,
@@ -53,7 +53,7 @@ def get(ChildID):
 		)
 	).fetchone()[0] * math.tau / 360
 
-def set(ChildID, dTheta):
+def store(ChildID, dTheta):
 	G.CONN.execute(
 		C.RDC.update().where(C.RDC.c.ChildID == ChildID), {
 			"dTheta": dTheta * 360 / math.tau

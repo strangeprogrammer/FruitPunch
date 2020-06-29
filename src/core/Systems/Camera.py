@@ -8,7 +8,7 @@ from .. import Component as C
 from .. import Resource as R
 
 from .. import G
-from ..Rect import Rect
+from ..Misc import Rect
 from .. import Entity
 
 from . import Position
@@ -41,12 +41,12 @@ def init():
 	Position.register(EntID)
 	Velocity.register(EntID)
 
-def get():
+def fetch():
 	global RectID
 	rect = R.RR[RectID]
 	return (rect.left, rect.top)
 
-def set(left, top):
+def store(left, top):
 	global RectID
 	rect = R.RR[RectID]
 	rect.left = left

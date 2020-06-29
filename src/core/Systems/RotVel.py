@@ -41,7 +41,7 @@ def deregister(EntID):
 		C.RVC.delete().where(C.RVC.c.EntID == EntID)
 	)
 
-def get(EntID):
+def fetch(EntID):
 	return Misc.degToRad(
 		G.CONN.execute(
 			sqa	.select([C.RVC.c.Omega]) \
@@ -50,7 +50,7 @@ def get(EntID):
 		).fetchone()[0]
 	)
 
-def set(EntID, Omega):
+def store(EntID, Omega):
 	G.CONN.execute(
 		C.RVC.update().where(C.RVC.c.EntID == EntID), {
 			"Omega": Misc.radToDeg(Omega),
@@ -61,6 +61,6 @@ def update(dt): # TODO: Re-write this using an execute-many style
 	global rotateQuery
 	
 	for EntID, Omega in G.CONN.execute(rotateQuery).fetchall():
-		Theta = Rotation.get(EntID)
+		Theta = Rotation.fetch(EntID)
 		newTheta = Theta + Misc.degToRad(Omega) * dt
-		Rotation.set(EntID, newTheta)
+		Rotation.store(EntID, newTheta)

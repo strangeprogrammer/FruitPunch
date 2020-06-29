@@ -41,14 +41,14 @@ def deregister(EntID):
 		C.POSC.delete().where(C.POSC.c.EntID == EntID)
 	)
 
-def get(EntID):
+def fetch(EntID):
 	return G.CONN.execute(
 		sqa	.select([C.POSC.c.PosX, C.POSC.c.PosY]) \
 			.select_from(C.POSC) \
 			.where(C.POSC.c.EntID == EntID)
 	).fetchone()
 
-def set(EntID, PosX, PosY):
+def store(EntID, PosX, PosY):
 	G.CONN.execute(
 		C.POSC	.update() \
 			.where(C.POSC.c.EntID == EntID), {

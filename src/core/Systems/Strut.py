@@ -43,14 +43,14 @@ def deregister(ChildID):
 		C.SBC.delete().where(C.SBC.c.ChildID == ChildID)
 	)
 
-def get(EntID):
+def fetch(EntID):
 	return G.CONN.execute(
 		sqa	.select([C.SBC.c.OffX, C.SBC.c.OffY]) \
 			.select_from(C.SBC) \
 			.where(C.SBC.c.ChildID == ChildID)
 	).fetchone()
 
-def set(ChildID, OffX, OffY):
+def store(ChildID, OffX, OffY):
 	G.CONN.execute(
 		C.SBC.update().where(
 			C.SBC.c.ChildID == ChildID,

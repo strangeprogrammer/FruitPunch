@@ -56,16 +56,16 @@ def keyUpHandler(e):
 def camHandler(e):
 	EntID = Camera.EntID
 	
-	(VelX, VelY) = Velocity.get(EntID)
+	(VelX, VelY) = Velocity.fetch(EntID)
 	
 	if e.key == pg.K_i:
-		Velocity.set(EntID, VelX, VelY - 0.5)
+		Velocity.store(EntID, VelX, VelY - 0.5)
 	elif e.key == pg.K_k:
-		Velocity.set(EntID, VelX, VelY + 0.5)
+		Velocity.store(EntID, VelX, VelY + 0.5)
 	elif e.key == pg.K_j:
-		Velocity.set(EntID, VelX - 0.5, VelY)
+		Velocity.store(EntID, VelX - 0.5, VelY)
 	elif e.key == pg.K_l:
-		Velocity.set(EntID, VelX + 0.5, VelY)
+		Velocity.store(EntID, VelX + 0.5, VelY)
 
 def moveHandler(e):
 	(dx, dy) = (0, 0)
@@ -79,14 +79,14 @@ def moveHandler(e):
 	
 	for (player,) in G.CONN.execute(C.PLYC.select()).fetchall():
 		if 0 < Velocity.instances(player):
-			(VelX, VelY) = Velocity.get(player)
-			Velocity.set(player, VelX + dx, VelY + dy)
+			(VelX, VelY) = Velocity.fetch(player)
+			Velocity.store(player, VelX + dx, VelY + dy)
 
 def unMoveHandler(e):
 	for (player,) in G.CONN.execute(C.PLYC.select()).fetchall():
 		if 0 < Velocity.instances(player):
-			(VelX, VelY) = Velocity.get(player)
-			Velocity.set(player, 0, VelY)
+			(VelX, VelY) = Velocity.fetch(player)
+			Velocity.store(player, 0, VelY)
 
 def rotHandler(e):
 	if e.key == pg.K_f:
@@ -96,4 +96,4 @@ def rotHandler(e):
 	
 	for (player,) in G.CONN.execute(C.PLYC.select()).fetchall():
 		if 0 < RotVel.instances(player):
-			RotVel.set(player, RotVel.get(player) + dOmega)
+			RotVel.store(player, RotVel.fetch(player) + dOmega)

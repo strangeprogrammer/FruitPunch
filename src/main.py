@@ -32,7 +32,7 @@ def init():
 	global bgd
 	bgd = Level.load("./LEVELS/tutorial.json")
 	
-	Camera.set(0, 0)
+	Camera.store(0, 0)
 	
 	Events.register(pg.QUIT, lambda e: InitQuit.quit())
 

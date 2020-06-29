@@ -42,14 +42,14 @@ def deregister(EntID):
 		C.AC.delete().where(C.AC.c.EntID == EntID)
 	)
 
-def get(EntID):
+def fetch(EntID):
 	return G.CONN.execute(
 		sqa	.select([C.AC.c.AccX, C.AC.c.AccY]) \
 			.select_from(C.AC) \
 			.where(C.AC.c.EntID == EntID)
 	).fetchone()
 
-def set(EntID, AccX, AccY):
+def store(EntID, AccX, AccY):
 	G.CONN.execute(
 		C.AC	.update() \
 			.where(C.AC.c.EntID == EntID), {
@@ -62,7 +62,7 @@ def update(dt):
 	global movingQuery
 	
 	for EntID, AccX, AccY in G.CONN.execute(movingQuery).fetchall():
-		(VelX, VelY) = Velocity.get(EntID)
+		(VelX, VelY) = Velocity.fetch(EntID)
 		newX = VelX + AccX * dt
 		newY = VelY + AccY * dt
-		Velocity.set(EntID, newX, newY)
+		Velocity.store(EntID, newX, newY)

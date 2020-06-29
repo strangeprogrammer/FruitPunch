@@ -21,10 +21,10 @@ def ejectUp(EntID, Ent2ID, RectID, Rect2ID):
 	
 	# if Rect1.colliderect(Rect2): # We assume this is true
 	Rect2.bottom = Rect1.top
-	Position.set(Ent2ID, Rect2.centerx, Rect2.centery)
+	Position.store(Ent2ID, Rect2.centerx, Rect2.centery)
 	
-	(VelX, VelY) = Velocity.get(Ent2ID)
-	Velocity.set(Ent2ID, VelX, min(0, VelY))
+	(VelX, VelY) = Velocity.fetch(Ent2ID)
+	Velocity.store(Ent2ID, VelX, min(0, VelY))
 
 def ejectDown(EntID, Ent2ID, RectID, Rect2ID):
 	Rect1 = R.RR[RectID]
@@ -32,10 +32,10 @@ def ejectDown(EntID, Ent2ID, RectID, Rect2ID):
 	
 	# if Rect1.colliderect(Rect2): # We assume this is true
 	Rect2.top = Rect1.bottom
-	Position.set(Ent2ID, Rect2.centerx, Rect2.centery)
+	Position.store(Ent2ID, Rect2.centerx, Rect2.centery)
 	
-	(VelX, VelY) = Velocity.get(Ent2ID)
-	Velocity.set(Ent2ID, VelX, max(0, VelY))
+	(VelX, VelY) = Velocity.fetch(Ent2ID)
+	Velocity.store(Ent2ID, VelX, max(0, VelY))
 
 def ejectLeft(EntID, Ent2ID, RectID, Rect2ID):
 	Rect1 = R.RR[RectID]
@@ -43,10 +43,10 @@ def ejectLeft(EntID, Ent2ID, RectID, Rect2ID):
 	
 	# if Rect1.colliderect(Rect2): # We assume this is true
 	Rect2.right = Rect1.left
-	Position.set(Ent2ID, Rect2.centerx, Rect2.centery)
+	Position.store(Ent2ID, Rect2.centerx, Rect2.centery)
 	
-	(VelX, VelY) = Velocity.get(Ent2ID)
-	Velocity.set(Ent2ID, min(0, VelX), VelY)
+	(VelX, VelY) = Velocity.fetch(Ent2ID)
+	Velocity.store(Ent2ID, min(0, VelX), VelY)
 
 def ejectRight(EntID, Ent2ID, RectID, Rect2ID):
 	Rect1 = R.RR[RectID]
@@ -54,7 +54,7 @@ def ejectRight(EntID, Ent2ID, RectID, Rect2ID):
 	
 	# if Rect1.colliderect(Rect2): # We assume this is true
 	Rect2.left = Rect1.right
-	Position.set(Ent2ID, Rect2.centerx, Rect2.centery)
+	Position.store(Ent2ID, Rect2.centerx, Rect2.centery)
 	
-	(VelX, VelY) = Velocity.get(Ent2ID)
-	Velocity.set(Ent2ID, max(0, VelX), VelY)
+	(VelX, VelY) = Velocity.fetch(Ent2ID)
+	Velocity.store(Ent2ID, max(0, VelX), VelY)

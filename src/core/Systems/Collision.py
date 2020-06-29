@@ -62,13 +62,13 @@ def deregister(EntID):
 		C.CC.delete().where(C.CC.c.EntID == EntID)
 	)
 
-def get(EntID):
+def fetch(EntID):
 	return G.CONN.execute(
 		C.CC	.select() \
 			.where(C.CC.c.EntID == EntID)
 	).fetchone()
 
-def setState(EntID, OnColl, WhileColl, OffColl):
+def store(EntID, OnColl, WhileColl, OffColl):
 	G.CONN.execute(
 		C.CC.update().where(C.CC.c.EntID == EntID), {
 			"OnColl": OnColl,

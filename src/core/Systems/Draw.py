@@ -6,8 +6,7 @@ import pygame as pg
 import sqlalchemy as sqa
 
 from .. import G
-from ..Crack import cleanCrack
-from ..Rect import Rect
+from ..Misc import Rect
 
 drawQuery = None
 RIPairsQuery = None
@@ -51,7 +50,7 @@ def _updateRects():
 	global RIPairsQuery
 	
 	for RectID, ImageID in G.CONN.execute(RIPairsQuery).fetchall():
-		R.RR[RectID] = R.IR[ImageID].get_rect()
+		R.RR[RectID] = Rect(R.IR[ImageID].get_rect())
 
 def render():
 	_resetDrawComp()
@@ -63,8 +62,7 @@ def render():
 	_updateRects()
 
 def _blackPad(bgd, camRect):
-	badlands = cleanCrack(bgd.get_rect(), camRect)
-	badlands = list(map(Rect, badlands))
+	badlands = Rect(bgd.get_rect()).cleanCrack(camRect)
 	badlands = list(map(lambda r: r - camRect, badlands))
 	outsurfaces = list(map(lambda r: G.SCREEN.subsurface(r), badlands))
 	
@@ -80,7 +78,7 @@ def update(bgd, camRect):
 	
 	# Draw all entities
 	for ImageID, RectID in G.CONN.execute(drawQuery).fetchall():
-		rect = Rect(R.RR[RectID])
+		rect = R.RR[RectID]
 		if rect.colliderect(camRect):
 			G.SCREEN.blit(R.IR[ImageID], rect - camRect)
 	

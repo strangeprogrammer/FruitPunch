@@ -57,7 +57,7 @@ def deregister(ChildID):
 		C.FDC.delete().where(C.FDC.c.ChildID == ChildID)
 	)
 
-def get(ChildID):
+def fetch(ChildID):
 	return G.CONN.execute(
 		sqa.select([
 			C.FDC.c.OffX,
@@ -67,7 +67,7 @@ def get(ChildID):
 		)
 	).fetchone()
 
-def set(ChildID, OffX, OffY):
+def store(ChildID, OffX, OffY):
 	G.CONN.execute(
 		C.FDC.update().where(C.FDC.c.ChildID == ChildID), {
 			"OffX": OffX,

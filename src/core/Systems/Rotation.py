@@ -52,7 +52,7 @@ def deregister(EntID):
 			.where(C.ROTC.EntID == EntID)
 	)
 
-def get(EntID):
+def fetch(EntID):
 	return Misc.degToRad(
 		G.CONN.execute(
 			sqa	.select([C.ROTC.c.Theta]) \
@@ -61,7 +61,7 @@ def get(EntID):
 		).fetchone()[0]
 	)
 
-def set(EntID, Theta):
+def store(EntID, Theta):
 	G.CONN.execute(
 		C.ROTC.update().where(
 			C.ROTC.c.EntID == EntID

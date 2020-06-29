@@ -60,14 +60,14 @@ def deregister(EntID):
 			.where(C.FC.EntID == EntID)
 	)
 
-def get(EntID):
+def fetch(EntID):
 	return G.CONN.execute(
 		sqa	.select([C.FC.c.FlipX, C.FC.c.FlipY]) \
 			.select_from(C.FC) \
 			.where(C.FC.c.EntID == EntID)
 	).fetchone()
 
-def set(EntID, FlipX, FlipY):
+def store(EntID, FlipX, FlipY):
 	G.CONN.execute(
 		C.FC.update().where(
 			C.FC.c.EntID == EntID

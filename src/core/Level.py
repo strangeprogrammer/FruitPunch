@@ -8,6 +8,7 @@ import pygame as pg
 
 from . import CollHandLib as CHL
 from . import Entity
+from .Misc import Rect
 
 from .Systems import (
 	Velocity,
@@ -42,13 +43,13 @@ def load(fileName):
 
 def _makePlayer(image, x, y):
 	img = _loadImage(image)
-	rect = img.get_rect()
+	rect = Rect(img.get_rect())
 	
 	EntID, ImageID, RectID = Entity.createPlayer(img, rect, (x, y))
 	
 	Velocity.register(EntID)
 	Accel.register(EntID)
-	Accel.set(EntID, 0, 0.8 / 1000)
+	Accel.store(EntID, 0, 0.8 / 1000)
 	Rotation.register(EntID)
 	RotVel.register(EntID)
 	
@@ -58,12 +59,12 @@ def _makePlayer(image, x, y):
 
 def _makeBumping(ejectHandlerID, image, x, y):
 	img = _loadImage(image)
-	rect = img.get_rect()
+	rect = Rect(img.get_rect())
 	
 	EntID, ImageID, RectID = Entity.create(img, rect, (x, y))
 	
 	Collision.register(EntID)
-	Collision.setState(EntID, ejectHandlerID, ejectHandlerID, 0)
+	Collision.store(EntID, ejectHandlerID, ejectHandlerID, 0)
 
 _makeCeiling	= lambda image, x, y: _makeBumping(CHL.ejectDownID, image, x, y)
 _makeFloor	= lambda image, x, y: _makeBumping(CHL.ejectUpID, image, x, y)
