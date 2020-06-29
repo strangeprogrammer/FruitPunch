@@ -5,12 +5,17 @@
 import pygame as pg
 from sys import exit
 
-from . import G
-from . import Database
-from . import Component
-from . import Resource
+from . import (
+	G,
+	Database,
+	Component,
+	Resource,
+	Time,
+	PlayerMove,
+	CollHandLib,
+	Entity,
+)
 
-from . import Entity
 from .Systems import (
 	Camera,
 	Draw,
@@ -25,9 +30,6 @@ from .Systems import (
 	Strut,
 	Collision,
 )
-
-from . import PlayerMove
-from . import CollHandLib
 
 def init():
 	pg.init()
@@ -61,7 +63,7 @@ def init():
 	
 	CollHandLib.init()
 	
-	G.CLOCK = pg.time.Clock()
+	Time.init()
 
 def quit():
 	pg.quit()

@@ -9,5 +9,3 @@ DB	= None
 CONN	= None
 
 SCREEN	= None
-
-CLOCK	= None

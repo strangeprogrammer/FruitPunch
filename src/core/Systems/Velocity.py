@@ -5,12 +5,13 @@
 import sqlalchemy as sqa
 
 from .. import G
-
-movingQuery = None
+from .. import Time
 
 from .. import Component as C
 
 from . import Position
+
+movingQuery = None
 
 def init():
 	global movingQuery
@@ -52,11 +53,11 @@ def store(EntID, VelX, VelY):
 			.values(VelX = VelX, VelY = VelY)
 	)
 
-def update(dt):
+def update():
 	global movingQuery
 	
 	for EntID, VelX, VelY in G.CONN.execute(movingQuery).fetchall():
 		(PosX, PosY) = Position.fetch(EntID)
-		newX = PosX + VelX * dt
-		newY = PosY + VelY * dt
+		newX = PosX + VelX * Time.elapsed
+		newY = PosY + VelY * Time.elapsed
 		Position.store(EntID, newX, newY)

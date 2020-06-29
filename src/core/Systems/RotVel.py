@@ -7,11 +7,13 @@ import math
 
 from .. import G
 from .. import Misc
-
-rotateQuery = None
+from .. import Time
 
 from .. import Component as C
+
 from . import Rotation
+
+rotateQuery = None
 
 def init():
 	global rotateQuery
@@ -57,10 +59,10 @@ def store(EntID, Omega):
 		}
 	)
 
-def update(dt): # TODO: Re-write this using an execute-many style
+def update():
 	global rotateQuery
 	
 	for EntID, Omega in G.CONN.execute(rotateQuery).fetchall():
 		Theta = Rotation.fetch(EntID)
-		newTheta = Theta + Misc.degToRad(Omega) * dt
+		newTheta = Theta + Misc.degToRad(Omega) * Time.elapsed
 		Rotation.store(EntID, newTheta)

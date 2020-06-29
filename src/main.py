@@ -8,6 +8,7 @@ from core import (
 	G,
 	Resource as R,
 	Level,
+	Time,
 )
 
 from core.Systems import (
@@ -36,18 +37,15 @@ def init():
 	
 	Events.register(pg.QUIT, lambda e: InitQuit.quit())
 
-elapsed = 0
 import itertools
 counter = itertools.count()
 
 def update():
-	global elapsed
-	
 	Events.update()
 	
-	Accel.update(elapsed)
-	Velocity.update(elapsed)
-	RotVel.update(elapsed)
+	Accel.update()
+	Velocity.update()
+	RotVel.update()
 	
 	FlipDoll.update()
 	RotDoll.update()
@@ -64,11 +62,11 @@ def update():
 	
 	Rotation.collect()
 	
-	elapsed = G.CLOCK.tick(60)
+	Time.update()
 	
 	global counter
 	if next(counter) % 60 == 0:
-		print(G.CLOCK.get_fps())
+		print(Time._clock.get_fps())
 
 def main():
 	init()
