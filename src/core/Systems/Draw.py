@@ -6,11 +6,12 @@ import pygame as pg
 import sqlalchemy as sqa
 
 from .. import G
+from ..Crack import cleanCrack
+from ..Rect import Rect
 
 drawQuery = None
 RIPairsQuery = None
 renderSteps = []
-borderWidth = 0
 
 from .. import Component as C
 from .. import Resource as R
@@ -61,32 +62,26 @@ def render():
 	
 	_updateRects()
 
-def _drawBorder(scene):
-	global borderWidth
-	if 0 < borderWidth:
-		origRect = scene.get_rect()
-		rect = origRect.copy()
-		rect.height -= borderWidth
-		rect.width -= borderWidth
-		rect.center = origRect.center
-		pg.draw.rect(scene, (255, 0, 255), rect, borderWidth)
+def _blackPad(bgd, camRect):
+	badlands = cleanCrack(bgd.get_rect(), camRect)
+	badlands = list(map(Rect, badlands))
+	badlands = list(map(lambda r: r - camRect, badlands))
+	outsurfaces = list(map(lambda r: G.SCREEN.subsurface(r), badlands))
+	
+	for s in outsurfaces:
+		s.fill([0, 0, 0])
 
-def update(scene, camRect):
+def update(bgd, camRect):
 	global drawQuery
 	
-	result = []
+	# Draw the background first
+	G.SCREEN.blit(bgd, (0, 0), camRect)
+	_blackPad(bgd, camRect)
+	
+	# Draw all entities
 	for ImageID, RectID in G.CONN.execute(drawQuery).fetchall():
-		rect = R.RR[RectID]
+		rect = Rect(R.RR[RectID])
 		if rect.colliderect(camRect):
-			scene.blit(R.IR[ImageID], rect)
-			result.append(rect)
+			G.SCREEN.blit(R.IR[ImageID], rect - camRect)
 	
-	_drawBorder(scene)
-	
-	return result
-
-def clear(scene, bgd, camRect):
-	for (RectID,) in G.CONN.execute(sqa.select([C.RECC.c.RectID]).select_from(C.RECC)).fetchall():
-		rect = R.RR[RectID]
-		if rect.colliderect(camRect):
-			scene.blit(bgd, rect, rect)
+	pg.display.flip()
