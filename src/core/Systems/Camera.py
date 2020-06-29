@@ -13,6 +13,7 @@ from .. import Entity
 
 from . import Position
 from . import Velocity
+from . import Rectangle
 
 EntID = RectID = None
 
@@ -31,12 +32,9 @@ def init():
 			"EntID": EntID,
 		}
 	)
-	G.CONN.execute(
-		C.RECC.insert(), {
-			"EntID": EntID,
-			"RectID": RectID,
-		}
-	)
+	
+	Rectangle.register(EntID)
+	Rectangle.store(EntID, RectID)
 	
 	Position.register(EntID)
 	Velocity.register(EntID)
