@@ -27,17 +27,8 @@ def load(fileName):
 		
 		_makePlayer(**level["player"])
 		
-		for ceiling in level.get("ceilings", []):
-			_makeCeiling(**ceiling)
-		
-		for floor in level.get("floors", []):
-			_makeFloor(**floor)
-		
-		for leftWall in level.get("leftWalls", []):
-			_makeLeftWall(**leftWall)
-		
-		for rightWall in level.get("rightWalls", []):
-			_makeRightWall(**rightWall)
+		for wall in level.get("walls", []):
+			_makeEject(**wall)
 		
 		return _loadImage(level["background"])
 
@@ -57,16 +48,11 @@ def _makePlayer(image, x, y):
 	
 	return EntID
 
-def _makeBumping(ejectHandlerID, image, x, y):
+def _makeEject(image, x, y):
 	img = _loadImage(image)
 	rect = Rect(img.get_rect())
 	
 	EntID, ImageID, RectID = Entity.create(img, rect, (x, y))
 	
 	Collision.register(EntID)
-	Collision.store(EntID, ejectHandlerID, ejectHandlerID, 0)
-
-_makeCeiling	= lambda image, x, y: _makeBumping(CHL.ejectDownID, image, x, y)
-_makeFloor	= lambda image, x, y: _makeBumping(CHL.ejectUpID, image, x, y)
-_makeLeftWall	= lambda image, x, y: _makeBumping(CHL.ejectRightID, image, x, y)
-_makeRightWall	= lambda image, x, y: _makeBumping(CHL.ejectLeftID, image, x, y)
+	Collision.store(EntID, CHL.ejectID, CHL.ejectID, 0)

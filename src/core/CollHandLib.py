@@ -6,55 +6,45 @@ from . import Resource as R
 
 from .Systems import Position, Velocity
 
-ejectUpID = ejectDownID = ejectLeftID = ejectRightID = None
+ejectID = None
 
 def init():
-	global ejectUpID, ejectDownID, ejectLeftID, ejectRightID
-	ejectUpID = R.CR.append(ejectUp)
-	ejectDownID = R.CR.append(ejectDown)
-	ejectLeftID = R.CR.append(ejectLeft)
-	ejectRightID = R.CR.append(ejectRight)
+	global ejectID
+	ejectID = R.CR.append(eject)
 
-def ejectUp(EntID, Ent2ID, RectID, Rect2ID):
-	Rect1 = R.RR[RectID]
-	Rect2 = R.RR[Rect2ID]
+def eject(EntID, Ent2ID, RectID, Rect2ID):
+	"""Eject the 2nd entity based upon diagonally divided quadrants of the 1st entity."""
 	
-	# if Rect1.colliderect(Rect2): # We assume this is true
-	Rect2.bottom = Rect1.top
-	Position.store(Ent2ID, Rect2.centerx, Rect2.centery)
+	rect1 = R.RR[RectID]
+	rect2 = R.RR[Rect2ID]
 	
-	(VelX, VelY) = Velocity.fetch(Ent2ID)
-	Velocity.store(Ent2ID, VelX, min(0, VelY))
-
-def ejectDown(EntID, Ent2ID, RectID, Rect2ID):
-	Rect1 = R.RR[RectID]
-	Rect2 = R.RR[Rect2ID]
+	BRTL = {}
+	TRBL = {}
 	
-	# if Rect1.colliderect(Rect2): # We assume this is true
-	Rect2.top = Rect1.bottom
-	Position.store(Ent2ID, Rect2.centerx, Rect2.centery)
+	BRTL["m"] = (rect1.bottom - rect1.top) / (rect1.right - rect1.left)
+	TRBL["m"] = -BRTL["m"] # This can be demonstrated using a rectangle in the coordinate plane
 	
-	(VelX, VelY) = Velocity.fetch(Ent2ID)
-	Velocity.store(Ent2ID, VelX, max(0, VelY))
-
-def ejectLeft(EntID, Ent2ID, RectID, Rect2ID):
-	Rect1 = R.RR[RectID]
-	Rect2 = R.RR[Rect2ID]
+	BRTL["b"] = rect1.bottom - BRTL["m"] * rect1.right
+	TRBL["b"] = rect1.top - TRBL["m"] * rect1.right
 	
-	# if Rect1.colliderect(Rect2): # We assume this is true
-	Rect2.right = Rect1.left
-	Position.store(Ent2ID, Rect2.centerx, Rect2.centery)
+	BRTL["y"] = BRTL["m"] * rect2.centerx + BRTL["b"]
+	TRBL["y"] = TRBL["m"] * rect2.centerx + TRBL["b"]
 	
-	(VelX, VelY) = Velocity.fetch(Ent2ID)
-	Velocity.store(Ent2ID, min(0, VelX), VelY)
-
-def ejectRight(EntID, Ent2ID, RectID, Rect2ID):
-	Rect1 = R.RR[RectID]
-	Rect2 = R.RR[Rect2ID]
+	if rect2.centery <= BRTL["y"] and rect2.centery < TRBL["y"]:
+		# Top Quadrant
+		rect2.bottom = rect1.top
+		Velocity.store(Ent2ID, Velocity.fetch(Ent2ID)[0], 0)
+	if rect2.centery >= BRTL["y"] and rect2.centery > TRBL["y"]:
+		# Bottom Quadrant
+		rect2.top = rect1.bottom
+		Velocity.store(Ent2ID, Velocity.fetch(Ent2ID)[0], 0)
+	if rect2.centery > BRTL["y"] and rect2.centery <= TRBL["y"]:
+		# Left Quadrant
+		rect2.right = rect1.left
+		Velocity.store(Ent2ID, 0, Velocity.fetch(Ent2ID)[1])
+	if rect2.centery < BRTL["y"] and rect2.centery >= TRBL["y"]:
+		# Right Quadrant
+		rect2.left = rect1.right
+		Velocity.store(Ent2ID, 0, Velocity.fetch(Ent2ID)[1])
 	
-	# if Rect1.colliderect(Rect2): # We assume this is true
-	Rect2.left = Rect1.right
-	Position.store(Ent2ID, Rect2.centerx, Rect2.centery)
-	
-	(VelX, VelY) = Velocity.fetch(Ent2ID)
-	Velocity.store(Ent2ID, max(0, VelX), VelY)
+	Position.store(Ent2ID, *rect2.center)

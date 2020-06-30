@@ -3,8 +3,9 @@
 		"image": "./RESOURCES/F.png",
 		"x": 200,
 		"y": 300
-	}, "background": "./RESOURCES/2000Grid.png",
-	"floors": [
+	},
+	"background": "./RESOURCES/2000Grid.png",
+	"walls": [
 		{
 			"image": "./RESOURCES/YellowSquare.png",
 			"x": 200,
