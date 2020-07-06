@@ -2,6 +2,8 @@
 
 # DO NOT RUN THIS FILE - import it instead
 
+import sqlalchemy as sqa
+
 from .. import G
 
 from .. import Component as C

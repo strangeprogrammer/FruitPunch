@@ -1,11 +1,13 @@
 #!/bin/python3
 
 import pygame as pg
+import sqlalchemy as sqa
 
 from core import (
 	InitQuit,
 	Events,
 	G,
+	Component as C,
 	Resource as R,
 	Level,
 	Time,
@@ -33,7 +35,17 @@ def init():
 	global bgd
 	bgd = Level.load("./LEVELS/tutorial.json")
 	
-	Camera.store(0, 0)
+	Camera.bind(
+		G.CONN.execute(
+			sqa	.select([
+					C.PLYC.c.EntID,
+				]).select_from(
+					C.PLYC,
+				)
+		).fetchall()[0][0]
+	)
+	
+	Camera.update()
 	
 	Events.register(pg.QUIT, lambda e: InitQuit.quit())
 
@@ -58,6 +70,8 @@ def update():
 	
 	Strut.update()
 	Position.update() # I hate double-updating the positions, but this is the best way that I know of right now to make 'bumping' work smoothly with struts
+	
+	Camera.update()
 	
 	global bgd
 	Draw.update(bgd, R.RR[Camera.RectID])

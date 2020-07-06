@@ -15,7 +15,7 @@ from . import Position
 from . import Velocity
 from . import Rectangle
 
-EntID = RectID = None
+EntID = RectID = BindID = None
 
 def init():
 	global EntID, RectID
@@ -49,3 +49,16 @@ def store(left, top):
 	rect = R.RR[RectID]
 	rect.left = left
 	rect.top = top
+
+def bind(EntID):
+	global BindID
+	BindID = EntID
+
+def unbind():
+	global BindID
+	BindID = None
+
+def update():
+	global RectID, BindID
+	if BindID is not None:
+		R.RR[RectID].center = R.RR[Rectangle.fetch(BindID)].center

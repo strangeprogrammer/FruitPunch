@@ -11,7 +11,6 @@ from . import Events
 
 from .Systems import Velocity
 from .Systems import RotVel
-from .Systems import Camera
 
 """
 Every time an important button is pressed, the flip state or rotation of all player-controlled entities is updated according to the key pressed.
@@ -36,13 +35,6 @@ def keyDownHandler(e):
 		pg.K_RIGHT,
 	]:
 		moveHandler(e)
-	elif e.key in [
-		pg.K_i,
-		pg.K_k,
-		pg.K_j,
-		pg.K_l,
-	]:
-		camHandler(e)
 
 def keyUpHandler(e):
 	if e.key in [
@@ -52,20 +44,6 @@ def keyUpHandler(e):
 		pg.K_RIGHT,
 	]:
 		unMoveHandler(e)
-
-def camHandler(e):
-	EntID = Camera.EntID
-	
-	(VelX, VelY) = Velocity.fetch(EntID)
-	
-	if e.key == pg.K_i:
-		Velocity.store(EntID, VelX, VelY - 0.5)
-	elif e.key == pg.K_k:
-		Velocity.store(EntID, VelX, VelY + 0.5)
-	elif e.key == pg.K_j:
-		Velocity.store(EntID, VelX - 0.5, VelY)
-	elif e.key == pg.K_l:
-		Velocity.store(EntID, VelX + 0.5, VelY)
 
 def moveHandler(e):
 	(dx, dy) = (0, 0)
@@ -83,10 +61,14 @@ def moveHandler(e):
 			Velocity.store(player, VelX + dx, VelY + dy)
 
 def unMoveHandler(e):
-	for (player,) in G.CONN.execute(C.PLYC.select()).fetchall():
-		if 0 < Velocity.instances(player):
-			(VelX, VelY) = Velocity.fetch(player)
-			Velocity.store(player, 0, VelY)
+	if e.key in [
+		pg.K_LEFT,
+		pg.K_RIGHT,
+	]:
+		for (player,) in G.CONN.execute(C.PLYC.select()).fetchall():
+			if 0 < Velocity.instances(player):
+				(VelX, VelY) = Velocity.fetch(player)
+				Velocity.store(player, 0, VelY)
 
 def rotHandler(e):
 	if e.key == pg.K_f:
