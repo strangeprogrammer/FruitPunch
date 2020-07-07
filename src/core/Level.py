@@ -44,7 +44,7 @@ def load(fileName):
 		_makePlayer(**level["player"])
 		
 		for wall in level.get("walls", []):
-			_makeEject(**wall)
+			_makeEjector(CHL.ejectID, **wall)
 		
 		return imagedict[level["background"]]
 
@@ -65,7 +65,7 @@ def _makePlayer(image, x, y):
 	
 	return EntID
 
-def _makeEject(image, x, y):
+def _makeEjector(ejectHandler, image, x, y):
 	global imagedict
 	img = imagedict[image]
 	rect = Rect(img.get_rect())
@@ -73,4 +73,4 @@ def _makeEject(image, x, y):
 	EntID, ImageID, RectID = Entity.create(img, rect, (x, y))
 	
 	Collision.register(EntID)
-	Collision.store(EntID, CHL.ejectID, CHL.ejectID, 0)
+	Collision.store(EntID, ejectHandler, ejectHandler, 0)
