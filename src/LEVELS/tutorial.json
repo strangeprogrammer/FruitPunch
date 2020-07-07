@@ -1,65 +1,71 @@
 {
+	"images": {
+		"LP": "./RESOURCES/LongPlayer.png",
+		"BGD": "./RESOURCES/2000Grid.png",
+		"YS": "./RESOURCES/YellowSquare.png",
+		"GS": "./RESOURCES/GreenSquare.png"
+	},
 	"player": {
-		"image": "./RESOURCES/F.png",
+		"image": "LP",
 		"x": 200,
 		"y": 300
 	},
-	"background": "./RESOURCES/2000Grid.png",
+	"background": "BGD",
 	"walls": [
 		{
-			"image": "./RESOURCES/YellowSquare.png",
+			"image": "YS",
 			"x": 200,
 			"y": 500
 		}, {
-			"image": "./RESOURCES/YellowSquare.png",
+			"image": "YS",
 			"x": 300,
 			"y": 500
 		}, {
-			"image": "./RESOURCES/YellowSquare.png",
+			"image": "YS",
 			"x": 400,
 			"y": 500
 		}, {
-			"image": "./RESOURCES/YellowSquare.png",
+			"image": "YS",
 			"x": 500,
 			"y": 500
 		}, {
-			"image": "./RESOURCES/YellowSquare.png",
+			"image": "YS",
 			"x": 600,
 			"y": 500
 		}, {
-			"image": "./RESOURCES/YellowSquare.png",
+			"image": "YS",
 			"x": 700,
 			"y": 500
 		}, {
-			"image": "./RESOURCES/YellowSquare.png",
+			"image": "YS",
 			"x": 800,
 			"y": 500
 		}, {
-			"image": "./RESOURCES/YellowSquare.png",
+			"image": "YS",
 			"x": 900,
 			"y": 500
 		}, {
-			"image": "./RESOURCES/YellowSquare.png",
+			"image": "YS",
 			"x": 1000,
 			"y": 500
 		}, {
-			"image": "./RESOURCES/YellowSquare.png",
+			"image": "YS",
 			"x": 1100,
 			"y": 500
 		}, {
-			"image": "./RESOURCES/YellowSquare.png",
+			"image": "YS",
 			"x": 1200,
 			"y": 500
 		}, {
-			"image": "./RESOURCES/YellowSquare.png",
+			"image": "YS",
 			"x": 1300,
 			"y": 500
 		}, {
-			"image": "./RESOURCES/YellowSquare.png",
+			"image": "YS",
 			"x": 1400,
 			"y": 500
 		}, {
-			"image": "./RESOURCES/YellowSquare.png",
+			"image": "YS",
 			"x": 1500,
 			"y": 500
 		},
@@ -67,7 +73,7 @@
 		
 		
 		{
-			"image": "./RESOURCES/YellowSquare.png",
+			"image": "YS",
 			"x": 400,
 			"y": 400
 		},
@@ -75,7 +81,7 @@
 		
 		
 		{
-			"image": "./RESOURCES/YellowSquare.png",
+			"image": "YS",
 			"x": 600,
 			"y": 300
 		},
@@ -83,15 +89,15 @@
 		
 		
 		{
-			"image": "./RESOURCES/YellowSquare.png",
+			"image": "YS",
 			"x": 800,
 			"y": 400
 		}, {
-			"image": "./RESOURCES/YellowSquare.png",
+			"image": "YS",
 			"x": 800,
 			"y": 300
 		}, {
-			"image": "./RESOURCES/YellowSquare.png",
+			"image": "YS",
 			"x": 800,
 			"y": 200
 		},
@@ -99,11 +105,11 @@
 		
 		
 		{
-			"image": "./RESOURCES/GreenSquare.png",
+			"image": "GS",
 			"x": 1200,
 			"y": 400
 		}, {
-			"image": "./RESOURCES/GreenSquare.png",
+			"image": "GS",
 			"x": 1200,
 			"y": 300
 		},
@@ -111,15 +117,15 @@
 		
 		
 		{
-			"image": "./RESOURCES/YellowSquare.png",
+			"image": "YS",
 			"x": 1300,
 			"y": 400
 		}, {
-			"image": "./RESOURCES/YellowSquare.png",
+			"image": "YS",
 			"x": 1300,
 			"y": 300
 		}, {
-			"image": "./RESOURCES/YellowSquare.png",
+			"image": "YS",
 			"x": 1300,
 			"y": 200
 		}
