@@ -15,10 +15,10 @@ from sqlalchemy import (
 
 from . import G
 
-E = I = R = RECC = IC = DC = POSC = ROTC = VC = RVC = AC = PLYC = FC = FI = FDC = RDC = SBC = SC = CC = None
+E = I = R = RECC = IC = DC = POSC = ROTC = VC = RVC = AC = PLYC = FC = FI = FDC = RDC = SBC = SC = CT = CU = None
 
 def init():
-	global E, I, R, RECC, IC, DC, POSC, ROTC, VC, RVC, AC, PLYC, FC, FI, FDC, RDC, SBC, SC, CC
+	global E, I, R, RECC, IC, DC, POSC, ROTC, VC, RVC, AC, PLYC, FC, FI, FDC, RDC, SBC, SC, CT, CU
 	
 	E = Table( # List of all entity ID's
 		"AllEnts", G.DB,
@@ -180,12 +180,18 @@ def init():
 		FKC(["EntID"], ["AllEnts.EntID"]),
 	)
 	
-	CC = Table( # All entities that can collide with other entities
-		"CollComp", G.DB,
+	CT = Table( # All entities that can collide with other entities and perform an action when they do
+		"CollTrigg", G.DB,
 		Column("EntID", Integer),
 		Column("OnColl", Integer),
-		Column("WhileColl", Integer),
 		Column("OffColl", Integer),
+		PKC("EntID", "OnColl", "OffColl"),
+		FKC(["EntID"], ["AllEnts.EntID"]),
+	)
+	
+	CU = Table( # All entities that can collide with other entities and trigger the other's collision actions
+		"CollUnTrigg", G.DB,
+		Column("EntID", Integer),
 		PKC("EntID"),
 		FKC(["EntID"], ["AllEnts.EntID"]),
 	)

@@ -6,15 +6,23 @@ from . import Resource as R
 
 from .Systems import Position, Velocity
 
-ejectUpID = ejectDownID = ejectLeftID = ejectRightID = ejectID = None
+onEjectUpID = onEjectDownID = onEjectLeftID = onEjectRightID = onEjectID = None
+offEjectUpID = offEjectDownID = offEjectLeftID = offEjectRightID = offEjectID = None
 
 def init():
-	global ejectUpID, ejectDownID, ejectLeftID, ejectRightID, ejectID
-	ejectUpID	= R.CR.append(ejectUp)
-	ejectDownID	= R.CR.append(ejectDown)
-	ejectLeftID	= R.CR.append(ejectLeft)
-	ejectRightID	= R.CR.append(ejectRight)
-	ejectID		= R.CR.append(eject)
+	global onEjectUpID, onEjectDownID, onEjectLeftID, onEjectRightID, onEjectID
+	onEjectUpID	= R.CR.append(onEjectUp)
+	onEjectDownID	= R.CR.append(onEjectDown)
+	onEjectLeftID	= R.CR.append(onEjectLeft)
+	onEjectRightID	= R.CR.append(onEjectRight)
+	onEjectID	= R.CR.append(onEject)
+	
+	global offEjectUpID, offEjectDownID, offEjectLeftID, offEjectRightID, offEjectID
+	offEjectUpID	= R.CR.append(offEjectUp)
+	offEjectDownID	= R.CR.append(offEjectDown)
+	offEjectLeftID	= R.CR.append(offEjectLeft)
+	offEjectRightID	= R.CR.append(offEjectRight)
+	offEjectID	= R.CR.append(offEject)
 
 def _makeLines(rect1, collrect):
 	"""Make diagonal lines of 'rect1' and the expected 'y' values of 'collrect' given those lines."""
@@ -32,74 +40,102 @@ def _makeLines(rect1, collrect):
 	
 	return [BRTL, TRBL]
 
-def eject(EntID, Ent2ID, RectID, Rect2ID):
-	args = [EntID, Ent2ID, RectID, Rect2ID]
+def onEject(TEntID, UEntID, TRectID, URectID):
+	args = [TEntID, UEntID, TRectID, URectID]
 	
-	ejectUp(*args)
-	ejectDown(*args)
-	ejectLeft(*args)
-	ejectRight(*args)
+	onEjectUp(*args)
+	onEjectDown(*args)
+	onEjectLeft(*args)
+	onEjectRight(*args)
 
-def ejectUp(EntID, Ent2ID, RectID, Rect2ID):
+def offEject(TEntID, UEntID, TRectID, URectID):
+	args = [TEntID, UEntID, TRectID, URectID]
+	
+	offEjectUp(*args)
+	offEjectDown(*args)
+	offEjectLeft(*args)
+	offEjectRight(*args)
+
+def ejectUp(UEntID, rect1, rect2):
+	rect2.bottom = rect1.top
+	Velocity.store(UEntID, Velocity.fetch(UEntID)[0], 0)
+	Position.store(UEntID, *rect2.center)
+
+def onEjectUp(TEntID, UEntID, TRectID, URectID):
 	"""Eject the 2nd entity based upon diagonally divided quadrants of the 1st entity."""
 	
-	rect1 = R.RR[RectID]
-	rect2 = R.RR[Rect2ID]
+	rect1 = R.RR[TRectID]
+	rect2 = R.RR[URectID]
 	collrect = rect2.clip(rect1.clip(rect2))
 	
 	[BRTL, TRBL] = _makeLines(rect1, collrect)
 	
 	if collrect.centery <= BRTL["y"] and collrect.centery < TRBL["y"]:
-		# Top Quadrant
-		rect2.bottom = rect1.top
-		Velocity.store(Ent2ID, Velocity.fetch(Ent2ID)[0], 0)
-	
-	Position.store(Ent2ID, *rect2.center)
+		R.CCR[(TEntID, UEntID, "ejectUp")] = lambda: ejectUp(UEntID, rect1, rect2)
 
-def ejectDown(EntID, Ent2ID, RectID, Rect2ID):
+def offEjectUp(TEntID, UEntID, TRectID, URectID):
+	if (TEntID, UEntID, "ejectUp") in R.CCR.members.keys():
+		del R.CCR[(TEntID, UEntID, "ejectUp")]
+
+def ejectDown(UEntID, rect1, rect2):
+	rect2.top = rect1.bottom
+	Velocity.store(UEntID, Velocity.fetch(UEntID)[0], 0)
+	Position.store(UEntID, *rect2.center)
+
+def onEjectDown(TEntID, UEntID, TRectID, URectID):
 	"""Eject the 2nd entity based upon diagonally divided quadrants of the 1st entity."""
 	
-	rect1 = R.RR[RectID]
-	rect2 = R.RR[Rect2ID]
+	rect1 = R.RR[TRectID]
+	rect2 = R.RR[URectID]
 	collrect = rect2.clip(rect1.clip(rect2))
 	
 	[BRTL, TRBL] = _makeLines(rect1, collrect)
 	
 	if collrect.centery >= BRTL["y"] and collrect.centery > TRBL["y"]:
-		# Bottom Quadrant
-		rect2.top = rect1.bottom
-		Velocity.store(Ent2ID, Velocity.fetch(Ent2ID)[0], 0)
-	
-	Position.store(Ent2ID, *rect2.center)
+		R.CCR[(TEntID, UEntID, "ejectDown")] = lambda: ejectDown(UEntID, rect1, rect2)
 
-def ejectLeft(EntID, Ent2ID, RectID, Rect2ID):
+def offEjectDown(TEntID, UEntID, TRectID, URectID):
+	if (TEntID, UEntID, "ejectDown") in R.CCR.members.keys():
+		del R.CCR[(TEntID, UEntID, "ejectDown")]
+
+def ejectLeft(UEntID, rect1, rect2):
+	rect2.right = rect1.left
+	Velocity.store(UEntID, 0, Velocity.fetch(UEntID)[1])
+	Position.store(UEntID, *rect2.center)
+
+def onEjectLeft(TEntID, UEntID, TRectID, URectID):
 	"""Eject the 2nd entity based upon diagonally divided quadrants of the 1st entity."""
 	
-	rect1 = R.RR[RectID]
-	rect2 = R.RR[Rect2ID]
+	rect1 = R.RR[TRectID]
+	rect2 = R.RR[URectID]
 	collrect = rect2.clip(rect1.clip(rect2))
 	
 	[BRTL, TRBL] = _makeLines(rect1, collrect)
 	
 	if collrect.centery > BRTL["y"] and collrect.centery <= TRBL["y"]:
-		# Left Quadrant
-		rect2.right = rect1.left
-		Velocity.store(Ent2ID, 0, Velocity.fetch(Ent2ID)[1])
-	
-	Position.store(Ent2ID, *rect2.center)
+		R.CCR[(TEntID, UEntID, "ejectLeft")] = lambda: ejectLeft(UEntID, rect1, rect2)
 
-def ejectRight(EntID, Ent2ID, RectID, Rect2ID):
+def offEjectLeft(TEntID, UEntID, TRectID, URectID):
+	if (TEntID, UEntID, "ejectLeft") in R.CCR.members.keys():
+		del R.CCR[(TEntID, UEntID, "ejectLeft")]
+
+def ejectRight(UEntID, rect1, rect2):
+	rect2.left = rect1.right
+	Velocity.store(UEntID, 0, Velocity.fetch(UEntID)[1])
+	Position.store(UEntID, *rect2.center)
+
+def onEjectRight(TEntID, UEntID, TRectID, URectID):
 	"""Eject the 2nd entity based upon diagonally divided quadrants of the 1st entity."""
 	
-	rect1 = R.RR[RectID]
-	rect2 = R.RR[Rect2ID]
+	rect1 = R.RR[TRectID]
+	rect2 = R.RR[URectID]
 	collrect = rect2.clip(rect1.clip(rect2))
 	
 	[BRTL, TRBL] = _makeLines(rect1, collrect)
 	
 	if collrect.centery < BRTL["y"] and collrect.centery >= TRBL["y"]:
-		# Right Quadrant
-		rect2.left = rect1.right
-		Velocity.store(Ent2ID, 0, Velocity.fetch(Ent2ID)[1])
-	
-	Position.store(Ent2ID, *rect2.center)
+		R.CCR[(TEntID, UEntID, "ejectRight")] = lambda: ejectRight(UEntID, rect1, rect2)
+
+def offEjectRight(TEntID, UEntID, TRectID, URectID):
+	if (TEntID, UEntID, "ejectRight") in R.CCR.members.keys():
+		del R.CCR[(TEntID, UEntID, "ejectRight")]

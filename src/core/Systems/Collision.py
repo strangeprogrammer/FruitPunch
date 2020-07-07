@@ -23,68 +23,79 @@ def init():
 	
 	global collQuery
 	
-	CC2 = C.CC.alias()
 	RECC2 = C.RECC.alias()
-	t1 = C.CC.join(C.RECC, C.CC.c.EntID == C.RECC.c.EntID)
-	t2 = CC2.join(RECC2, CC2.c.EntID == RECC2.c.EntID)
+	t1 = C.CT.join(C.RECC, C.CT.c.EntID == C.RECC.c.EntID)
+	t2 = C.CU.join(RECC2, C.CU.c.EntID == RECC2.c.EntID)
 	
 	collQuery = sqa.select([
-		C.CC.c.EntID,
-		CC2.c.EntID,
+		C.CT.c.EntID,
+		C.CU.c.EntID,
 		C.RECC.c.RectID,
 		RECC2.c.RectID,
-		C.CC.c.OnColl,
-		C.CC.c.WhileColl,
-		C.CC.c.OffColl,
+		C.CT.c.OnColl,
+		C.CT.c.OffColl,
 	]).select_from(
 		t1.join(t2, sqa.literal(True))
 	).where(
-		C.CC.c.EntID != CC2.c.EntID # Objects can't collide with themselves (or at least, it makes programming simpler)
+		C.CT.c.EntID != C.CU.c.EntID # Objects can't collide with themselves (or at least, it makes programming simpler)
 	).compile()
 
-def register(EntID):
+def registerT(EntID, OnColl, OffColl):
 	G.CONN.execute(
-		C.CC.insert(), {
+		C.CT.insert(), {
 			"EntID": EntID,
-			"OnColl": 0,
-			"WhileColl": 0,
-			"OffColl": 0,
-		}
-	)
-
-def instances(EntID):
-	return len(G.CONN.execute(
-		C.CC.select().where(C.CC.c.EntID == EntID)
-	).fetchall())
-
-def deregister(EntID):
-	G.CONN.execute(
-		C.CC.delete().where(C.CC.c.EntID == EntID)
-	)
-
-def fetch(EntID):
-	return G.CONN.execute(
-		C.CC	.select() \
-			.where(C.CC.c.EntID == EntID)
-	).fetchone()
-
-def store(EntID, OnColl, WhileColl, OffColl):
-	G.CONN.execute(
-		C.CC.update().where(C.CC.c.EntID == EntID), {
 			"OnColl": OnColl,
-			"WhileColl": WhileColl,
 			"OffColl": OffColl,
 		}
+	)
+
+def fetchT(EntID):
+	return G.CONN.execute(
+		C.CT	.select() \
+			.where(C.CT.c.EntID == EntID)
+	).fetchall()
+
+def instancesT(EntID):
+	return len(G.CONN.execute(
+		C.CT.select().where(C.CT.c.EntID == EntID)
+	).fetchall())
+
+def deregisterT(EntID, OnColl, OffColl):
+	G.CONN.execute(
+		C.CT.delete().where(
+			C.CT.c.EntID == EntID &
+			C.CT.c.OnColl == OnColl &
+			C.CT.c.OffColl == OffColl
+		)
+	)
+
+def registerU(EntID):
+	G.CONN.execute(
+		C.CU.insert(), {
+			"EntID": EntID,
+		}
+	)
+
+def instancesU(EntID):
+	return len(G.CONN.execute(
+		C.CG.select().where(C.CG.c.EntID == EntID)
+	).fetchall())
+
+def deregisterU(EntID):
+	G.CONN.execute(
+		C.CG.delete().where(
+			C.CG.c.EntID == EntID
+		)
 	)
 
 def _getCollisions():
 	collisions = set()
 	
 	global collQuery
-	for EntID, Ent2ID, RectID, Rect2ID, OnColl, WhileColl, OffColl in G.CONN.execute(collQuery).fetchall():
-		if R.RR[RectID].colliderect(R.RR[Rect2ID]):
+	for TEntID, UEntID, TRectID, URectID, OnColl, OffColl in G.CONN.execute(collQuery).fetchall():
+		if R.RR[TRectID].colliderect(R.RR[URectID]):
 			# TODO: Check for 'collide by mask' as well
-			collisions |= {(EntID, Ent2ID, RectID, Rect2ID, OnColl, WhileColl, OffColl)} # We add in the collision handler indeces so that we don't have to perform another query at (1)
+			collisions |= {(TEntID, UEntID, TRectID, URectID, OnColl, OffColl)} # We add in the collision handler indeces so that we don't have to perform another query at (1)
 	
 	return collisions
 
@@ -94,19 +105,17 @@ def update():
 	collisions = _getCollisions()
 	
 	newCollisions = collisions - prevCollisions
-	curCollisions = collisions & prevCollisions
 	oldCollisions = prevCollisions - collisions
 	
 	prevCollisions = collisions
 	
 	# (1)
-	for EntID, Ent2ID, RectID, Rect2ID, OnColl, WhileColl, OffColl in newCollisions:
-		R.CR[OnColl](EntID, Ent2ID, RectID, Rect2ID)
+	for TEntID, UEntID, TRectID, URectID, OnColl, OffColl in newCollisions:
+		R.CR[OnColl](TEntID, UEntID, TRectID, URectID)
 	
 	# (1)
-	for EntID, Ent2ID, RectID, Rect2ID, OnColl, WhileColl, OffColl in curCollisions:
-		R.CR[WhileColl](EntID, Ent2ID, RectID, Rect2ID)
+	for TEntID, UEntID, TRectID, URectID, OnColl, OffColl in oldCollisions:
+		R.CR[OffColl](TEntID, UEntID, TRectID, URectID)
 	
-	# (1)
-	for EntID, Ent2ID, RectID, Rect2ID, OnColl, WhileColl, OffColl in oldCollisions:
-		R.CR[OffColl](EntID, Ent2ID, RectID, Rect2ID)
+	for handler in R.CCR.members.values():
+		handler()
