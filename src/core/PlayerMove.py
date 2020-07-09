@@ -12,10 +12,6 @@ from . import Events
 from .Systems import Velocity
 from .Systems import RotVel
 
-"""
-Every time an important button is pressed, the flip state or rotation of all player-controlled entities is updated according to the key pressed.
-"""
-
 from . import Component as C
 
 def init():

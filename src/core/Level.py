@@ -65,11 +65,18 @@ def _makePlayer(image, x, y):
 	
 	return EntID
 
-def _makeEjector(image, x, y):
+def _makeEjector(image, x, y, eject = []):
 	global imagedict
 	img = imagedict[image]
 	rect = Rect(img.get_rect())
 	
 	EntID, ImageID, RectID = Entity.create(img, rect, (x, y))
 	
-	Collision.registerT(EntID, CHL.onEjectID, CHL.offEjectID)
+	if "up" in eject:
+		Collision.registerT(EntID, CHL.onEjectUpID, CHL.offEjectUpID)
+	if "down" in eject:
+		Collision.registerT(EntID, CHL.onEjectDownID, CHL.offEjectDownID)
+	if "left" in eject:
+		Collision.registerT(EntID, CHL.onEjectLeftID, CHL.offEjectLeftID)
+	if "right" in eject:
+		Collision.registerT(EntID, CHL.onEjectRightID, CHL.offEjectRightID)
