@@ -15,6 +15,7 @@ from . import Resource as R
 
 from .Systems import Position
 from .Systems import Rectangle
+from .Systems import Image
 
 def init():
 	global entCounter
@@ -32,7 +33,9 @@ def create(image, rect, center):
 	G.CONN.execute(C.I.insert().values(ImageID = ImageID))
 	G.CONN.execute(C.R.insert().values(RectID = RectID))
 	
-	G.CONN.execute(C.IC.insert().values(EntID = EntID, ImageID = ImageID))
+	Image.register(EntID)
+	Image.store(EntID, ImageID)
+	
 	Rectangle.register(EntID)
 	Rectangle.store(EntID, RectID)
 	
