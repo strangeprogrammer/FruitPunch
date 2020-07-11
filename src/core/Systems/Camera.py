@@ -25,7 +25,7 @@ def init():
 	(rect.x, rect.y) = (0, 0)
 	RectID = R.RR.append(rect)
 	
-	EntID = next(Entity.entCounter)
+	EntID = R.ER.append(None)
 	
 	G.CONN.execute(
 		C.E.insert(), {

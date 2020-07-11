@@ -50,7 +50,7 @@ def _updateRects():
 	global RIPairsQuery
 	
 	for RectID, ImageID in G.CONN.execute(RIPairsQuery).fetchall():
-		R.RR[RectID] = Rect(R.IR[ImageID].get_rect())
+		R.RR[RectID] = Rect(R.IR[ImageID].get_rect()) # XXX WARNING: this will fully replace any rectangle that the original image was associated with
 
 def render():
 	_resetDrawComp()
@@ -80,6 +80,10 @@ def update(bgd, camRect):
 	for ImageID, RectID in G.CONN.execute(drawQuery).fetchall():
 		rect = R.RR[RectID]
 		if rect.colliderect(camRect):
-			G.SCREEN.blit(R.IR[ImageID], rect - camRect)
+			G.SCREEN.blit(
+				R.IR[ImageID],
+				rect - camRect,
+				Rect(0, 0, rect.width, rect.height)
+			)
 	
 	pg.display.flip()

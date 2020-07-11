@@ -13,7 +13,6 @@ from . import (
 	Time,
 	PlayerMove,
 	CollHandLib,
-	Entity,
 )
 
 from .Systems import (
@@ -38,7 +37,6 @@ def init():
 	Component.init()
 	Resource.init()
 	
-	Entity.init()
 	Draw.init()
 	Flip.init()
 	

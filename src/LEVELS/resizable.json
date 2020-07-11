@@ -8,6 +8,9 @@
 			"path": "./RESOURCES/YellowSquare.png"
 		}, "GS": {
 			"path": "./RESOURCES/GreenSquare.png"
+		}, "BS1/2" : {
+			"path": "./RESOURCES/BlueSquare.png",
+			"height": 25
 		}
 	},
 	"player": {
@@ -18,6 +21,32 @@
 	"background":
 		"BGD",
 	"walls": [
+		{
+			"name": "Half-height-block1",
+			"image": "BS1/2",
+			"x": 300,
+			"y": 0
+		}, {
+			"name" : "Invisi-block!",
+			"x": 400,
+			"y": 0,
+			"width": 100,
+			"height": 100,
+			"eject": [
+				"up",
+				"down",
+				"left",
+				"right"
+			]
+		}, {
+			"name": "Half-height-block2",
+			"image": "BS1/2",
+			"x": 500,
+			"y": 0
+		},
+		
+		
+		
 		{
 			"image": "YS",
 			"x": 200,

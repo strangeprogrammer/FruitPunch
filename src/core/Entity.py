@@ -17,15 +17,10 @@ from .Systems import Position
 from .Systems import Rectangle
 from .Systems import Image
 
-def init():
-	global entCounter
-	entCounter = count()
-
-def create(image, rect, center):
-	rect.center = center
+def create(image, rect, topleft):
+	rect.topleft = topleft
 	
-	global entCounter
-	EntID = next(entCounter)
+	EntID = R.ER.append(None)
 	ImageID = R.IR.append(image)
 	RectID = R.RR.append(rect)
 	
@@ -40,7 +35,7 @@ def create(image, rect, center):
 	Rectangle.store(EntID, RectID)
 	
 	Position.register(EntID)
-	Position.store(EntID, center[0], center[1])
+	Position.store(EntID, *rect.center)
 	
 	return EntID, ImageID, RectID
 

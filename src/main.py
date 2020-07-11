@@ -33,7 +33,7 @@ def init():
 	InitQuit.init()
 	
 	global bgd
-	bgd = Level.load("./LEVELS/tutorial.json")
+	bgd = Level.load("./LEVELS/resizable.json")
 	
 	Camera.bind(
 		G.CONN.execute(

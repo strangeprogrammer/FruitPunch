@@ -13,6 +13,9 @@ from . import Component as C
 from . import Resource as R
 
 from .Systems import (
+	Image,
+	Rectangle,
+	Position,
 	Velocity,
 	Accel,
 	Rotation,
@@ -20,37 +23,42 @@ from .Systems import (
 	Collision,
 )
 
-imagedict = {}
+imageIDs = {}
+imageProps = {}
 
-def _loadImage(fileName):
-	return pg.image.load(
+def _loadImage(fileName, width = None, height = None):
+	base = pg.image.load(
 		fileName
 	).convert_alpha()
+	
+	base_rect = base.get_rect()
+	
+	if width is not None and height is not None:
+		base = pg.transform.scale(base, (width, height))
+	elif width is not None and height is None:
+		base = pg.transform.scale(base, (width, base_rect.height))
+	elif width is None and height is not None:
+		base = pg.transform.scale(base, (base_rect.width, height))
+	
+	ImageID = R.IR.append(base)
+	
+	return ImageID
 
 def _makeImages(images):
-	return dict(
-		map(
-			lambda t: [t[0], _loadImage(t[1])],
-			images.items()
+	global imageIDs, imageProps
+	
+	for k, v in images.items():
+		imageIDs[k] = _loadImage(
+			v["path"],
+			v.get("width", None),
+			v.get("height", None),
 		)
-	)
+		imageProps[k] = v
 
-def load(fileName):
-	with open(fileName) as fp:
-		global imagedict
-		level = json.load(fp)
-		imagedict = _makeImages(level["images"])
-		
-		_makePlayer(**level["player"])
-		
-		for wall in level.get("walls", []):
-			_makeEjector(**wall)
-		
-		return imagedict[level["background"]]
-
-def _makePlayer(image, x, y):
-	global imagedict
-	img = imagedict[image]
+def _makePlayer(x, y, image = None):
+	global imageIDs
+	ImageID = imageIDs[image]
+	img = R.IR[ImageID]
 	rect = Rect(img.get_rect())
 	
 	EntID, ImageID, RectID = Entity.createPlayer(img, rect, (x, y))
@@ -65,12 +73,15 @@ def _makePlayer(image, x, y):
 	
 	return EntID
 
-def _makeEjector(image, x, y, eject = []):
-	global imagedict
-	img = imagedict[image]
-	rect = Rect(img.get_rect())
+def _makeEjector(rect, eject = []):
+	EntID = R.ER.append(None)
+	RectID = R.RR.append(rect)
 	
-	EntID, ImageID, RectID = Entity.create(img, rect, (x, y))
+	Rectangle.register(EntID)
+	Rectangle.store(EntID, RectID)
+	
+	Position.register(EntID)
+	Position.store(EntID, *rect.center)
 	
 	if "up" in eject:
 		Collision.registerT(EntID, CHL.onEjectUpID, CHL.offEjectUpID)
@@ -80,3 +91,36 @@ def _makeEjector(image, x, y, eject = []):
 		Collision.registerT(EntID, CHL.onEjectLeftID, CHL.offEjectLeftID)
 	if "right" in eject:
 		Collision.registerT(EntID, CHL.onEjectRightID, CHL.offEjectRightID)
+	
+	return EntID
+
+def _makeWall(x, y, eject = [], image = None, width = None, height = None, name = None):
+	global imageIDs
+	
+	if image is not None:
+		ImageID = imageIDs[image]
+		rect = R.IR[ImageID].get_rect()
+		rect.topleft = (x, y)
+	else:
+		assert width is not None, "A width must be specified for the entity with name: " + str(name)
+		assert height is not None, "A height must be specified for the entity with name: " + str(name)
+		
+		rect = Rect(x, y, width, height)
+	
+	EntID = _makeEjector(rect, eject)
+	
+	if image is not None:
+		Image.register(EntID)
+		Image.store(EntID, ImageID)
+
+def load(fileName):
+	with open(fileName) as fp:
+		level = json.load(fp)
+		_makeImages(level["images"])
+		
+		_makePlayer(**level["player"])
+		
+		for wall in level.get("walls", []):
+			_makeWall(**wall)
+		
+		return R.IR[imageIDs[level["background"]]]
