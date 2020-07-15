@@ -33,16 +33,16 @@ def init():
 	InitQuit.init()
 	
 	global bgd
-	bgd = Level.load("./LEVELS/resizable.json")
+	bgd = Level.load("./LEVELS/tutorial.json")
 	
 	Camera.bind(
 		G.CONN.execute(
-			sqa	.select([
-					C.PLYC.c.EntID,
-				]).select_from(
-					C.PLYC,
-				)
-		).fetchall()[0][0]
+			sqa.select([
+				C.PLYC.c.EntID,
+			]).select_from(
+				C.PLYC,
+			)
+		).scalar()
 	)
 	
 	Camera.update()

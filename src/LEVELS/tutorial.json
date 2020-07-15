@@ -7,7 +7,8 @@
 		}, "YS": {
 			"path": "./RESOURCES/YellowSquare.png"
 		}, "GS": {
-			"path": "./RESOURCES/GreenSquare.png"
+			"path": "./RESOURCES/GreenSquare.png",
+			"height": 25
 		}
 	},
 	"player": {
@@ -102,6 +103,7 @@
 			"x": 1200,
 			"y": 500,
 			"eject": [
+				"up",
 				"down"
 			]
 		}, {
@@ -189,29 +191,11 @@
 		
 		
 		{
-			"image": "GS",
-			"x": 1200,
-			"y": 400,
-			"eject": [
-				"left"
-			]
-		}, {
-			"image": "GS",
-			"x": 1200,
-			"y": 300,
-			"eject": [
-				"up",
-				"left"
-			]
-		},
-		
-		
-		
-		{
 			"image": "YS",
 			"x": 1300,
 			"y": 400,
 			"eject": [
+				"left",
 				"right"
 			]
 		}, {
@@ -219,6 +203,7 @@
 			"x": 1300,
 			"y": 300,
 			"eject": [
+				"left",
 				"right"
 			]
 		}, {
@@ -229,6 +214,23 @@
 				"up",
 				"left",
 				"right"
+			]
+		}
+	],
+	"platforms": [
+		{
+			"image": "GS",
+			"x": 1200,
+			"y": 400,
+			"eject": [
+				"up"
+			]
+		}, {
+			"image": "GS",
+			"x": 1200,
+			"y": 300,
+			"eject": [
+				"up"
 			]
 		}
 	]

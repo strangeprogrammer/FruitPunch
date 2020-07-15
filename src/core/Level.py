@@ -102,12 +102,52 @@ def _makeWall(x, y, eject = [], image = None, width = None, height = None, name 
 		rect = R.IR[ImageID].get_rect()
 		rect.topleft = (x, y)
 	else:
-		assert width is not None, "A width must be specified for the entity with name: " + str(name)
-		assert height is not None, "A height must be specified for the entity with name: " + str(name)
+		assert width is not None, "A width must be specified for the imageless entity with name: " + str(name)
+		assert height is not None, "A height must be specified for the imageless entity with name: " + str(name)
 		
 		rect = Rect(x, y, width, height)
 	
 	EntID = _makeEjector(rect, eject)
+	
+	if image is not None:
+		Image.register(EntID)
+		Image.store(EntID, ImageID)
+
+def _makeOneWay(rect, eject = []):
+	EntID = R.ER.append(None)
+	RectID = R.RR.append(rect)
+	
+	Rectangle.register(EntID)
+	Rectangle.store(EntID, RectID)
+	
+	Position.register(EntID)
+	Position.store(EntID, *rect.center)
+	
+	if "up" in eject:
+		Collision.registerT(EntID, CHL.onOneWayUpID, CHL.offOneWayUpID)
+	if "down" in eject:
+		Collision.registerT(EntID, CHL.onOneWayDownID, CHL.offOneWayDownID)
+	if "left" in eject:
+		Collision.registerT(EntID, CHL.onOneWayLeftID, CHL.offOneWayLeftID)
+	if "right" in eject:
+		Collision.registerT(EntID, CHL.onOneWayRightID, CHL.offOneWayRightID)
+	
+	return EntID
+
+def _makePlatform(x, y, eject = [], image = None, width = None, height = None, name = None):
+	global imageIDs
+	
+	if image is not None:
+		ImageID = imageIDs[image]
+		rect = R.IR[ImageID].get_rect()
+		rect.topleft = (x, y)
+	else:
+		assert width is not None, "A width must be specified for the imageless entity with name: " + str(name)
+		assert height is not None, "A height must be specified for the imageless entity with name: " + str(name)
+		
+		rect = Rect(x, y, width, height)
+	
+	EntID = _makeOneWay(rect, eject)
 	
 	if image is not None:
 		Image.register(EntID)
@@ -122,5 +162,8 @@ def load(fileName):
 		
 		for wall in level.get("walls", []):
 			_makeWall(**wall)
+		
+		for platform in level.get("platforms", []):
+			_makePlatform(**platform)
 		
 		return R.IR[imageIDs[level["background"]]]

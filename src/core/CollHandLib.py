@@ -4,10 +4,15 @@
 
 from . import Resource as R
 
+from . import Time
+
 from .Systems import Position, Velocity
 
 onEjectUpID = onEjectDownID = onEjectLeftID = onEjectRightID = None
 offEjectUpID = offEjectDownID = offEjectLeftID = offEjectRightID = None
+
+onOneWayUpID = onOneWayDownID = onOneWayLeftID = onOneWayRightID = None
+offOneWayUpID = offOneWayDownID = offOneWayLeftID = offOneWayRightID = None
 
 def init():
 	global onEjectUpID, onEjectDownID, onEjectLeftID, onEjectRightID
@@ -21,6 +26,18 @@ def init():
 	offEjectDownID	= R.CR.append(offEjectDown)
 	offEjectLeftID	= R.CR.append(offEjectLeft)
 	offEjectRightID	= R.CR.append(offEjectRight)
+	
+	global onOneWayUpID, onOneWayDownID, onOneWayLeftID, onOneWayRightID
+	onOneWayUpID	= R.CR.append(onOneWayUp)
+	onOneWayDownID	= R.CR.append(onOneWayDown)
+	onOneWayLeftID	= R.CR.append(onOneWayLeft)
+	onOneWayRightID	= R.CR.append(onOneWayRight)
+	
+	global offOneWayUpID, offOneWayDownID, offOneWayLeftID, offOneWayRightID
+	offOneWayUpID		= R.CR.append(offOneWayUp)
+	offOneWayDownID		= R.CR.append(offOneWayDown)
+	offOneWayLeftID		= R.CR.append(offOneWayLeft)
+	offOneWayRightID	= R.CR.append(offOneWayRight)
 
 def _makeLines(trect, collrect):
 	"""Make diagonal lines of 'trect' and the expected 'y' values of 'collrect' given those lines."""
@@ -108,3 +125,55 @@ def offEjectLeft(TEntID, UEntID, TRectID, URectID):
 
 def offEjectRight(TEntID, UEntID, TRectID, URectID):
 	del R.CCR[(TEntID, UEntID, "ejectRight")]
+
+
+
+def onOneWayUp(TEntID, UEntID, TRectID, URectID):
+	[VelX, VelY] = Velocity.fetch(UEntID)
+	trect = R.RR[TRectID]
+	urect = R.RR[URectID]
+	
+	if 0 < VelY and urect.bottom - Time.elapsed * VelY - 1 < trect.top: # The '1' is to account for rounding errors due to the velocity update step
+		R.CCR[(TEntID, UEntID, "oneWayUp")] = lambda: ejectUp(TEntID, UEntID, TRectID, URectID)
+
+def onOneWayDown(TEntID, UEntID, TRectID, URectID):
+	[VelX, VelY] = Velocity.fetch(UEntID)
+	trect = R.RR[TRectID]
+	urect = R.RR[URectID]
+	
+	if VelY < 0 and trect.bottom < urect.top - Time.elapsed * VelY - 1: # The '1' is to account for rounding errors due to the velocity update step
+		R.CCR[(TEntID, UEntID, "oneWayDown")] = lambda: ejectDown(TEntID, UEntID, TRectID, URectID)
+
+def onOneWayLeft(TEntID, UEntID, TRectID, URectID):
+	[VelX, VelY] = Velocity.fetch(UEntID)
+	trect = R.RR[TRectID]
+	urect = R.RR[URectID]
+	
+	if 0 < VelX and urect.right - Time.elapsed * VelX - 1 < trect.left: # The '1' is to account for rounding errors due to the velocity update step
+		R.CCR[(TEntID, UEntID, "oneWayLeft")] = lambda: ejectLeft(TEntID, UEntID, TRectID, URectID)
+
+def onOneWayRight(TEntID, UEntID, TRectID, URectID):
+	[VelX, VelY] = Velocity.fetch(UEntID)
+	trect = R.RR[TRectID]
+	urect = R.RR[URectID]
+	
+	if VelX < 0 and trect.right < urect.left - Time.elapsed * VelX - 1 : # The '1' is to account for rounding errors due to the velocity update step
+		R.CCR[(TEntID, UEntID, "oneWayDown")] = lambda: ejectRight(TEntID, UEntID, TRectID, URectID)
+
+
+
+def offOneWayUp(TEntID, UEntID, TRectID, URectID):
+	if (TEntID, UEntID, "oneWayUp") in R.CCR.members:
+		del R.CCR[(TEntID, UEntID, "oneWayUp")]
+
+def offOneWayDown(TEntID, UEntID, TRectID, URectID):
+	if (TEntID, UEntID, "oneWayDown") in R.CCR.members:
+		del R.CCR[(TEntID, UEntID, "oneWayDown")]
+
+def offOneWayLeft(TEntID, UEntID, TRectID, URectID):
+	if (TEntID, UEntID, "oneWayLeft") in R.CCR.members:
+		del R.CCR[(TEntID, UEntID, "oneWayLeft")]
+
+def offOneWayRight(TEntID, UEntID, TRectID, URectID):
+	if (TEntID, UEntID, "oneWayRight") in R.CCR.members:
+		del R.CCR[(TEntID, UEntID, "oneWayRight")]
