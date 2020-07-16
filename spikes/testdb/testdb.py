@@ -1,4 +1,4 @@
-#!/bin/sed -e 3q;d
+#!/bin/sed -e 3q;d;
 
 # DO NOT RUN THIS FILE - import it instead
 
@@ -6,7 +6,7 @@
 #
 # from testdb import ENGINE, DB, CONN, t1, t2
 #
-# And then you will have a simple database with which you can test ideas
+# And then you will have a simple database with which you can test your ideas.
 
 import sqlalchemy as sqa
 from sqlalchemy import (

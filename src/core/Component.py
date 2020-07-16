@@ -2,6 +2,7 @@
 
 # DO NOT RUN THIS FILE - import it instead
 
+import sqlalchemy as sqa
 from sqlalchemy import (
 	Table,
 	Column,
@@ -18,6 +19,10 @@ from . import G
 E = I = R = RECC = IC = DC = POSC = ROTC = VC = RVC = AC = PLYC = FC = FI = FDC = RDC = SBC = SC = CT = CU = None
 
 def init():
+	G.ENGINE = sqa.create_engine("sqlite:///:memory:")
+	G.DB = sqa.MetaData()
+	G.CONN = G.ENGINE.connect()
+	
 	global E, I, R, RECC, IC, DC, POSC, ROTC, VC, RVC, AC, PLYC, FC, FI, FDC, RDC, SBC, SC, CT, CU
 	
 	E = Table( # List of all entity ID's
@@ -197,6 +202,13 @@ def init():
 	)
 	
 	G.DB.create_all(G.ENGINE)
+
+def quit():
+	G.CONN.close()
+	
+	G.ENGINE = None
+	G.DB = None
+	G.CONN = None
 
 def retrieve(compName):
 	for table in G.DB.sorted_tables:

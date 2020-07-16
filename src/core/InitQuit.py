@@ -7,7 +7,6 @@ from sys import exit
 
 from . import (
 	G,
-	Database,
 	Component,
 	Resource,
 	Time,
@@ -33,7 +32,6 @@ from .Systems import (
 def init():
 	pg.init()
 	
-	Database.init()
 	Component.init()
 	Resource.init()
 	
@@ -64,6 +62,10 @@ def init():
 	Time.init()
 
 def quit():
+	CollHandLib.quit()
+	
+	Component.quit()
+	
 	pg.quit()
 	
 	exit(0)

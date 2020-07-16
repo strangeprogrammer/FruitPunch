@@ -39,6 +39,17 @@ def init():
 	offOneWayLeftID		= R.CR.append(offOneWayLeft)
 	offOneWayRightID	= R.CR.append(offOneWayRight)
 
+def quit():
+	global onEjectUpID, onEjectDownID, onEjectLeftID, onEjectRightID
+	global offEjectUpID, offEjectDownID, offEjectLeftID, offEjectRightID
+	onEjectUpID = onEjectDownID = onEjectLeftID = onEjectRightID = None
+	offEjectUpID = offEjectDownID = offEjectLeftID = offEjectRightID = None
+	
+	global onOneWayUpID, onOneWayDownID, onOneWayLeftID, onOneWayRightID
+	global offOneWayUpID, offOneWayDownID, offOneWayLeftID, offOneWayRightID
+	onOneWayUpID = onOneWayDownID = onOneWayLeftID = onOneWayRightID = None
+	offOneWayUpID = offOneWayDownID = offOneWayLeftID = offOneWayRightID = None
+
 def _makeLines(trect, collrect):
 	"""Make diagonal lines of 'trect' and the expected 'y' values of 'collrect' given those lines."""
 	BRTL = {}
