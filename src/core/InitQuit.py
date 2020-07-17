@@ -67,9 +67,6 @@ def quit():
 	
 	Camera.quit()
 	
-#	Draw.addRenderStep(Rotation.render)
-#	Draw.addRenderStep(Flip.render)
-	
 	Collision.quit()
 	
 	Strut.quit()
@@ -83,7 +80,7 @@ def quit():
 	Position.quit()
 	
 	Flip.quit()
-	# Draw.quit()	# This function is unnecessary?
+	Draw.quit()
 	
 	Resource.quit()
 	

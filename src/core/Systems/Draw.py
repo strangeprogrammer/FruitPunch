@@ -34,6 +34,14 @@ def init():
 		C.DC.join(C.RECC, C.DC.c.EntID == C.RECC.c.EntID)
 	).compile()
 
+def quit():
+	G.CONN.execute(
+		C.DC.delete()
+	)
+	
+	global renderSteps
+	renderSteps = []
+
 def addRenderStep(step):
 	global renderSteps
 	renderSteps.append(step)
