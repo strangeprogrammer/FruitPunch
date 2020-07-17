@@ -65,7 +65,7 @@ def quit():
 	
 	PlayerMove.quit()
 	
-#	Camera.quit()
+	Camera.quit()
 	
 #	Draw.addRenderStep(Rotation.render)
 #	Draw.addRenderStep(Flip.render)

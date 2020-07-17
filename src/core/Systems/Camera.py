@@ -39,6 +39,30 @@ def init():
 	Position.register(EntID)
 	Velocity.register(EntID)
 
+def quit():
+	unbind()
+	
+	global EntID, RectID
+	
+	Velocity.deregister(EntID)
+	Position.deregister(EntID)
+	
+	Rectangle.deregister(EntID)
+	
+	G.CONN.execute(
+		C.E.delete().where(
+			C.E.c.EntID == EntID
+		)
+	)
+	
+	del R.ER[EntID]
+	
+	del R.RR[RectID]
+	
+	G.SCREEN = None
+	
+	EntID = RectID = BindID = None
+
 def fetch():
 	global RectID
 	rect = R.RR[RectID]
