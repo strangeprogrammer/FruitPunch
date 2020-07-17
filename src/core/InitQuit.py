@@ -76,11 +76,11 @@ def quit():
 	RotDoll.quit()
 	FlipDoll.quit()
 	
-#	Accel.quit()
-#	RotVel.quit()
-#	Velocity.quit()
-#	Rotation.quit()
-#	Position.quit()
+	Accel.quit()
+	RotVel.quit()
+	Velocity.quit()
+	Rotation.quit()
+	Position.quit()
 	
 	Flip.quit()
 	# Draw.quit()	# This function is unnecessary?

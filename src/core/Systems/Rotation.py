@@ -33,6 +33,13 @@ def init():
 		C.DC.join(C.ROTC, C.DC.c.EntID == C.ROTC.c.EntID)
 	).compile()
 
+def quit():
+	G.CONN.execute(
+		C.ROTC.delete()
+	)
+	
+	collect()
+
 def register(EntID):
 	G.CONN.execute(
 		C.ROTC.insert(), {

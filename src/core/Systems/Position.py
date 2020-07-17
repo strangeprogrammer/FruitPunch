@@ -22,6 +22,11 @@ def init():
 		C.RECC.join(C.POSC, C.RECC.c.EntID == C.POSC.c.EntID)
 	).compile()
 
+def quit():
+	G.CONN.execute(
+		C.POSC.delete()
+	)
+
 def register(EntID):
 	G.CONN.execute(
 		C.POSC.insert(), {

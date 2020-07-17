@@ -25,6 +25,11 @@ def init():
 		C.RVC
 	).compile()
 
+def quit():
+	G.CONN.execute(
+		C.RVC.delete()
+	)
+
 def register(EntID):
 	G.CONN.execute(
 		C.RVC.insert(), {

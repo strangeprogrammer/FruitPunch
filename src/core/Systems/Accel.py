@@ -24,6 +24,11 @@ def init():
 		C.AC,
 	).compile()
 
+def quit():
+	G.CONN.execute(
+		C.AC.delete()
+	)
+
 def register(EntID):
 	G.CONN.execute(
 		C.AC.insert(), {

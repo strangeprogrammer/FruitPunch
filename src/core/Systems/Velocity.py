@@ -24,6 +24,11 @@ def init():
 		C.VC,
 	).compile()
 
+def quit():
+	G.CONN.execute(
+		C.VC.delete()
+	)
+
 def register(EntID):
 	G.CONN.execute(
 		C.VC.insert().values(EntID = EntID, VelX = 0, VelY = 0)
