@@ -16,6 +16,7 @@ from . import Resource as R
 from .Systems import Position
 from .Systems import Rectangle
 from .Systems import Image
+from .Systems import Flip
 
 def create(image, rect, topleft):
 	rect.topleft = topleft
@@ -42,4 +43,8 @@ def create(image, rect, topleft):
 def createPlayer(image, rect, center):
 	EntID, ImageID, RectID = create(image, rect, center)
 	G.CONN.execute(C.PLYC.insert().values(EntID = EntID))
+	
+	Flip.registerImage(ImageID)
+	Flip.register(EntID)
+	
 	return EntID, ImageID, RectID

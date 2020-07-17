@@ -82,8 +82,8 @@ def quit():
 #	Rotation.quit()
 #	Position.quit()
 	
-#	Flip.quit()
-#	Draw.quit()
+	Flip.quit()
+	# Draw.quit()	# This function is unnecessary?
 	
 	Resource.quit()
 	

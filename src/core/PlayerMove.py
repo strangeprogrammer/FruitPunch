@@ -11,6 +11,7 @@ from . import Events
 
 from .Systems import Velocity
 from .Systems import RotVel
+from .Systems import Flip
 
 from . import Component as C
 
@@ -30,11 +31,14 @@ def keyDownHandler(e):
 		rotHandler(e)
 	elif e.key in [
 		pg.K_UP,
-		pg.K_DOWN,
+	]:
+		moveHandler(e)
+	elif e.key in [
 		pg.K_LEFT,
 		pg.K_RIGHT,
 	]:
 		moveHandler(e)
+		flipHandler(e)
 
 def keyUpHandler(e):
 	if e.key in [
@@ -55,17 +59,22 @@ def moveHandler(e):
 	elif e.key == pg.K_RIGHT:
 		dx += 0.5
 	
-	for (player,) in G.CONN.execute(C.PLYC.select()).fetchall():
+	for [player] in G.CONN.execute(C.PLYC.select()).fetchall():
 		if 0 < Velocity.instances(player):
 			(VelX, VelY) = Velocity.fetch(player)
 			Velocity.store(player, VelX + dx, VelY + dy)
+
+def flipHandler(e):
+	for [player] in G.CONN.execute(C.PLYC.select()).fetchall():
+		[FlipX, FlipY] = Flip.fetch(player)
+		Flip.store(player, e.key == pg.K_LEFT, FlipY)
 
 def unMoveHandler(e):
 	if e.key in [
 		pg.K_LEFT,
 		pg.K_RIGHT,
 	]:
-		for (player,) in G.CONN.execute(C.PLYC.select()).fetchall():
+		for [player] in G.CONN.execute(C.PLYC.select()).fetchall():
 			if 0 < Velocity.instances(player):
 				(VelX, VelY) = Velocity.fetch(player)
 				Velocity.store(player, 0, VelY)
@@ -76,6 +85,6 @@ def rotHandler(e):
 	elif e.key == pg.K_d:
 		dOmega = math.tau / 16 / 1000
 	
-	for (player,) in G.CONN.execute(C.PLYC.select()).fetchall():
+	for [player] in G.CONN.execute(C.PLYC.select()).fetchall():
 		if 0 < RotVel.instances(player):
 			RotVel.store(player, RotVel.fetch(player) + dOmega)

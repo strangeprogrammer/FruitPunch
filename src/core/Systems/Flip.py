@@ -40,6 +40,36 @@ def init():
 	
 	renderQuery = exempt.union(doFlips).compile()
 
+def quit():
+	G.CONN.execute(
+		C.FC.delete()
+	)
+	
+	flippedImages = G.CONN.execute(
+		sqa.select([
+			C.FI.c.OutImageID
+		]).select_from(
+			C.FI
+		).where(
+			C.FI.c.FlipX == sqa.literal(True) |
+			C.FI.c.FlipY == sqa.literal(True)
+		)
+	).fetchall()
+	
+	for [ImageID] in flippedImages:
+		del R.IR[ImageID]
+	
+	G.CONN.execute(
+		C.FI.delete()
+	)
+	
+	for [ImageID] in flippedImages:
+		G.CONN.execute(
+			C.I.delete().where(
+				C.I.c.ImageID == ImageID
+			)
+		)
+
 def register(EntID):
 	G.CONN.execute(
 		C.FC.insert(), {
