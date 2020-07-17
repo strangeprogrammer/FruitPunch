@@ -40,6 +40,17 @@ def init():
 		C.CT.c.EntID != C.CU.c.EntID # Objects can't collide with themselves (or at least, it makes programming simpler)
 	).compile()
 
+def quit():
+	G.CONN.execute(
+		C.CT.delete()
+	)
+	G.CONN.execute(
+		C.CU.delete()
+	)
+	
+	global prevCollisions
+	prevCollisions = set()
+
 def registerT(EntID, OnColl, OffColl):
 	G.CONN.execute(
 		C.CT.insert(), {

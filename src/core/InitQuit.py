@@ -70,7 +70,7 @@ def quit():
 #	Draw.addRenderStep(Rotation.render)
 #	Draw.addRenderStep(Flip.render)
 	
-#	Collision.quit()
+	Collision.quit()
 	
 	Strut.quit()
 	RotDoll.quit()
