@@ -29,21 +29,6 @@ from core.Systems import (
 	Collision,
 )
 
-bgd = None
-
-def init():
-	pg.init()
-	
-	global bgd
-	bgd = Level.load("./LEVELS/tutorial.json")
-	
-	Events.register(pg.QUIT, quit)
-
-def quit(*args, **kwargs):
-	Level.unload()
-	pg.quit()
-	sys.exit(0)
-
 import itertools
 counter = itertools.count()
 
@@ -79,10 +64,35 @@ def update():
 	if next(counter) % 60 == 0:
 		print(Time._clock.get_fps())
 
+bgd = None
+phasenum = 0
+
+def advance(*args, **kwargs):
+	global phasenum
+	phasenum += 1
+
 def main():
-	init()
+	pg.init()
+	Events.register(pg.QUIT, advance)
 	
-	while True:
+	global bgd, phasenum
+	
+	
+	bgd = Level.load("./LEVELS/tutorial.json")
+	
+	while phasenum == 0:
 		update()
+	
+	
+	
+	Level.unload()
+	bgd = Level.load("./LEVELS/notTutorial.json")
+	
+	while phasenum == 1:
+		update()
+	
+	Level.unload()
+	pg.quit()
+	sys.exit(0)
 
 main()

@@ -1,0 +1,190 @@
+{
+	"images": {
+		"GS": {
+			"path": "./RESOURCES/GreenSquare.png",
+			"height": 50,
+			"width": 50
+		}, "BGD": {
+			"path": "./RESOURCES/2000Grid.png"
+		}, "YS": {
+			"path": "./RESOURCES/YellowSquare.png"
+		}
+	},
+	"player": {
+		"image": "GS",
+		"x": 200,
+		"y": 300
+	},
+	"background":
+		"BGD",
+	"walls": [
+		{
+			"image": "YS",
+			"x": 200,
+			"y": 500,
+			"eject": [
+				"up",
+				"down",
+				"left"
+			]
+		}, {
+			"image": "YS",
+			"x": 300,
+			"y": 500,
+			"eject": [
+				"up",
+				"down"
+			]
+		}, {
+			"image": "YS",
+			"x": 400,
+			"y": 500,
+			"eject": [
+				"down"
+			]
+		}, {
+			"image": "YS",
+			"x": 500,
+			"y": 500,
+			"eject": [
+				"up",
+				"down"
+			]
+		}, {
+			"image": "YS",
+			"x": 600,
+			"y": 500,
+			"eject": [
+				"up",
+				"down"
+			]
+		}, {
+			"image": "YS",
+			"x": 700,
+			"y": 500,
+			"eject": [
+				"up",
+				"down"
+			]
+		}, {
+			"image": "YS",
+			"x": 800,
+			"y": 500,
+			"eject": [
+				"down"
+			]
+		}, {
+			"image": "YS",
+			"x": 900,
+			"y": 500,
+			"eject": [
+				"up",
+				"down"
+			]
+		}, {
+			"image": "YS",
+			"x": 1000,
+			"y": 500,
+			"eject": [
+				"up",
+				"down"
+			]
+		}, {
+			"image": "YS",
+			"x": 1100,
+			"y": 500,
+			"eject": [
+				"up",
+				"down"
+			]
+		}, {
+			"image": "YS",
+			"x": 1200,
+			"y": 500,
+			"eject": [
+				"up",
+				"down"
+			]
+		}, {
+			"image": "YS",
+			"x": 1300,
+			"y": 500,
+			"eject": [
+				"down"
+			]
+		}, {
+			"image": "YS",
+			"x": 1400,
+			"y": 500,
+			"eject": [
+				"up",
+				"down"
+			]
+		}, {
+			"image": "YS",
+			"x": 1500,
+			"y": 500,
+			"eject": [
+				"up",
+				"down",
+				"right"
+			]
+		},
+		
+		
+		
+		{
+			"image": "YS",
+			"x": 400,
+			"y": 400,
+			"eject": [
+				"up",
+				"left",
+				"right"
+			]
+		},
+		
+		
+		
+		{
+			"image": "YS",
+			"x": 600,
+			"y": 300,
+			"eject": [
+				"up",
+				"down",
+				"left",
+				"right"
+			]
+		},
+		
+		
+		
+		{
+			"image": "YS",
+			"x": 800,
+			"y": 400,
+			"eject": [
+				"left",
+				"right"
+			]
+		}, {
+			"image": "YS",
+			"x": 800,
+			"y": 300,
+			"eject": [
+				"left",
+				"right"
+			]
+		}, {
+			"image": "YS",
+			"x": 800,
+			"y": 200,
+			"eject": [
+				"up",
+				"left",
+				"right"
+			]
+		}
+	]
+}
