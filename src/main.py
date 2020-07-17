@@ -2,7 +2,8 @@
 
 import pygame as pg
 import sqlalchemy as sqa
-from sys import exit
+import sys
+import math
 
 from core import (
 	InitQuit,
@@ -38,11 +39,7 @@ def init():
 	
 	Camera.bind(
 		G.CONN.execute(
-			sqa.select([
-				C.PLYC.c.EntID,
-			]).select_from(
-				C.PLYC,
-			)
+			C.PLYC.select()
 		).scalar()
 	)
 	
@@ -52,7 +49,7 @@ def init():
 
 def quit(*args, **kwargs):
 	InitQuit.quit()
-	exit(0)
+	sys.exit(0)
 
 import itertools
 counter = itertools.count()

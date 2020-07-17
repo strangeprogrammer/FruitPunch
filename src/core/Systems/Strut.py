@@ -23,6 +23,11 @@ def init():
 		C.POSC.join(C.SBC, C.POSC.c.EntID == C.SBC.c.EntID)
 	).compile()
 
+def quit():
+	G.CONN.execute(
+		C.SBC.delete()
+	)
+
 def register(EntID, ChildID):
 	G.CONN.execute(
 		C.SBC.insert(), {

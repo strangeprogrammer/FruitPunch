@@ -22,6 +22,11 @@ def init():
 		C.ROTC.join(C.RDC, C.ROTC.c.EntID == C.RDC.c.EntID)
 	).compile()
 
+def quit():
+	G.CONN.execute(
+		C.RDC.delete()
+	)
+
 def register(EntID, ChildID):
 	# TODO: Find out whether or not the entity being registered is in a chain of dolls, and assign to it its generation number as appropriate
 	# The entity being registered should already be registered with the Rotation System

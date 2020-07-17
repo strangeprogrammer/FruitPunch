@@ -72,9 +72,9 @@ def quit():
 	
 #	Collision.quit()
 	
-#	Strut.quit()
-#	RotDoll.quit()
-#	FlipDoll.quit()
+	Strut.quit()
+	RotDoll.quit()
+	FlipDoll.quit()
 	
 #	Accel.quit()
 #	RotVel.quit()
