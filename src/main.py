@@ -6,13 +6,13 @@ import sys
 import math
 
 from core import (
-	InitQuit,
 	Events,
 	G,
 	Component as C,
 	Resource as R,
-	Level,
+	LevelLoader,
 	Time,
+	Level,
 )
 
 from core.Systems import (
@@ -32,23 +32,16 @@ from core.Systems import (
 bgd = None
 
 def init():
-	InitQuit.init()
+	pg.init()
 	
 	global bgd
 	bgd = Level.load("./LEVELS/tutorial.json")
 	
-	Camera.bind(
-		G.CONN.execute(
-			C.PLYC.select()
-		).scalar()
-	)
-	
-	Camera.update()
-	
 	Events.register(pg.QUIT, quit)
 
 def quit(*args, **kwargs):
-	InitQuit.quit()
+	Level.unload()
+	pg.quit()
 	sys.exit(0)
 
 import itertools
