@@ -18,6 +18,10 @@ def init():
 	Events.register(pg.KEYDOWN, keyDownHandler)
 	Events.register(pg.KEYUP, keyUpHandler)
 
+def quit():
+	Events.deregister(pg.KEYDOWN)
+	Events.deregister(pg.KEYUP)
+
 def keyDownHandler(e):
 	if e.key in [
 		pg.K_f,

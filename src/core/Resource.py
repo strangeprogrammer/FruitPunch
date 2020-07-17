@@ -14,3 +14,7 @@ def init():
 	RR = create("RectRes")
 	CR = create("CollRes")
 	CCR = create("ContCollRes")
+
+def quit():
+	global ER, IR, RR, CR, CCR
+	ER = IR = RR = CR = CCR = None

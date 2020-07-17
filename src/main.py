@@ -2,6 +2,7 @@
 
 import pygame as pg
 import sqlalchemy as sqa
+from sys import exit
 
 from core import (
 	InitQuit,
@@ -47,7 +48,11 @@ def init():
 	
 	Camera.update()
 	
-	Events.register(pg.QUIT, lambda e: InitQuit.quit())
+	Events.register(pg.QUIT, quit)
+
+def quit(*args, **kwargs):
+	InitQuit.quit()
+	exit(0)
 
 import itertools
 counter = itertools.count()

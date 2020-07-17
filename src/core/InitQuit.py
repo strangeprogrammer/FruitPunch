@@ -3,7 +3,6 @@
 # DO NOT RUN THIS FILE - import it instead
 
 import pygame as pg
-from sys import exit
 
 from . import (
 	G,
@@ -64,8 +63,30 @@ def init():
 def quit():
 	CollHandLib.quit()
 	
+	PlayerMove.quit()
+	
+#	Camera.quit()
+	
+#	Draw.addRenderStep(Rotation.render)
+#	Draw.addRenderStep(Flip.render)
+	
+#	Collision.quit()
+	
+#	Strut.quit()
+#	RotDoll.quit()
+#	FlipDoll.quit()
+	
+#	Accel.quit()
+#	RotVel.quit()
+#	Velocity.quit()
+#	Rotation.quit()
+#	Position.quit()
+	
+#	Flip.quit()
+#	Draw.quit()
+	
+	Resource.quit()
+	
 	Component.quit()
 	
 	pg.quit()
-	
-	exit(0)
