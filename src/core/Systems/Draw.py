@@ -15,6 +15,10 @@ renderSteps = []
 from .. import Component as C
 from .. import Resource as R
 
+from . import Camera
+
+bgd = None
+
 def init():
 	global drawQuery, RIPairsQuery
 	
@@ -41,6 +45,9 @@ def quit():
 	
 	global renderSteps
 	renderSteps = []
+	
+	global bgd
+	bgd = None
 
 def addRenderStep(step):
 	global renderSteps
@@ -77,8 +84,10 @@ def _blackPad(bgd, camRect):
 	for s in outsurfaces:
 		s.fill([0, 0, 0])
 
-def update(bgd, camRect):
-	global drawQuery
+def update():
+	global bgd, drawQuery
+	
+	camRect = R.RR[Camera.RectID]
 	
 	# Draw the background first
 	G.SCREEN.blit(bgd, (0, 0), camRect)

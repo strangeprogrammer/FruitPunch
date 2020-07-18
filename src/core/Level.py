@@ -34,7 +34,6 @@ def load(fileName):
 	Component.init()
 	Resource.init()
 	
-	Draw.init()
 	Flip.init()
 	
 	Position.init()
@@ -49,10 +48,11 @@ def load(fileName):
 	
 	Collision.init()
 	
+	Camera.init()
+	
+	Draw.init()
 	Draw.addRenderStep(Flip.render)
 	Draw.addRenderStep(Rotation.render)
-	
-	Camera.init()
 	
 	PlayerMove.init()
 	
@@ -62,7 +62,7 @@ def load(fileName):
 	
 	
 	
-	bgd = LevelLoader.load(fileName)
+	Draw.bgd = LevelLoader.load(fileName)
 	
 	Camera.bind(
 		G.CONN.execute(
@@ -71,13 +71,13 @@ def load(fileName):
 	)
 	
 	Camera.update()
-	
-	return bgd
 
 def unload():
 	CollHandLib.quit()
 	
 	PlayerMove.quit()
+	
+	Draw.quit()
 	
 	Camera.quit()
 	
@@ -94,7 +94,6 @@ def unload():
 	Position.quit()
 	
 	Flip.quit()
-	Draw.quit()
 	
 	Resource.quit()
 	

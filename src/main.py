@@ -3,7 +3,6 @@
 import pygame as pg
 import sqlalchemy as sqa
 import sys
-import math
 
 from core import (
 	Events,
@@ -53,8 +52,7 @@ def update():
 	
 	Camera.update()
 	
-	global bgd
-	Draw.update(bgd, R.RR[Camera.RectID])
+	Draw.update()
 	
 	Rotation.collect()
 	
@@ -64,7 +62,6 @@ def update():
 	if next(counter) % 60 == 0:
 		print(Time._clock.get_fps())
 
-bgd = None
 phasenum = 0
 
 def advance(*args, **kwargs):
@@ -75,10 +72,10 @@ def main():
 	pg.init()
 	Events.register(pg.QUIT, advance)
 	
-	global bgd, phasenum
+	global phasenum
 	
 	
-	bgd = Level.load("./LEVELS/tutorial.json")
+	Level.load("./LEVELS/tutorial.json")
 	
 	while phasenum == 0:
 		update()
@@ -86,7 +83,7 @@ def main():
 	
 	
 #	Level.unload()
-#	bgd = Level.load("./LEVELS/notTutorial.json")
+#	Level.load("./LEVELS/notTutorial.json")
 #	
 #	while phasenum == 1:
 #		update()
