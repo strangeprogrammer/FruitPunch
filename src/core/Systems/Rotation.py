@@ -81,10 +81,6 @@ def collect():
 	global collectable
 	for rotateID in collectable:
 		del R.IR[rotateID]
-		G.CONN.execute(
-			C.I	.delete() \
-				.where(C.I.c.ImageID == rotateID)
-		)
 	
 	collectable = []
 
@@ -96,11 +92,6 @@ def render():
 	for EntID, ImageID, Theta in G.CONN.execute(rotateQuery).fetchall():
 		rotateID = R.IR.append(
 			pg.transform.rotate(R.IR[ImageID], Theta)
-		)
-		
-		G.CONN.execute(
-			C.I.insert(),
-			{"ImageID": rotateID}
 		)
 		
 		collectable.append(rotateID)

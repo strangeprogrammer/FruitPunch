@@ -6,8 +6,8 @@ import json
 import math
 import pygame as pg
 
+from . import G
 from . import CollHandLib as CHL
-from . import Entity
 from .Misc import Rect
 from . import Component as C
 from . import Resource as R
@@ -21,6 +21,7 @@ from .Systems import (
 	Rotation,
 	RotVel,
 	Collision,
+	Flip,
 )
 
 imageIDs = {}
@@ -55,13 +56,36 @@ def _makeImages(images):
 		)
 		imageProps[k] = v
 
-def _makePlayer(x, y, image = None):
-	global imageIDs
-	ImageID = imageIDs[image]
-	img = R.IR[ImageID]
-	rect = Rect(img.get_rect())
+def _makeEntImage(EntID, entity):
+	if "image" in entity:
+		global imageIDs
+		ImageID = imageIDs[entity["image"]]
+		
+		Image.register(EntID)
+		Image.store(EntID, ImageID)
+		
+		return R.IR[ImageID].get_rect()
+	else:
+		return None
+
+def _makeEntRect(EntID, entity, rect = None):
+	if rect is None:
+		rect = Rect(0, 0, entity["width"], entity["height"])
 	
-	EntID, ImageID, RectID = Entity.createPlayer(img, rect, (x, y))
+	rect.topleft = [entity["x"], entity["y"]]
+	
+	RectID = R.RR.append(rect)
+	
+	Rectangle.register(EntID)
+	Rectangle.store(EntID, RectID)
+	
+	return rect
+
+def _makeEntPlayer(EntID):
+	G.CONN.execute(C.PLYC.insert().values(EntID = EntID))
+	
+	Flip.registerImage(Image.fetch(EntID))
+	Flip.register(EntID)
 	
 	Velocity.register(EntID)
 	Accel.register(EntID)
@@ -70,18 +94,9 @@ def _makePlayer(x, y, image = None):
 	RotVel.register(EntID)
 	
 	Collision.registerU(EntID)
-	
-	return EntID
 
-def _makeEjector(rect, eject = []):
-	EntID = R.ER.append(None)
-	RectID = R.RR.append(rect)
-	
-	Rectangle.register(EntID)
-	Rectangle.store(EntID, RectID)
-	
-	Position.register(EntID)
-	Position.store(EntID, *rect.center)
+def _makeEntWall(EntID, entity):
+	eject = entity["eject"]
 	
 	if "up" in eject:
 		Collision.registerT(EntID, CHL.onEjectUpID, CHL.offEjectUpID)
@@ -91,37 +106,9 @@ def _makeEjector(rect, eject = []):
 		Collision.registerT(EntID, CHL.onEjectLeftID, CHL.offEjectLeftID)
 	if "right" in eject:
 		Collision.registerT(EntID, CHL.onEjectRightID, CHL.offEjectRightID)
-	
-	return EntID
 
-def _makeWall(x, y, eject = [], image = None, width = None, height = None, name = None):
-	global imageIDs
-	
-	if image is not None:
-		ImageID = imageIDs[image]
-		rect = R.IR[ImageID].get_rect()
-		rect.topleft = (x, y)
-	else:
-		assert width is not None, "A width must be specified for the imageless entity with name: " + str(name)
-		assert height is not None, "A height must be specified for the imageless entity with name: " + str(name)
-		
-		rect = Rect(x, y, width, height)
-	
-	EntID = _makeEjector(rect, eject)
-	
-	if image is not None:
-		Image.register(EntID)
-		Image.store(EntID, ImageID)
-
-def _makeOneWay(rect, eject = []):
-	EntID = R.ER.append(None)
-	RectID = R.RR.append(rect)
-	
-	Rectangle.register(EntID)
-	Rectangle.store(EntID, RectID)
-	
-	Position.register(EntID)
-	Position.store(EntID, *rect.center)
+def _makeEntPlatform(EntID, entity):
+	eject = entity["eject"]
 	
 	if "up" in eject:
 		Collision.registerT(EntID, CHL.onOneWayUpID, CHL.offOneWayUpID)
@@ -131,39 +118,32 @@ def _makeOneWay(rect, eject = []):
 		Collision.registerT(EntID, CHL.onOneWayLeftID, CHL.offOneWayLeftID)
 	if "right" in eject:
 		Collision.registerT(EntID, CHL.onOneWayRightID, CHL.offOneWayRightID)
-	
-	return EntID
 
-def _makePlatform(x, y, eject = [], image = None, width = None, height = None, name = None):
-	global imageIDs
+def _makeEntity(entity):
+	EntID = R.ER.append(None)
 	
-	if image is not None:
-		ImageID = imageIDs[image]
-		rect = R.IR[ImageID].get_rect()
-		rect.topleft = (x, y)
-	else:
-		assert width is not None, "A width must be specified for the imageless entity with name: " + str(name)
-		assert height is not None, "A height must be specified for the imageless entity with name: " + str(name)
-		
-		rect = Rect(x, y, width, height)
+	rect = _makeEntImage(EntID, entity)
+	rect = _makeEntRect(EntID, entity, rect = rect)
 	
-	EntID = _makeOneWay(rect, eject)
+	Position.register(EntID)
+	Position.store(EntID, *rect.center)
 	
-	if image is not None:
-		Image.register(EntID)
-		Image.store(EntID, ImageID)
+	if entity["type"] == "player":
+		_makeEntPlayer(EntID)
+		return
+	elif entity["type"] == "wall":
+		_makeEntWall(EntID, entity)
+		return
+	elif entity["type"] == "platform":
+		_makeEntPlatform(EntID, entity)
+		return
 
 def load(fileName):
 	with open(fileName) as fp:
 		level = json.load(fp)
 		_makeImages(level["images"])
 		
-		_makePlayer(**level["player"])
-		
-		for wall in level.get("walls", []):
-			_makeWall(**wall)
-		
-		for platform in level.get("platforms", []):
-			_makePlatform(**platform)
+		for entity in level.get("entities", []):
+			_makeEntity(entity)
 		
 		return R.IR[imageIDs[level["background"]]]

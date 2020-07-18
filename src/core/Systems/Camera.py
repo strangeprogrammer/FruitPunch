@@ -9,7 +9,6 @@ from .. import Resource as R
 
 from .. import G
 from ..Misc import Rect
-from .. import Entity
 
 from . import Position
 from . import Velocity
@@ -27,12 +26,6 @@ def init():
 	
 	EntID = R.ER.append(None)
 	
-	G.CONN.execute(
-		C.E.insert(), {
-			"EntID": EntID,
-		}
-	)
-	
 	Rectangle.register(EntID)
 	Rectangle.store(EntID, RectID)
 	
@@ -48,12 +41,6 @@ def quit():
 	Position.deregister(EntID)
 	
 	Rectangle.deregister(EntID)
-	
-	G.CONN.execute(
-		C.E.delete().where(
-			C.E.c.EntID == EntID
-		)
-	)
 	
 	del R.ER[EntID]
 	

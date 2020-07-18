@@ -85,11 +85,11 @@ def main():
 	
 	
 	
-	Level.unload()
-	bgd = Level.load("./LEVELS/notTutorial.json")
-	
-	while phasenum == 1:
-		update()
+#	Level.unload()
+#	bgd = Level.load("./LEVELS/notTutorial.json")
+#	
+#	while phasenum == 1:
+#		update()
 	
 	Level.unload()
 	pg.quit()

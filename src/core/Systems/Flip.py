@@ -62,13 +62,6 @@ def quit():
 	G.CONN.execute(
 		C.FI.delete()
 	)
-	
-	for [ImageID] in flippedImages:
-		G.CONN.execute(
-			C.I.delete().where(
-				C.I.c.ImageID == ImageID
-			)
-		)
 
 def register(EntID):
 	G.CONN.execute(
@@ -126,15 +119,6 @@ def registerImage(ImageID):
 			{"InImageID": ImageID, "FlipX": True,	"FlipY": False,	"OutImageID": xflipped},
 			{"InImageID": ImageID, "FlipX": False,	"FlipY": True,	"OutImageID": yflipped},
 			{"InImageID": ImageID, "FlipX": True,	"FlipY": True,	"OutImageID": xyflipped},
-		]
-	)
-	
-	G.CONN.execute(
-		C.I.insert(), [
-			# We assume 'ImageID' has already been registered
-			{"ImageID": xflipped},
-			{"ImageID": yflipped},
-			{"ImageID": xyflipped},
 		]
 	)
 
