@@ -2,41 +2,39 @@
 
 # DO NOT RUN THIS FILE - import it instead
 
-from functools import partial
-from sys import modules
 from itertools import count
 
-allResources = {}
+from . import G
 
-class ResPack():
-	def __init__(self):
-		self.members = {}
+class ResPack(dict):
+	def __init__(self, *args, table = None, field = None, **kwargs):
+		super().__init__()
 		
+		self.table = table
+		self.field = field
 		self.counter = count()
 	
 	def append(self, value):
 		index = next(self.counter)
-		self.members[index] = value
+		self[index] = value
 		return index
 	
-	def __getitem__(self, key):
-		return self.members[key]
-	
 	def __setitem__(self, key, value):
-		self.members[key] = value
+		if self.table is not None and key not in self:
+			G.CONN.execute(
+				self.table.insert(), {
+					self.field: key
+				}
+			)
+		
+		super().__setitem__(key, value)
 	
 	def __delitem__(self, key):
-		del self.members[key]
-
-def create(resName):
-	global allResources
-	allResources[resName] = ResPack()
-	return allResources[resName]
-
-def retrieve(resName):
-	global allResources
-	return allResources[resName]
-
-def delete(resName):
-	global allResources
-	del allResources[resName]
+		if self.table is not None:
+			G.CONN.execute(
+				self.table.delete().where(
+					getattr(self.table.columns, self.field) == key
+				)
+			)
+		
+		super().__delitem__(key)

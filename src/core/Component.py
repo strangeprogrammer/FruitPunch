@@ -16,22 +16,40 @@ from sqlalchemy import (
 
 from . import G
 
-RECC = IC = DC = POSC = ROTC = VC = RVC = AC = PLYC = FC = FI = FDC = RDC = SBC = SC = CT = CU = None
+E = I = R = RECC = IC = DC = POSC = ROTC = VC = RVC = AC = PLYC = FC = FI = FDC = RDC = SBC = SC = CT = CU = None
 
 def init():
 	G.ENGINE = sqa.create_engine("sqlite:///:memory:")
 	G.DB = sqa.MetaData()
 	G.CONN = G.ENGINE.connect()
 	
-	global RECC, IC, DC, POSC, ROTC, VC, RVC, AC, PLYC, FC, FI, FDC, RDC, SBC, SC, CT, CU
+	global E, I, R, RECC, IC, DC, POSC, ROTC, VC, RVC, AC, PLYC, FC, FI, FDC, RDC, SBC, SC, CT, CU
+	
+	E = Table( # List of all entity ID's
+		"AllEnts", G.DB,
+		Column("EntID", Integer),
+		PKC("EntID"),
+	)
+	
+	I = Table( # List of all image ID's
+		"AllImages", G.DB,
+		Column("ImageID", Integer),
+		PKC("ImageID"),
+	)
+	
+	R = Table( # List of all rectangle ID's
+		"AllRects", G.DB,
+		Column("RectID", Integer),
+		PKC("RectID"),
+	)
 	
 	RECC = Table( # Entity-rectangle link table
 		"RectComp", G.DB,
 		Column("EntID", Integer),
 		Column("RectID", Integer),
 		PKC("EntID", "RectID"),
-#		FKC(["EntID"], ["AllEnts.EntID"]),
-#		FKC(["RectID"], ["AllRects.RectID"]),
+		FKC(["EntID"], ["AllEnts.EntID"]),
+		FKC(["RectID"], ["AllRects.RectID"]),
 	)
 	
 	IC = Table( # Entity-image link table for the base image of an entity
@@ -39,8 +57,8 @@ def init():
 		Column("EntID", Integer),
 		Column("ImageID", Integer),
 		PKC("EntID"),
-#		FKC(["EntID"], ["AllEnts.EntID"]),
-#		FKC(["ImageID"], ["AllImages.ImageID"]),
+		FKC(["EntID"], ["AllEnts.EntID"]),
+		FKC(["ImageID"], ["AllImages.ImageID"]),
 	)
 	
 	DC = Table( # Entity-image link table for the renderable image of an entity
@@ -48,8 +66,8 @@ def init():
 		Column("EntID", Integer),
 		Column("ImageID", Integer),
 		PKC("EntID"),
-#		FKC(["EntID"], ["AllEnts.EntID"]),
-#		FKC(["ImageID"], ["AllImages.ImageID"]),
+		FKC(["EntID"], ["AllEnts.EntID"]),
+		FKC(["ImageID"], ["AllImages.ImageID"]),
 	)
 	
 	POSC = Table( # Real centers of all entities (useful for fine-grained velocity calculations)
@@ -58,7 +76,7 @@ def init():
 		Column("PosX", REAL),
 		Column("PosY", REAL),
 		PKC("EntID"),
-#		FKC(["EntID"], ["AllEnts.EntID"]),
+		FKC(["EntID"], ["AllEnts.EntID"]),
 	)
 	
 	ROTC = Table( # Entities that have an angle applied to them
@@ -66,7 +84,7 @@ def init():
 		Column("EntID", Integer),
 		Column("Theta", REAL),
 		PKC("EntID"),
-#		FKC(["EntID"], ["AllEnts.EntID"]),
+		FKC(["EntID"], ["AllEnts.EntID"]),
 	)
 	
 	VC = Table( # Velocities of all entities
@@ -75,7 +93,7 @@ def init():
 		Column("VelX", REAL),
 		Column("VelY", REAL),
 		PKC("EntID"),
-#		FKC(["EntID"], ["AllEnts.EntID"]),
+		FKC(["EntID"], ["AllEnts.EntID"]),
 	)
 	
 	RVC = Table( # Angular velocities of all entities
@@ -83,7 +101,7 @@ def init():
 		Column("EntID", Integer),
 		Column("Omega", REAL),
 		PKC("EntID"),
-#		FKC(["EntID"], ["AllEnts.EntID"]),
+		FKC(["EntID"], ["AllEnts.EntID"]),
 	)
 	
 	AC = Table( # Velocities of all entities
@@ -92,14 +110,14 @@ def init():
 		Column("AccX", REAL),
 		Column("AccY", REAL),
 		PKC("EntID"),
-#		FKC(["EntID"], ["AllEnts.EntID"]),
+		FKC(["EntID"], ["AllEnts.EntID"]),
 	)
 	
 	PLYC = Table( # Player-controlled entities
 		"PlayerComp", G.DB,
 		Column("EntID", Integer),
 		PKC("EntID"),
-#		FKC(["EntID"], ["AllEnts.EntID"]),
+		FKC(["EntID"], ["AllEnts.EntID"]),
 	)
 	
 	FC = Table( # Entities that have an image flip applied to them
@@ -108,7 +126,7 @@ def init():
 		Column("FlipX", Boolean),
 		Column("FlipY", Boolean),
 		PKC("EntID"),
-#		FKC(["EntID"], ["AllEnts.EntID"]),
+		FKC(["EntID"], ["AllEnts.EntID"]),
 	)
 	
 	FI = Table( # Images and their flipped equivalents
@@ -119,8 +137,8 @@ def init():
 		Column("OutImageID", Integer),
 		PKC("InImageID", "FlipX", "FlipY"),
 		UC("OutImageID"),
-#		FKC(["InImageID"], ["AllImages.ImageID"]),
-#		FKC(["OutImageID"], ["AllImages.ImageID"]),
+		FKC(["InImageID"], ["AllImages.ImageID"]),
+		FKC(["OutImageID"], ["AllImages.ImageID"]),
 	)
 	
 	FDC = Table( # Entities that use the flip state of the parent to determine their own flip state
@@ -131,8 +149,8 @@ def init():
 		Column("OffX", Boolean),
 		Column("OffY", Boolean),
 		PKC("ChildID"),
-#		FKC(["ChildID"], ["AllEnts.EntID"]),
-#		FKC(["EntID"], ["AllEnts.EntID"]),
+		FKC(["ChildID"], ["AllEnts.EntID"]),
+		FKC(["EntID"], ["AllEnts.EntID"]),
 	)
 	
 	RDC = Table( # Entities that have an angle applied to them
@@ -141,8 +159,8 @@ def init():
 		Column("ChildID", Integer),
 		Column("dTheta", REAL),
 		PKC("ChildID"),
-#		FKC(["ChildID"], ["AllEnts.EntID"]),
-#		FKC(["EntID"], ["AllEnts.EntID"]),
+		FKC(["ChildID"], ["AllEnts.EntID"]),
+		FKC(["EntID"], ["AllEnts.EntID"]),
 	)
 	
 	SBC = Table( # Base strut offsets of all affected entities
@@ -152,8 +170,8 @@ def init():
 		Column("OffX", REAL),
 		Column("OffY", REAL),
 		PKC("ChildID"),
-#		FKC(["ChildID"], ["AllEnts.EntID"]),
-#		FKC(["EntID"], ["AllEnts.EntID"]),
+		FKC(["ChildID"], ["AllEnts.EntID"]),
+		FKC(["EntID"], ["AllEnts.EntID"]),
 	)
 	
 	SC = Table( # Strut offsets of all affected entities
@@ -163,8 +181,8 @@ def init():
 		Column("OffX", REAL),
 		Column("OffY", REAL),
 		PKC("ChildID"),
-#		FKC(["ChildID"], ["AllEnts.EntID"]),
-#		FKC(["EntID"], ["AllEnts.EntID"]),
+		FKC(["ChildID"], ["AllEnts.EntID"]),
+		FKC(["EntID"], ["AllEnts.EntID"]),
 	)
 	
 	CT = Table( # All entities that can collide with other entities and perform an action when they do
@@ -173,14 +191,14 @@ def init():
 		Column("OnColl", Integer),
 		Column("OffColl", Integer),
 		PKC("EntID", "OnColl", "OffColl"),
-#		FKC(["EntID"], ["AllEnts.EntID"]),
+		FKC(["EntID"], ["AllEnts.EntID"]),
 	)
 	
 	CU = Table( # All entities that can collide with other entities and trigger the other's collision actions
 		"CollUnTrigg", G.DB,
 		Column("EntID", Integer),
 		PKC("EntID"),
-#		FKC(["EntID"], ["AllEnts.EntID"]),
+		FKC(["EntID"], ["AllEnts.EntID"]),
 	)
 	
 	G.DB.create_all(G.ENGINE)

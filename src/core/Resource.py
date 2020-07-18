@@ -2,18 +2,20 @@
 
 # DO NOT RUN THIS FILE - import it instead
 
-from .ResPack import create
+from .ResPack import ResPack
+
+from . import Component as C
 
 ER = IR = RR = CR = CCR = None
 
 def init():
 	global ER, IR, RR, CR, CCR
 	
-	ER = create("EntityRes")
-	IR = create("ImageRes")
-	RR = create("RectRes")
-	CR = create("CollRes")
-	CCR = create("ContCollRes")
+	ER	= ResPack(table = C.E, field = "EntID")
+	IR	= ResPack(table = C.I, field = "ImageID")
+	RR	= ResPack(table = C.R, field = "RectID")
+	CR	= ResPack()
+	CCR	= ResPack()
 
 def quit():
 	global ER, IR, RR, CR, CCR

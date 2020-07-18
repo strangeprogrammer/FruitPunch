@@ -128,5 +128,5 @@ def update():
 	for TEntID, UEntID, TRectID, URectID, OnColl, OffColl in oldCollisions:
 		R.CR[OffColl](TEntID, UEntID, TRectID, URectID)
 	
-	for handler in R.CCR.members.values():
+	for handler in R.CCR.values():
 		handler()

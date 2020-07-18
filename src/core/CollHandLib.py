@@ -174,17 +174,17 @@ def onOneWayRight(TEntID, UEntID, TRectID, URectID):
 
 
 def offOneWayUp(TEntID, UEntID, TRectID, URectID):
-	if (TEntID, UEntID, "oneWayUp") in R.CCR.members:
+	if (TEntID, UEntID, "oneWayUp") in R.CCR:
 		del R.CCR[(TEntID, UEntID, "oneWayUp")]
 
 def offOneWayDown(TEntID, UEntID, TRectID, URectID):
-	if (TEntID, UEntID, "oneWayDown") in R.CCR.members:
+	if (TEntID, UEntID, "oneWayDown") in R.CCR:
 		del R.CCR[(TEntID, UEntID, "oneWayDown")]
 
 def offOneWayLeft(TEntID, UEntID, TRectID, URectID):
-	if (TEntID, UEntID, "oneWayLeft") in R.CCR.members:
+	if (TEntID, UEntID, "oneWayLeft") in R.CCR:
 		del R.CCR[(TEntID, UEntID, "oneWayLeft")]
 
 def offOneWayRight(TEntID, UEntID, TRectID, URectID):
-	if (TEntID, UEntID, "oneWayRight") in R.CCR.members:
+	if (TEntID, UEntID, "oneWayRight") in R.CCR:
 		del R.CCR[(TEntID, UEntID, "oneWayRight")]
