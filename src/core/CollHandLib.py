@@ -5,6 +5,7 @@
 from . import Resource as R
 
 from . import Time
+from .Misc import LevelLoadException
 
 from .Systems import Position, Velocity
 
@@ -13,6 +14,8 @@ offEjectUpID = offEjectDownID = offEjectLeftID = offEjectRightID = None
 
 onOneWayUpID = onOneWayDownID = onOneWayLeftID = onOneWayRightID = None
 offOneWayUpID = offOneWayDownID = offOneWayLeftID = offOneWayRightID = None
+
+onDoorID = None
 
 def init():
 	global onEjectUpID, onEjectDownID, onEjectLeftID, onEjectRightID
@@ -38,6 +41,9 @@ def init():
 	offOneWayDownID		= R.CR.append(offOneWayDown)
 	offOneWayLeftID		= R.CR.append(offOneWayLeft)
 	offOneWayRightID	= R.CR.append(offOneWayRight)
+	
+	global onDoorID
+	onDoorID	 = R.CR.append(onDoor)
 
 def quit():
 	global onEjectUpID, onEjectDownID, onEjectLeftID, onEjectRightID
@@ -49,6 +55,9 @@ def quit():
 	global offOneWayUpID, offOneWayDownID, offOneWayLeftID, offOneWayRightID
 	onOneWayUpID = onOneWayDownID = onOneWayLeftID = onOneWayRightID = None
 	offOneWayUpID = offOneWayDownID = offOneWayLeftID = offOneWayRightID = None
+	
+	global onDoorID
+	onDoorID = None
 
 def _makeLines(trect, collrect):
 	"""Make diagonal lines of 'trect' and the expected 'y' values of 'collrect' given those lines."""
@@ -188,3 +197,8 @@ def offOneWayLeft(TEntID, UEntID, TRectID, URectID):
 def offOneWayRight(TEntID, UEntID, TRectID, URectID):
 	if (TEntID, UEntID, "oneWayRight") in R.CCR:
 		del R.CCR[(TEntID, UEntID, "oneWayRight")]
+
+
+
+def onDoor(TEntID, UEntID, TRectID, URectID):
+	raise LevelLoadException(R.AAR[TEntID]["filename"])

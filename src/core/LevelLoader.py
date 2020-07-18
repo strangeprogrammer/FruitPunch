@@ -119,6 +119,13 @@ def _makeEntPlatform(EntID, entity):
 	if "right" in eject:
 		Collision.registerT(EntID, CHL.onOneWayRightID, CHL.offOneWayRightID)
 
+def _makeEntDoor(EntID, entity):
+	R.AAR[EntID] = {
+		"filename": entity["levelRef"]
+	}
+	
+	Collision.registerT(EntID, CHL.onDoorID, 0)
+
 def _makeEntity(entity):
 	EntID = R.ER.append(None)
 	
@@ -136,6 +143,9 @@ def _makeEntity(entity):
 		return
 	elif entity["type"] == "platform":
 		_makeEntPlatform(EntID, entity)
+		return
+	elif entity["type"] == "door":
+		_makeEntDoor(EntID, entity)
 		return
 
 def load(fileName):

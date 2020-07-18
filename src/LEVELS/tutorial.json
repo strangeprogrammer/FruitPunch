@@ -9,6 +9,8 @@
 		}, "GS": {
 			"path": "./RESOURCES/GreenSquare.png",
 			"height": 25
+		}, "DOOR": {
+			"path": "./RESOURCES/Door.png"
 		}
 	},
 	"background":
@@ -19,7 +21,11 @@
 			"image": "LP",
 			"x": 200,
 			"y": 300
-		}, {
+		},
+		
+		
+		
+		{
 			"type": "wall",
 			"image": "YS",
 			"x": 200,
@@ -257,6 +263,20 @@
 			"eject": [
 				"up"
 			]
+		},
+		
+		
+		
+		{
+			"type": "door",
+			"image": "DOOR",
+			"x": 1550,
+			"y": 400,
+			"levelRef": "./LEVELS/tutorialSequel.json",
+			"spawn": {
+				"x": 1400,
+				"y": 400
+			}
 		}
 	]
 }

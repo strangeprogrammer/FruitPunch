@@ -14,6 +14,8 @@ from core import (
 	Level,
 )
 
+from core.Misc import LevelLoadException
+
 from core.Systems import (
 	Camera,
 	Draw,
@@ -62,31 +64,25 @@ def update():
 	if next(counter) % 60 == 0:
 		print(Time._clock.get_fps())
 
-phasenum = 0
+goflag = True
 
-def advance(*args, **kwargs):
-	global phasenum
-	phasenum += 1
+def quit(*args, **kwargs):
+	global goflag
+	goflag = False
 
 def main():
 	pg.init()
-	Events.register(pg.QUIT, advance)
-	
-	global phasenum
-	
+	Events.register(pg.QUIT, quit)
 	
 	Level.load("./LEVELS/tutorial.json")
 	
-	while phasenum == 0:
-		update()
-	
-	
-	
-#	Level.unload()
-#	Level.load("./LEVELS/notTutorial.json")
-#	
-#	while phasenum == 1:
-#		update()
+	global goflag
+	while goflag:
+		try:
+			update()
+		except LevelLoadException as e:
+			Level.unload()
+			Level.load(e.filename)
 	
 	Level.unload()
 	pg.quit()

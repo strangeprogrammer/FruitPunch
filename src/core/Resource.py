@@ -6,17 +6,18 @@ from .ResPack import ResPack
 
 from . import Component as C
 
-ER = IR = RR = CR = CCR = None
+ER = IR = RR = CR = CCR = AAR = None
 
 def init():
-	global ER, IR, RR, CR, CCR
+	global ER, IR, RR, CR, CCR, AAR
 	
-	ER	= ResPack(table = C.E, field = "EntID")
-	IR	= ResPack(table = C.I, field = "ImageID")
-	RR	= ResPack(table = C.R, field = "RectID")
-	CR	= ResPack()
-	CCR	= ResPack()
+	ER	= ResPack(table = C.E, field = "EntID")		# Entity Resource
+	IR	= ResPack(table = C.I, field = "ImageID")	# Image Resource
+	RR	= ResPack(table = C.R, field = "RectID")	# Rectangle Resource
+	CR	= ResPack()					# Collision Resource
+	CCR	= ResPack()					# Continuous Collision Resource
+	AAR	= ResPack()					# Auxilliary Attribute Resource
 
 def quit():
-	global ER, IR, RR, CR, CCR
-	ER = IR = RR = CR = CCR = None
+	global ER, IR, RR, CR, CCR, AAR
+	ER = IR = RR = CR = CCR = AAR = None

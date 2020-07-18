@@ -90,6 +90,11 @@ class Rect(pg.Rect):
 			self.crack(other),
 		))
 
+class LevelLoadException(Exception):
+	def __init__(self, filename, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.filename = filename
+
 ### Unit Tests
 
 import unittest
