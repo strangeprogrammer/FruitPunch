@@ -22,9 +22,12 @@ def init():
 	G.SCREEN = pg.display.set_mode()
 	rect = Rect(G.SCREEN.get_rect())
 	(rect.x, rect.y) = (0, 0)
+	
 	RectID = R.RR.append(rect)
+	R.RR.flush()
 	
 	EntID = R.ER.append(None)
+	R.ER.flush()
 	
 	Rectangle.register(EntID)
 	Rectangle.store(EntID, RectID)
@@ -43,8 +46,10 @@ def quit():
 	Rectangle.deregister(EntID)
 	
 	del R.ER[EntID]
+	R.ER.flush()
 	
 	del R.RR[RectID]
+	R.RR.flush()
 	
 	G.SCREEN = None
 	
@@ -72,4 +77,10 @@ def unbind():
 def update():
 	global RectID, BindID
 	if BindID is not None:
-		R.RR[RectID].center = R.RR[Rectangle.fetch(BindID)].center
+		oldcenter = R.RR[RectID].center
+		newcenter = R.RR[Rectangle.fetch(BindID)].center
+		if oldcenter != newcenter:
+			R.RR[RectID].center = newcenter
+			R.RR.invalidate(RectID)
+	
+	R.RR.flush()

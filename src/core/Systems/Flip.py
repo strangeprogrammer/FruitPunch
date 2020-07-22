@@ -59,6 +59,8 @@ def quit():
 	for [ImageID] in flippedImages:
 		del R.IR[ImageID]
 	
+	R.IR.flush()
+	
 	G.CONN.execute(
 		C.FI.delete()
 	)
@@ -112,6 +114,8 @@ def registerImage(ImageID):
 	xyflipped = R.IR.append(
 		pg.transform.flip(R.IR[ImageID], True, True)
 	)
+	
+	R.IR.flush()
 	
 	G.CONN.execute(
 		C.FI.insert(), [

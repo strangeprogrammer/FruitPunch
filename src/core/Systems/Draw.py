@@ -65,7 +65,12 @@ def _updateRects():
 	global RIPairsQuery
 	
 	for RectID, ImageID in G.CONN.execute(RIPairsQuery).fetchall():
-		R.RR[RectID] = Rect(R.IR[ImageID].get_rect()) # XXX WARNING: this will fully replace any rectangle that the original image was associated with
+		oldrect = R.RR[RectID]
+		newrect = Rect(R.IR[ImageID].get_rect())
+		newrect.center = oldrect.center
+		R.RR[RectID] = newrect # XXX WARNING: this will replace any rectangle that the original image was associated with while preserving the center
+	
+	R.RR.flush()
 
 def render():
 	_resetDrawComp()

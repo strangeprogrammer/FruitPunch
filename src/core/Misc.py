@@ -1,5 +1,6 @@
 #!/bin/python3
 
+import itertools
 import math
 import pygame as pg
 
@@ -94,6 +95,18 @@ class LevelLoadException(Exception):
 	def __init__(self, filename, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.filename = filename
+
+def incrementable(d):
+	d.counter = itertools.count()
+	
+	def append(value):
+		index = next(d.counter)
+		d[index] = value
+		return index
+	
+	d.append = append
+	
+	return d
 
 ### Unit Tests
 

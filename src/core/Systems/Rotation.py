@@ -77,14 +77,14 @@ def store(EntID, Theta):
 		}
 	)
 
-def collect():
+def collect(): # We don't bother flushing 'R.IR' here since the data is so short-lived
 	global collectable
 	for rotateID in collectable:
 		del R.IR[rotateID]
 	
 	collectable = []
 
-def render():
+def render(): # We don't bother flushing 'R.IR' here since the data is so short-lived
 	global exemptQuery, rotateQuery, collectable
 	
 	result = G.CONN.execute(exemptQuery).fetchall()

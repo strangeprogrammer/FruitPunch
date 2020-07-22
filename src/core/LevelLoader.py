@@ -156,4 +156,8 @@ def load(fileName):
 		for entity in level.get("entities", []):
 			_makeEntity(entity)
 		
+		R.ER.flush()
+		R.IR.flush()
+		R.RR.flush()
+		
 		return R.IR[imageIDs[level["background"]]]

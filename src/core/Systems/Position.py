@@ -66,4 +66,9 @@ def update():
 	global rectPosQuery
 	
 	for RectID, PosX, PosY in G.CONN.execute(rectPosQuery).fetchall():
-		R.RR[RectID].center = (PosX, PosY)
+		oldcenter = R.RR[RectID].center
+		if oldcenter != (PosX, PosY):
+			R.RR[RectID].center = (PosX, PosY)
+			R.RR.invalidate(RectID)
+	
+	R.RR.flush()
