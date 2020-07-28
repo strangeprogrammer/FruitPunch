@@ -41,7 +41,12 @@ from .. import Resource as R
 def init():
 	global exemptQuery, rotateQuery
 	
-	exemptQuery = C.DC.select().where(
+	exemptQuery = sqa.select([
+		C.DC.c.EntID,
+		C.DC.c.ImageID,
+	]).select_from(
+		C.DC
+	).where(
 		C.DC.c.EntID.notin_(
 			sqa.select([C.ROTC.c.EntID]).select_from(C.ROTC)
 		)
@@ -72,7 +77,7 @@ def register(EntID):
 
 def instances(EntID):
 	return len(G.CONN.execute(
-		C.ROTC.select().where(C.ROTC.c.EntID == EntID)
+		C.ROTC.select(C.ROTC.c.EntID == EntID)
 	).fetchall())
 
 def deregister(EntID):

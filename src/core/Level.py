@@ -25,6 +25,7 @@
 
 
 import pygame as pg
+import sqlalchemy as sqa
 
 from . import (
 	G,
@@ -50,6 +51,7 @@ from .Systems import (
 	RotDoll,
 	Strut,
 	Collision,
+	Layer,
 )
 
 def load(fileName):
@@ -88,7 +90,8 @@ def load(fileName):
 	
 	Camera.bind(
 		G.CONN.execute(
-			C.PLYC.select()
+			sqa	.select([C.PLYC.c.EntID]) \
+				.select_from(C.PLYC)
 		).scalar()
 	)
 	
@@ -116,6 +119,8 @@ def unload():
 	Position.quit()
 	
 	Flip.quit()
+	
+	Layer.quit()
 	
 	Resource.quit()
 	

@@ -81,13 +81,19 @@ def moveHandler(e):
 	elif e.key == pg.K_RIGHT:
 		dx += 0.5
 	
-	for [player] in G.CONN.execute(C.PLYC.select()).fetchall():
+	for [player] in G.CONN.execute(
+		sqa	.select([C.PLYC.c.EntID]) \
+			.select_from(C.PLYC)
+	).fetchall():
 		if 0 < Velocity.instances(player):
 			(VelX, VelY) = Velocity.fetch(player)
 			Velocity.store(player, VelX + dx, VelY + dy)
 
 def flipHandler(e):
-	for [player] in G.CONN.execute(C.PLYC.select()).fetchall():
+	for [player] in G.CONN.execute(
+		sqa	.select([C.PLYC.c.EntID]) \
+			.select_from(C.PLYC)
+	).fetchall():
 		[FlipX, FlipY] = Flip.fetch(player)
 		Flip.store(player, e.key == pg.K_LEFT, FlipY)
 
@@ -96,7 +102,10 @@ def unMoveHandler(e):
 		pg.K_LEFT,
 		pg.K_RIGHT,
 	]:
-		for [player] in G.CONN.execute(C.PLYC.select()).fetchall():
+		for [player] in G.CONN.execute(
+			sqa	.select([C.PLYC.c.EntID]) \
+				.select_from(C.PLYC)
+		).fetchall():
 			if 0 < Velocity.instances(player):
 				(VelX, VelY) = Velocity.fetch(player)
 				Velocity.store(player, 0, VelY)
@@ -107,6 +116,9 @@ def rotHandler(e):
 	elif e.key == pg.K_d:
 		dOmega = math.tau / 16 / 1000
 	
-	for [player] in G.CONN.execute(C.PLYC.select()).fetchall():
+	for [player] in G.CONN.execute(
+		sqa	.select([C.PLYC.c.EntID]) \
+			.select_from(C.PLYC)
+	).fetchall():
 		if 0 < RotVel.instances(player):
 			RotVel.store(player, RotVel.fetch(player) + dOmega)

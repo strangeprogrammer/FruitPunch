@@ -34,18 +34,19 @@ from sqlalchemy import (
 	PrimaryKeyConstraint as PKC,
 	ForeignKeyConstraint as FKC,
 	UniqueConstraint as UC,
+	Index,
 )
 
 from . import G
 
-E = I = R = RECC = IC = DC = POSC = ROTC = VC = RVC = AC = PLYC = FC = FI = FDC = RDC = SBC = SC = CT = CU = None
+E = I = R = RECC = IC = DC = LC = POSC = ROTC = VC = RVC = AC = PLYC = FC = FI = FDC = RDC = SBC = SC = CT = CU = None
 
 def init():
 	G.ENGINE = sqa.create_engine("sqlite:///:memory:")
 	G.DB = sqa.MetaData()
 	G.CONN = G.ENGINE.connect()
 	
-	global E, I, R, RECC, IC, DC, POSC, ROTC, VC, RVC, AC, PLYC, FC, FI, FDC, RDC, SBC, SC, CT, CU
+	global E, I, R, RECC, IC, DC, LC, POSC, ROTC, VC, RVC, AC, PLYC, FC, FI, FDC, RDC, SBC, SC, CT, CU
 	
 	E = Table( # List of all entity ID's
 		"AllEnts", G.DB,
@@ -90,6 +91,17 @@ def init():
 		PKC("EntID"),
 		FKC(["EntID"], ["AllEnts.EntID"]),
 		FKC(["ImageID"], ["AllImages.ImageID"]),
+	)
+	
+	LC = Table( # Drawing layer information for all entities
+		"LayerComp", G.DB,
+		Column("EntID", Integer),
+		Column("Major", Integer),	# Anti-functional dependency:
+		Column("SubMajor", Integer),	# If 2 tuples have the same Major number, they must NOT have the same SubMajor number
+		Column("Minor", Integer),	# (Similarly for SubMajor and Minor number)
+		PKC("EntID"),
+		FKC(["EntID"], ["AllEnts.EntID"]),
+		Index("IDX_Layer", "Major", "SubMajor", "Minor"),
 	)
 	
 	POSC = Table( # Real centers of all entities (useful for fine-grained velocity calculations)

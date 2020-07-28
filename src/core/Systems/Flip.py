@@ -37,7 +37,12 @@ from .. import Resource as R
 def init():
 	global renderQuery
 	
-	exempt = C.DC.select().where(
+	exempt = sqa.select([
+		C.DC.c.EntID,
+		C.DC.c.ImageID,
+	]).select_from(
+		C.DC
+	).where(
 		C.DC.c.EntID.notin_(
 			sqa.select([C.FC.c.EntID]).select_from(C.FC)
 		)
@@ -98,7 +103,7 @@ def register(EntID):
 
 def instances(EntID):
 	return len(G.CONN.execute(
-		C.FC.select().where(C.FC.c.EntID == EntID)
+		C.FC.select(C.FC.c.EntID == EntID)
 	).fetchall())
 
 def deregister(EntID):

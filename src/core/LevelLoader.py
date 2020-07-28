@@ -44,6 +44,7 @@ from .Systems import (
 	RotVel,
 	Collision,
 	Flip,
+	Layer,
 )
 
 imageIDs = {}
@@ -153,6 +154,9 @@ def _makeEntity(entity):
 	
 	rect = _makeEntImage(EntID, entity)
 	rect = _makeEntRect(EntID, entity, rect = rect)
+	
+	Layer.register(EntID)
+	Layer.store(EntID, *entity["z"])
 	
 	Position.register(EntID)
 	Position.store(EntID, *rect.center)

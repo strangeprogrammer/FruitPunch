@@ -60,7 +60,7 @@ def register(EntID):
 
 def instances(EntID):
 	return len(G.CONN.execute(
-		C.POSC.select().where(C.POSC.c.EntID == EntID)
+		C.POSC.select(C.POSC.c.EntID == EntID)
 	).fetchall())
 
 def deregister(EntID):

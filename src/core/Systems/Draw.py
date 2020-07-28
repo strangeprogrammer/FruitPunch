@@ -48,16 +48,22 @@ def init():
 		C.DC.c.ImageID,
 		C.RECC.c.RectID,
 	]).select_from(
-		C.DC.join(C.RECC,
-			C.DC.c.EntID == C.RECC.c.EntID,
-		)
+		C.LC.join(C.DC.join(C.RECC,
+			C.DC.c.EntID == C.RECC.c.EntID),
+			C.LC.c.EntID == C.DC.c.EntID)
+	).order_by(
+		C.LC.c.Major.asc(),
+		C.LC.c.SubMajor.asc(),
+		C.LC.c.Minor.asc(),
 	).compile()
 	
 	RIPairsQuery = sqa.select([
 		C.RECC.c.RectID,
 		C.DC.c.ImageID,
 	]).select_from(
-		C.DC.join(C.RECC, C.DC.c.EntID == C.RECC.c.EntID)
+		C.DC.join(C.RECC,
+			C.DC.c.EntID == C.RECC.c.EntID
+		)
 	).compile()
 
 def quit():
@@ -78,10 +84,13 @@ def addRenderStep(step):
 def _updateDrawComp(values):
 	G.CONN.execute(C.DC.delete())			# Empty the drawing table
 	if 0 < len(values):
-		G.CONN.execute(C.DC.insert(), values)	# Repopulate the table with the given values (must be dict-like (have Key-Value pairs), such as a row proxy)
+		G.CONN.execute(C.DC.insert(), values)	# Repopulate the table with the given values (must be dict-like (have Key-Value pairs), such as a row proxy from sqlalchemy)
 
 def _resetDrawComp():
-	_updateDrawComp(G.CONN.execute(C.IC.select()).fetchall())
+	_updateDrawComp(G.CONN.execute(
+		sqa	.select([C.IC.c.EntID, C.IC.c.ImageID]) \
+			.select_from(C.IC)
+	).fetchall())
 
 def _updateRects():
 	global RIPairsQuery
@@ -121,7 +130,7 @@ def update():
 	_blackPad(bgd, camRect)
 	
 	# Draw all entities
-	for ImageID, RectID in G.CONN.execute(drawQuery).fetchall():
+	for [ImageID, RectID] in G.CONN.execute(drawQuery).fetchall():
 		rect = R.RR[RectID]
 		if rect.colliderect(camRect):
 			G.SCREEN.blit(

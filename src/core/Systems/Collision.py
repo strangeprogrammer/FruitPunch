@@ -84,13 +84,20 @@ def registerT(EntID, OnColl, OffColl):
 
 def fetchT(EntID):
 	return G.CONN.execute(
-		C.CT	.select() \
-			.where(C.CT.c.EntID == EntID)
+		sqa.select([
+			C.CT.c.EntID,
+			C.CT.c.OnColl,
+			C.CT.c.OffColl,
+		]).select_from(
+			C.CT
+		).where(
+			C.CT.c.EntID == EntID
+		)
 	).fetchall()
 
 def instancesT(EntID):
 	return len(G.CONN.execute(
-		C.CT.select().where(C.CT.c.EntID == EntID)
+		C.CT.select(C.CT.c.EntID == EntID)
 	).fetchall())
 
 def deregisterT(EntID, OnColl, OffColl):
@@ -111,13 +118,13 @@ def registerU(EntID):
 
 def instancesU(EntID):
 	return len(G.CONN.execute(
-		C.CG.select().where(C.CG.c.EntID == EntID)
+		C.CU.select(C.CU.c.EntID == EntID)
 	).fetchall())
 
 def deregisterU(EntID):
 	G.CONN.execute(
-		C.CG.delete().where(
-			C.CG.c.EntID == EntID
+		C.CU.delete().where(
+			C.CU.c.EntID == EntID
 		)
 	)
 
