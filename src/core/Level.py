@@ -123,5 +123,4 @@ def unload():
 	Layer.quit()
 	
 	Resource.quit()
-	
 	Component.quit()

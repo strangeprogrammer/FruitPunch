@@ -1,6 +1,4 @@
-#!/bin/sed -e 3q;d;
-
-# DO NOT RUN THIS FILE - import it instead
+#!/bin/python3
 
 # Copyright (C) 2020 Stephen Fedele <32551324+strangeprogrammer@users.noreply.github.com>
 # 
@@ -24,95 +22,72 @@
 
 
 
-# Import this file like:
-#
-# from testdb import ENGINE, DB, CONN, t1, t2
-#
-# And then you will have a simple database with which you can test your ideas.
-
+import pickle
 import sqlalchemy as sqa
 from sqlalchemy import (
 	Table,
 	Column,
 	Integer,
 	String,
+	BLOB,
 	PrimaryKeyConstraint as PKC,
-	ForeignKeyConstraint as FKC,
 )
 
-ENGINE = None
+from testModule import simpleFunc
+
 DB = None
+ENGINE = None
 
 t1 = None
-t2 = None
-t3 = None
 
 def makeDB():
 	global DB, ENGINE
 	ENGINE = sqa.create_engine("sqlite:///:memory:")
 	DB = sqa.MetaData()
 
-def makeTables():
-	global DB, ENGINE, t1, t2, t3
+def makeTable():
+	global DB, ENGINE, t1
 	
 	t1 = Table(
 		"table1", DB,
 		Column("Col1", Integer),
 		Column("Col2", String),
+		Column("Col3", BLOB),
 		PKC("Col1"),
-	)
-	
-	t2 = Table(
-		"table2", DB,
-		Column("Col2", String),
-		Column("Col3", Integer),
-		PKC("Col3"),
-		FKC(["Col2"], ["table1.Col2"]),
-	)
-	
-	t3 = Table(
-		"table3", DB,
-		Column("Col2", String),
-		Column("Col3", Integer),
-		PKC("Col3"),
-		FKC(["Col2"], ["table1.Col2"]),
-		FKC(["Col3"], ["table2.Col3"]),
 	)
 	
 	DB.create_all(ENGINE)
 
-def populateTables():
-	global ENGINE, t1, t2, t3
+def populateTable():
+	global ENGINE, t1
 	
 	with ENGINE.connect() as CONN:
 		CONN.execute(
-			t1.insert(),
-			[
-				{"Col1": 5, "Col2": "hi"},
-				{"Col1": 7, "Col2": "bye"},
-			]
-		)
-		
-		CONN.execute(
-			t2.insert(),
-			[
-				{"Col2": "hi", "Col3": 6},
-				{"Col2": "nope", "Col3": 2},
-			]
-		)
-		
-		CONN.execute(
-			t3.insert(),
-			[
-				{"Col2": "nope", "Col3": 2},
-				{"Col2": "eve", "Col3": 4},
+			t1.insert(), [
+				{
+					"Col1": 2356,
+					"Col2": "lskjdxhf,v",
+					"Col3": pickle.dumps({1, 5, 8}),
+				}, {
+					"Col1": 98765,
+					"Col2": "wlekjrsfdg",
+					"Col3": pickle.dumps(simpleFunc),
+				},
 			]
 		)
 
+def saveTable():
+	global ENGINE
+	
+	with ENGINE.connect() as CONN:
+		with open("./savefile.sql", "w") as file:
+			contents = '\n'.join(CONN.connection.connection.iterdump())
+			file.write(contents)
+
 def main():
 	makeDB()
-	makeTables()
-	populateTables()
-	print("Go nuts.")
+	makeTable()
+	populateTable()
+	saveTable()
 
 main()
