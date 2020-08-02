@@ -45,34 +45,17 @@ from .Systems import (
 	Collision,
 	Flip,
 	Layer,
+	ImageLoader,
 )
 
 imageIDs = {}
 imageProps = {}
 
-def _loadImage(fileName, width = None, height = None):
-	base = pg.image.load(
-		fileName
-	).convert_alpha()
-	
-	base_rect = base.get_rect()
-	
-	if width is not None and height is not None:
-		base = pg.transform.scale(base, (width, height))
-	elif width is not None and height is None:
-		base = pg.transform.scale(base, (width, base_rect.height))
-	elif width is None and height is not None:
-		base = pg.transform.scale(base, (base_rect.width, height))
-	
-	ImageID = R.IR.append(base)
-	
-	return ImageID
-
 def _makeImages(images):
 	global imageIDs, imageProps
 	
 	for k, v in images.items():
-		imageIDs[k] = _loadImage(
+		imageIDs[k] = ImageLoader.create(
 			v["path"],
 			v.get("width", None),
 			v.get("height", None),
@@ -183,7 +166,6 @@ def load(fileName):
 			_makeEntity(entity)
 		
 		R.ER.flush()
-		R.IR.flush()
 		R.RR.flush()
 		
 		return R.IR[imageIDs[level["background"]]]

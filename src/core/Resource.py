@@ -34,6 +34,9 @@ ER = IR = RR = CR = CCR = AAR = None
 def init():
 	global ER, IR, RR, CR, CCR, AAR
 	
+	class Dict(dict): # https://stackoverflow.com/a/2827664
+		pass
+	
 	ER = incrementable(ResPack( # Entity Resource
 		table = C.E,
 		keyCol = C.E.c.EntID,
@@ -42,13 +45,7 @@ def init():
 		}
 	))
 	
-	IR = incrementable(ResPack( # Image Resource
-		table = C.I,
-		keyCol = C.I.c.ImageID,
-		packager = lambda k, v: { # This is only an example for now
-			"ImageID": k
-		}
-	))
+	IR	= incrementable(Dict())
 	
 	RR = incrementable(ResPack( # Rectangle Resource
 		table = C.R,
@@ -57,9 +54,6 @@ def init():
 			"RectID": k
 		}
 	))
-	
-	class Dict(dict): # https://stackoverflow.com/a/2827664
-		pass
 	
 	CR	= incrementable(Dict()) # Collision Resource
 	CCR	= incrementable(Dict()) # Continuous Collision Resource

@@ -31,6 +31,7 @@ from sqlalchemy import (
 	Integer,
 	Boolean,
 	REAL,
+	String,
 	PrimaryKeyConstraint as PKC,
 	ForeignKeyConstraint as FKC,
 	UniqueConstraint as UC,
@@ -54,9 +55,12 @@ def init():
 		PKC("EntID"),
 	)
 	
-	I = Table( # List of all image ID's
+	I = Table( # List of all image ID's and information used to generate them
 		"AllImages", G.DB,
 		Column("ImageID", Integer),
+		Column("Filename", String),
+		Column("Width", Integer),
+		Column("Height", Integer),
 		PKC("ImageID"),
 	)
 	

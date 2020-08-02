@@ -52,6 +52,7 @@ from .Systems import (
 	Strut,
 	Collision,
 	Layer,
+	ImageLoader,
 )
 
 def load(fileName):
@@ -121,6 +122,8 @@ def unload():
 	Flip.quit()
 	
 	Layer.quit()
+	
+	ImageLoader.quit()
 	
 	Resource.quit()
 	Component.quit()
