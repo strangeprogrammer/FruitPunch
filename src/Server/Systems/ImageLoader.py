@@ -42,7 +42,7 @@ def quit():
 def create(Filename, width = None, height = None):
 	base = pg.image.load(
 		Filename
-	).convert_alpha()
+	)#.convert_alpha()
 	
 	base_rect = base.get_rect()
 	

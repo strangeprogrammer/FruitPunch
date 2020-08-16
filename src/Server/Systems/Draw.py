@@ -32,7 +32,6 @@ from ..Misc import Rect
 
 drawQuery = None
 RIPairsQuery = None
-renderSteps = []
 
 from .. import Component as C
 from .. import Resource as R
@@ -71,28 +70,21 @@ def quit():
 		C.DC.delete()
 	)
 	
-	global renderSteps
-	renderSteps = []
-	
 	global bgd
 	bgd = None
 
-def addRenderStep(step):
-	global renderSteps
-	renderSteps.append(step)
-
-def _updateDrawComp(values):
+def updateDrawComp(values):
 	G.CONN.execute(C.DC.delete())			# Empty the drawing table
 	if 0 < len(values):
 		G.CONN.execute(C.DC.insert(), values)	# Repopulate the table with the given values (must be dict-like (have Key-Value pairs), such as a row proxy from sqlalchemy)
 
-def _resetDrawComp():
-	_updateDrawComp(G.CONN.execute(
+def resetDrawComp():
+	updateDrawComp(G.CONN.execute(
 		sqa	.select([C.IC.c.EntID, C.IC.c.ImageID]) \
 			.select_from(C.IC)
 	).fetchall())
 
-def _updateRects():
+def updateRects():
 	global RIPairsQuery
 	
 	for RectID, ImageID in G.CONN.execute(RIPairsQuery).fetchall():
@@ -103,40 +95,31 @@ def _updateRects():
 	
 	R.RR.flush()
 
-def render():
-	_resetDrawComp()
-	
-	global renderSteps
-	for step in renderSteps:
-		_updateDrawComp(step())
-	
-	_updateRects()
+#def _blackPad(bgd, camRect):
+#	badlands = Rect(bgd.get_rect()).cleanCrack(camRect)
+#	badlands = list(map(lambda r: r - camRect, badlands))
+#	outsurfaces = list(map(lambda r: G.SCREEN.subsurface(r), badlands))
+#	
+#	for s in outsurfaces:
+#		s.fill([0, 0, 0])
 
-def _blackPad(bgd, camRect):
-	badlands = Rect(bgd.get_rect()).cleanCrack(camRect)
-	badlands = list(map(lambda r: r - camRect, badlands))
-	outsurfaces = list(map(lambda r: G.SCREEN.subsurface(r), badlands))
-	
-	for s in outsurfaces:
-		s.fill([0, 0, 0])
-
-def update():
-	global bgd, drawQuery
-	
-	camRect = R.RR[Camera.RectID]
-	
-	# Draw the background first
-	G.SCREEN.blit(bgd, (0, 0), camRect)
-	_blackPad(bgd, camRect)
-	
-	# Draw all entities
-	for [ImageID, RectID] in G.CONN.execute(drawQuery).fetchall():
-		rect = R.RR[RectID]
-		if rect.colliderect(camRect):
-			G.SCREEN.blit(
-				R.IR[ImageID],
-				rect - camRect,
-				Rect(0, 0, rect.width, rect.height)
-			)
-	
-	pg.display.flip()
+#def update():
+#	global bgd, drawQuery
+#	
+#	camRect = R.RR[Camera.RectID]
+#	
+#	# Draw the background first
+#	G.SCREEN.blit(bgd, (0, 0), camRect)
+#	_blackPad(bgd, camRect)
+#	
+#	# Draw all entities
+#	for [ImageID, RectID] in G.CONN.execute(drawQuery).fetchall():
+#		rect = R.RR[RectID]
+#		if rect.colliderect(camRect):
+#			G.SCREEN.blit(
+#				R.IR[ImageID],
+#				rect - camRect,
+#				Rect(0, 0, rect.width, rect.height)
+#			)
+#	
+#	pg.display.flip()

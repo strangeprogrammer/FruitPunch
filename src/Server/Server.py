@@ -1,4 +1,6 @@
-#!/bin/python3
+#!/bin/sed -e 3q;d;
+
+# DO NOT RUN THIS FILE - import it instead
 
 # Copyright (C) 2020 Stephen Fedele <32551324+strangeprogrammer@users.noreply.github.com>
 # 
@@ -26,7 +28,7 @@ import pygame as pg
 import sqlalchemy as sqa
 import sys
 
-from core import (
+from . import (
 	Events,
 	G,
 	Component as C,
@@ -34,11 +36,12 @@ from core import (
 	LevelLoader,
 	Time,
 	Level,
+	Radio,
 )
 
-from core.Misc import LevelLoadException
+from .Misc import LevelLoadException
 
-from core.Systems import (
+from .Systems import (
 	Camera,
 	Draw,
 	Position,
@@ -46,6 +49,7 @@ from core.Systems import (
 	Velocity,
 	RotVel,
 	Accel,
+	Flip,
 	FlipDoll,
 	RotDoll,
 	Strut,
@@ -56,7 +60,7 @@ import itertools
 counter = itertools.count()
 
 def update():
-	Events.update()
+	Radio.update()
 	
 	Accel.update()
 	Velocity.update()
@@ -65,7 +69,10 @@ def update():
 	FlipDoll.update()
 	RotDoll.update()
 	
-	Draw.render()
+	Draw.resetDrawComp()
+	Draw.updateDrawComp(Flip.render())
+	Draw.updateDrawComp(Rotation.render())
+	Draw.updateRects()
 	
 	Position.update()
 	
@@ -74,32 +81,26 @@ def update():
 	Strut.update()
 	Position.update() # I hate double-updating the positions, but this is the best way that I know of right now to make 'bumping' work smoothly with struts
 	
-	Camera.update()
+#	Camera.update()
 	
-	Draw.update()
+#	Draw.update()
 	
 	Rotation.collect()
 	
 	Time.update()
 	
-	global counter
-	if next(counter) % 60 == 0:
-		print(Time._clock.get_fps())
+#	global counter
+#	if next(counter) % 60 == 0:
+#		print(Time._clock.get_fps())
 
-goflag = True
-
-def quit(*args, **kwargs):
-	global goflag
-	goflag = False
-
-def main():
+def main(SERVTOCONT):
+	G.SERVTOCONT = SERVTOCONT
+	
 	pg.init()
-	Events.register(pg.QUIT, quit)
 	
 	Level.load("./LEVELS/tutorial.json")
 	
-	global goflag
-	while goflag:
+	while G.ALIVE:
 		try:
 			update()
 		except LevelLoadException as e:
@@ -109,5 +110,3 @@ def main():
 	Level.unload()
 	pg.quit()
 	sys.exit(0)
-
-main()

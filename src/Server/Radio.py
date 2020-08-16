@@ -24,10 +24,25 @@
 
 
 
-"""'G' for 'Globals'."""
+from . import G
 
-ENGINE	= None
-DB	= None
-CONN	= None
+from ..Common.SerDes import (
+	recvStr
+)
 
-SCREEN	= None
+def doController():
+	while G.SERVTOCONT.poll():
+		command = recvStr(G.SERVTOCONT)
+		if command == "echo":
+			print(recvStr(G.SERVTOCONT))
+		elif command == "quit":
+			G.ALIVE = False
+		else:
+			raise Exception("Command received from controller was undefined...")
+
+def doProxies():
+	pass
+
+def update():
+	doController()
+	doProxies()

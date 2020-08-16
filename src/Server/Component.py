@@ -40,14 +40,14 @@ from sqlalchemy import (
 
 from . import G
 
-E = I = R = RECC = IC = DC = LC = POSC = ROTC = VC = RVC = AC = PLYC = FC = FI = FDC = RDC = SBC = SC = CT = CU = None
+E = I = R = RECC = IC = DC = LC = POSC = ROTC = VC = RVC = AC = FC = FI = FDC = RDC = SBC = SC = CT = CU = None
 
 def init():
 	G.ENGINE = sqa.create_engine("sqlite:///:memory:")
 	G.DB = sqa.MetaData()
 	G.CONN = G.ENGINE.connect()
 	
-	global E, I, R, RECC, IC, DC, LC, POSC, ROTC, VC, RVC, AC, PLYC, FC, FI, FDC, RDC, SBC, SC, CT, CU
+	global E, I, R, RECC, IC, DC, LC, POSC, ROTC, VC, RVC, AC, FC, FI, FDC, RDC, SBC, SC, CT, CU
 	
 	E = Table( # List of all entity ID's
 		"AllEnts", G.DB,
@@ -147,13 +147,6 @@ def init():
 		Column("EntID", Integer),
 		Column("AccX", REAL),
 		Column("AccY", REAL),
-		PKC("EntID"),
-		FKC(["EntID"], ["AllEnts.EntID"]),
-	)
-	
-	PLYC = Table( # Player-controlled entities
-		"PlayerComp", G.DB,
-		Column("EntID", Integer),
 		PKC("EntID"),
 		FKC(["EntID"], ["AllEnts.EntID"]),
 	)

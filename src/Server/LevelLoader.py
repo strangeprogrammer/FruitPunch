@@ -87,19 +87,17 @@ def _makeEntRect(EntID, entity, rect = None):
 	
 	return rect
 
-def _makeEntPlayer(EntID):
-	G.CONN.execute(C.PLYC.insert().values(EntID = EntID))
-	
-	Flip.registerImage(Image.fetch(EntID))
-	Flip.register(EntID)
-	
-	Velocity.register(EntID)
-	Accel.register(EntID)
-	Accel.store(EntID, 0, 0.8 / 1000)
-	Rotation.register(EntID)
-	RotVel.register(EntID)
-	
-	Collision.registerU(EntID)
+#def _makeEntPlayer(EntID):
+#	Flip.registerImage(Image.fetch(EntID))
+#	Flip.register(EntID)
+#	
+#	Velocity.register(EntID)
+#	Accel.register(EntID)
+#	Accel.store(EntID, 0, 0.8 / 1000)
+#	Rotation.register(EntID)
+#	RotVel.register(EntID)
+#	
+#	Collision.registerU(EntID)
 
 def _makeEntWall(EntID, entity):
 	eject = entity["eject"]
@@ -144,10 +142,10 @@ def _makeEntity(entity):
 	Position.register(EntID)
 	Position.store(EntID, *rect.center)
 	
-	if entity["type"] == "player":
-		_makeEntPlayer(EntID)
-		return
-	elif entity["type"] == "wall":
+#	if entity["type"] == "player":
+#		_makeEntPlayer(EntID)
+#		return
+	if entity["type"] == "wall":
 		_makeEntWall(EntID, entity)
 		return
 	elif entity["type"] == "platform":

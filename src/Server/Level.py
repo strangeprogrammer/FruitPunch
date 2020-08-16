@@ -73,13 +73,11 @@ def load(fileName):
 	
 	Collision.init()
 	
-	Camera.init()
+#	Camera.init()
 	
 	Draw.init()
-	Draw.addRenderStep(Flip.render)
-	Draw.addRenderStep(Rotation.render)
 	
-	PlayerMove.init()
+#	PlayerMove.init()
 	
 	CollHandLib.init()
 	
@@ -89,23 +87,23 @@ def load(fileName):
 	
 	Draw.bgd = LevelLoader.load(fileName)
 	
-	Camera.bind(
-		G.CONN.execute(
-			sqa	.select([C.PLYC.c.EntID]) \
-				.select_from(C.PLYC)
-		).scalar()
-	)
+#	Camera.bind(
+#		G.CONN.execute(
+#			sqa	.select([C.PLYC.c.EntID]) \
+#				.select_from(C.PLYC)
+#		).scalar()
+#	)
 	
-	Camera.update()
+#	Camera.update()
 
 def unload():
 	CollHandLib.quit()
 	
-	PlayerMove.quit()
+#	PlayerMove.quit()
 	
 	Draw.quit()
 	
-	Camera.quit()
+#	Camera.quit()
 	
 	Collision.quit()
 	

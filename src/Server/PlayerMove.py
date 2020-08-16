@@ -38,12 +38,14 @@ from .Systems import Flip
 from . import Component as C
 
 def init():
-	Events.register(pg.KEYDOWN, keyDownHandler)
-	Events.register(pg.KEYUP, keyUpHandler)
+#	Events.register(pg.KEYDOWN, keyDownHandler)
+#	Events.register(pg.KEYUP, keyUpHandler)
+	pass
 
 def quit():
-	Events.deregister(pg.KEYDOWN)
-	Events.deregister(pg.KEYUP)
+#	Events.deregister(pg.KEYDOWN)
+#	Events.deregister(pg.KEYUP)
+	pass
 
 def keyDownHandler(e):
 	if e.key in [
