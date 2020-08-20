@@ -1,6 +1,4 @@
-#!/bin/sed -e 3q;d;
-
-# DO NOT RUN THIS FILE - import it instead
+#!/bin/python3
 
 # Copyright (C) 2020 Stephen Fedele <32551324+strangeprogrammer@users.noreply.github.com>
 # 
@@ -24,37 +22,18 @@
 
 
 
-from . import G
-
 from ..Common.SerDes import (
 	sendStr,
 	recvStr,
 )
 
-proxies = []
-
-def doController():
-	while G.SERVTOCONT.poll():
-		command = recvStr(G.SERVTOCONT)
-		if command == "addproxy":
-			global proxies
-			proxies.append(G.SERVTOCONT.recv()) # Receive a pipe to a proxy from the controller - this is a danger point since it uses pickling internally
-		elif command == "quit":
-			G.ALIVE = False
-		else:
-			raise Exception("Command received from controller was undefined...")
-
-def doProxies():
-	global proxies
-	for proxy in proxies:
-		while proxy.poll():
-			command = recvStr(proxy)
-			
-			if command == "echo":
-				sendStr(proxy, recvStr(proxy))
-			else:
-				raise Exception("Command received from proxy was undefined...")
-
-def update():
-	doController()
-	doProxies()
+def DebugProxy(CLITOSERV):
+	command = input().strip()
+	while command != "quit":
+		sendStr(CLITOSERV, command)
+		
+		if command == "echo":
+			sendStr(CLITOSERV, input().strip())
+			print(recvStr(CLITOSERV))
+		
+		command = input().strip()

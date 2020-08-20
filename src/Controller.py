@@ -27,12 +27,13 @@
 import multiprocessing as mp
 
 from .Server import Server
+from .DebugProxy.DebugProxy import DebugProxy
 
 from .Common.SerDes import (
 	sendStr,
 )
 
-def main():
+def setMPMethod():
 	startmethods = mp.get_all_start_methods()
 	if "forkserver" in startmethods:
 		startmethod = "forkserver"
@@ -41,16 +42,19 @@ def main():
 	else:
 		startmethod = "spawn"
 	mp.set_start_method(startmethod)
+
+def main():
+	setMPMethod()
 	
 	[CONTTOSERV, SERVTOCONT] = mp.Pipe()
-	
 	ServerProc = mp.Process(target = Server.main, args = [SERVTOCONT])
 	ServerProc.start()
 	
-	echoed = input()
-	sendStr(CONTTOSERV, "echo")
-	sendStr(CONTTOSERV, echoed)
+	[CLITOSERV, SERVTOCLI] = mp.Pipe()
+	sendStr(CONTTOSERV, "addproxy")
+	CONTTOSERV.send(SERVTOCLI)
+	
+	DebugProxy(CLITOSERV)
 	
 	sendStr(CONTTOSERV, "quit")
-	
 	ServerProc.join()
