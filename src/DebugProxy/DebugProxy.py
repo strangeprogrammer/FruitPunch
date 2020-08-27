@@ -22,20 +22,27 @@
 
 
 
-from ..Common.SerDes import (
-	serialize,
-	deserialize,
-)
+import json
+
+from ..Common import SerDes
 
 def DebugProxy(CLITOSERV):
-	command = input().strip()
-	while command != "quit":
-		CLITOSERV.send_bytes(serialize(command))
+	while True:
+		raw = input().strip()
+		commands = raw.split()
 		
-		if command == "echo":
-			CLITOSERV.send_bytes(serialize(input().strip()))
-			response = deserialize(CLITOSERV.recv_bytes())
-			assert type(response) == str # TODO: Replace this with something cleaner
-			print(response)
+		if "quit" in commands:
+			break
 		
-		command = input().strip()
+		CLITOSERV.send_bytes(SerDes.Ser(raw))
+		
+		for command in commands:
+			if command == "echo":
+				CLITOSERV.send_bytes(SerDes.Ser(input().strip()))
+				response = SerDes.Des(CLITOSERV.recv_bytes())
+				assert type(response) == str # TODO: Do something better than this
+				print(response)
+			elif command == "getdrawn":
+				response = SerDes.Des(CLITOSERV.recv_bytes())
+				assert type(response) == str # TODO: Do something better than this
+				print(json.loads(response))

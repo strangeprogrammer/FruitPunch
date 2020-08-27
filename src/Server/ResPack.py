@@ -26,20 +26,26 @@
 
 from . import G
 
-class SyncDict(dict):
-	def __init__(self, *args, getter = None, inserter = None, updater = None, deleter = None, **kwargs):
-		super().__init__()
-		self.getter = getter
-		self.inserter = inserter
+class InvalidatingMixin(dict):
+	def invalidate(self, key):
+		self.__setitem__(key, super().__getitem__(key)) # Forcefully flush a cache element
+		if "invalidate" in super().__dict__:
+			super().invalidate(key)
+
+class CrudDict(InvalidatingMixin, dict):
+	def __init__(self, *args, creator = None, retriever = None, updater = None, deleter = None, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.creator = creator
+		self.retriever = retriever
 		self.updater = updater
 		self.deleter = deleter
 	
 	def __getitem__(self, key):
-		return self.getter(super(), key)
+		return self.retriever(super(), key)
 	
 	def __setitem__(self, key, value):
 		if key not in super().keys():
-			self.inserter(key, value)
+			self.creator(key, value)
 		elif super().__getitem__(key) != value: # Speed up by caching hash values?
 			self.updater(key, value)
 		
@@ -49,9 +55,6 @@ class SyncDict(dict):
 		self.deleter(key)
 		
 		super().__delitem__(key)
-	
-	def invalidate(self, key):
-		self.updater(key, super().__getitem__(key)) # Flush the value within the dictionary cache
 
 class TaskQueue(list):
 	def __init__(self, *args, runner = None, **kwargs):
@@ -64,36 +67,37 @@ class TaskQueue(list):
 		
 		self.clear()
 
-class ResPack(SyncDict):
-	def __init__(self, table, keyCol, packager):
-		self.tq = TaskQueue(
+class ResPack(CrudDict):
+	def __init__(self, keyCol, packager):
+		self.__tq = TaskQueue(
 			runner = G.CONN.execute
 		)
 		
+		table = keyCol.table
 		colname = keyCol.name
 		
-		self.sd = super().__init__(
-			getter = lambda d, k:
-				d.__getitem__(k),
-			
-			inserter = lambda k, v:
-				self.tq.append([
+		super().__init__(
+			creator = lambda k, v:
+				self.__tq.append([
 					table.insert(),
 					packager(k, v)
 				]),
 			
+			retriever = lambda d, k:
+				d.__getitem__(k),
+			
 			updater = lambda k, v:
-				self.tq.append([
+				self.__tq.append([
 					table.update().where(keyCol == k),
 					packager(k, v)
 				]),
 			
 			deleter = lambda k:
-				self.tq.append([
+				self.__tq.append([
 					table.delete().where(keyCol == k)
 				]),
 		)
 	
 	def flush(self):
 		with G.CONN.begin():
-			self.tq.flush()
+			self.__tq.flush()

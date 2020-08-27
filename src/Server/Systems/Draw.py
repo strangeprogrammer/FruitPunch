@@ -44,8 +44,8 @@ def init():
 	global drawQuery, RIPairsQuery
 	
 	drawQuery = sqa.select([
-		C.DC.c.ImageID,
 		C.RECC.c.RectID,
+		C.DC.c.ImageID,
 	]).select_from(
 		C.LC.join(C.DC.join(C.RECC,
 			C.DC.c.EntID == C.RECC.c.EntID),
@@ -113,7 +113,7 @@ def updateRects():
 #	_blackPad(bgd, camRect)
 #	
 #	# Draw all entities
-#	for [ImageID, RectID] in G.CONN.execute(drawQuery).fetchall():
+#	for [RectID, ImageID] in G.CONN.execute(drawQuery).fetchall():
 #		rect = R.RR[RectID]
 #		if rect.colliderect(camRect):
 #			G.SCREEN.blit(

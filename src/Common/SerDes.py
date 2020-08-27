@@ -60,7 +60,7 @@ def peel(bobj):
 
 ### Front-end Functions
 
-def serialize(x): # Serialize
+def Ser(x): # Serialize
 	if type(x) == str:
 		return pascalify(b"str") + pascalify(strToBytes(x))
 	elif type(x) == int:
@@ -68,12 +68,12 @@ def serialize(x): # Serialize
 	elif type(x) == list:
 		bobj = b""
 		for y in x:
-			bobj += pascalify(serialize(y))
+			bobj += pascalify(Ser(y))
 		return pascalify(b"list") + cap(bobj, len(x))
 	else:
 		raise Exception("Couldn't serialize object: " + repr(x))
 
-def deserialize(bobj): # Deserialize
+def Des(bobj): # Deserialize
 	[t, bobj] = peel(bobj)
 	if t == b"str":
 		return bytesToStr(peel(bobj)[0])
@@ -84,7 +84,7 @@ def deserialize(bobj): # Deserialize
 		[numelems, bobj] = uncap(bobj)
 		while 0 < numelems:
 			[y, bobj] = peel(bobj)
-			x.append(deserialize(y))
+			x.append(Des(y))
 			numelems -= 1
 		return x
 	else:

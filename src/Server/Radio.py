@@ -24,23 +24,30 @@
 
 
 
-from . import G
+import json
+from itertools import count
 
-from ..Common.SerDes import (
-	serialize,
-	deserialize,
+from ..Common import SerDes
+
+from . import G
+from .Systems import (
+	Draw,
 )
 
 proxies = []
+proxyGen = count()
 
 def doController():
 	while G.SERVTOCONT.poll():
-		command = deserialize(G.SERVTOCONT.recv_bytes())
-		assert type(command) == str # TODO: Replace this with something cleaner
+		command = SerDes.Des(G.SERVTOCONT.recv_bytes())
+		assert type(command) == str # TODO: Do something better than this
 		
 		if command == "addproxy":
-			global proxies
-			proxies.append(G.SERVTOCONT.recv()) # Receive a pipe to a proxy from the controller - this is a danger point since it uses pickling internally
+			global proxies, proxyGen
+			proxies.append([
+				G.SERVTOCONT.recv(), # Receive a pipe to a proxy from the controller - this is a danger point since it uses pickling internally
+				next(proxyGen),
+			])
 		elif command == "quit":
 			G.ALIVE = False
 		else:
@@ -48,17 +55,26 @@ def doController():
 
 def doProxies():
 	global proxies
-	for proxy in proxies:
+	for [proxy, proxyID] in proxies:
 		while proxy.poll():
-			command = deserialize(proxy.recv_bytes())
-			assert type(command) == str # TODO: Replace this with something cleaner
+			commands = SerDes.Des(proxy.recv_bytes())
+			assert type(commands) == str # TODO: Do something better than this
 			
-			if command == "echo":
-				response = deserialize(proxy.recv_bytes())
-				assert type(response) == str # TODO: Replace this with something cleaner
-				proxy.send_bytes(serialize(response))
-			else:
-				raise Exception("Command received from proxy was undefined...")
+			for command in commands.split():
+				if command == "echo":
+					response = SerDes.Des(proxy.recv_bytes())
+					assert type(response) == str # TODO: Do something better than this
+					proxy.send_bytes(SerDes.Ser(response))
+				elif command == "getdrawn":
+					proxy.send_bytes(SerDes.Ser(
+						json.dumps(
+							list(map(dict,
+								G.CONN.execute(Draw.drawQuery).fetchall()
+							))
+						)
+					))
+				else:
+					raise Exception("Command received from proxy was undefined...")
 
 def update():
 	doController()

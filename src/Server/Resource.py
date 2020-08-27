@@ -38,7 +38,6 @@ def init():
 		pass
 	
 	ER = incrementable(ResPack( # Entity Resource
-		table = C.E,
 		keyCol = C.E.c.EntID,
 		packager = lambda k, v: { # This is only an example for now
 			"EntID": k
@@ -48,7 +47,6 @@ def init():
 	IR	= incrementable(Dict())
 	
 	RR = incrementable(ResPack( # Rectangle Resource
-		table = C.R,
 		keyCol = C.R.c.RectID,
 		packager = lambda k, v: { # This is only an example for now
 			"RectID": k
