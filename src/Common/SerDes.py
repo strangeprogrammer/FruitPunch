@@ -24,38 +24,68 @@
 
 
 
-### Raw Conversion Functions
+### Backend Functions
 
 def strToBytes(s):
-	return bytes(str(s), 'utf-8')
+	return bytes(str(s), "utf-8")
 
 def bytesToStr(byteobj):
-	return str(byteobj, 'utf-8')
+	return str(byteobj, "utf-8")
 
-def intToBytes(n):
-	return strToBytes(int(n))
-
-def bytesToInt(byteobj):
-	return int(bytesToStr(byteobj))
-
-### Pipe Manipulation Functions
-
-def sendInt(pipe, n):
-	return pipe.send_bytes(
-		intToBytes(n)
+def getmeasures(bobj):
+	datastart = bobj.index(b" ") + 1 # NOTE: The constant '1' is the size of the b" "
+	blength = int(
+		bytesToStr(
+			bobj[ : datastart - 1]
+		)
 	)
+	return [datastart, blength]
 
-def sendStr(pipe, s):
-	return pipe.send_bytes(
-		strToBytes(s)
-	)
+def cap(bobj, n):
+	return strToBytes(str(n)) + b" " + bobj
 
-def recvInt(pipe):
-	return bytesToInt(
-		pipe.recv_bytes()
-	)
+def pascalify(bobj):
+	return cap(bobj, len(bobj))
 
-def recvStr(pipe):
-	return bytesToStr(
-		pipe.recv_bytes()
-	)
+def uncap(bobj):
+	[datastart, blength] = getmeasures(bobj)
+	return [blength, bobj[datastart : ]]
+
+def peel(bobj):
+	[datastart, blength] = getmeasures(bobj)
+	return [
+		bobj[datastart : datastart + blength],	# What we expect to receive given 'blength'
+		bobj[datastart + blength : ],		# What we didn't expect to receive
+	]
+
+### Front-end Functions
+
+def serialize(x): # Serialize
+	if type(x) == str:
+		return pascalify(b"str") + pascalify(strToBytes(x))
+	elif type(x) == int:
+		return pascalify(b"int") + pascalify(strToBytes(x))
+	elif type(x) == list:
+		bobj = b""
+		for y in x:
+			bobj += pascalify(serialize(y))
+		return pascalify(b"list") + cap(bobj, len(x))
+	else:
+		raise Exception("Couldn't serialize object: " + repr(x))
+
+def deserialize(bobj): # Deserialize
+	[t, bobj] = peel(bobj)
+	if t == b"str":
+		return bytesToStr(peel(bobj)[0])
+	elif t == b"int":
+		return int(bytesToStr(peel(bobj)[0]))
+	elif t == b"list":
+		x = []
+		[numelems, bobj] = uncap(bobj)
+		while 0 < numelems:
+			[y, bobj] = peel(bobj)
+			x.append(deserialize(y))
+			numelems -= 1
+		return x
+	else:
+		raise Exception("Couldn't deserialize object: " + repr(bobj))

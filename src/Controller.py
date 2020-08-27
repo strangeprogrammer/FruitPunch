@@ -30,7 +30,7 @@ from .Server import Server
 from .DebugProxy.DebugProxy import DebugProxy
 
 from .Common.SerDes import (
-	sendStr,
+	serialize,
 )
 
 def setMPMethod():
@@ -51,10 +51,10 @@ def main():
 	ServerProc.start()
 	
 	[CLITOSERV, SERVTOCLI] = mp.Pipe()
-	sendStr(CONTTOSERV, "addproxy")
+	CONTTOSERV.send_bytes(serialize("addproxy"))
 	CONTTOSERV.send(SERVTOCLI)
 	
 	DebugProxy(CLITOSERV)
 	
-	sendStr(CONTTOSERV, "quit")
+	CONTTOSERV.send_bytes(serialize("quit"))
 	ServerProc.join()

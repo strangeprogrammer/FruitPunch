@@ -27,15 +27,17 @@
 from . import G
 
 from ..Common.SerDes import (
-	sendStr,
-	recvStr,
+	serialize,
+	deserialize,
 )
 
 proxies = []
 
 def doController():
 	while G.SERVTOCONT.poll():
-		command = recvStr(G.SERVTOCONT)
+		command = deserialize(G.SERVTOCONT.recv_bytes())
+		assert type(command) == str # TODO: Replace this with something cleaner
+		
 		if command == "addproxy":
 			global proxies
 			proxies.append(G.SERVTOCONT.recv()) # Receive a pipe to a proxy from the controller - this is a danger point since it uses pickling internally
@@ -48,10 +50,13 @@ def doProxies():
 	global proxies
 	for proxy in proxies:
 		while proxy.poll():
-			command = recvStr(proxy)
+			command = deserialize(proxy.recv_bytes())
+			assert type(command) == str # TODO: Replace this with something cleaner
 			
 			if command == "echo":
-				sendStr(proxy, recvStr(proxy))
+				response = deserialize(proxy.recv_bytes())
+				assert type(response) == str # TODO: Replace this with something cleaner
+				proxy.send_bytes(serialize(response))
 			else:
 				raise Exception("Command received from proxy was undefined...")
 

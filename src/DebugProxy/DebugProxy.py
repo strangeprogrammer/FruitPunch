@@ -23,17 +23,19 @@
 
 
 from ..Common.SerDes import (
-	sendStr,
-	recvStr,
+	serialize,
+	deserialize,
 )
 
 def DebugProxy(CLITOSERV):
 	command = input().strip()
 	while command != "quit":
-		sendStr(CLITOSERV, command)
+		CLITOSERV.send_bytes(serialize(command))
 		
 		if command == "echo":
-			sendStr(CLITOSERV, input().strip())
-			print(recvStr(CLITOSERV))
+			CLITOSERV.send_bytes(serialize(input().strip()))
+			response = deserialize(CLITOSERV.recv_bytes())
+			assert type(response) == str # TODO: Replace this with something cleaner
+			print(response)
 		
 		command = input().strip()
