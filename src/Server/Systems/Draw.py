@@ -28,7 +28,7 @@ import pygame as pg
 import sqlalchemy as sqa
 
 from .. import G
-from ..Misc import Rect
+from ...Common.Misc import Rect
 
 drawQuery = None
 RIPairsQuery = None

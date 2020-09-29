@@ -24,39 +24,28 @@
 
 
 
-from .ResPack import ResPack
-from ..Common.Misc import incrementable
+import pygame as pg
 
-from . import Component as C
-
-ER = IR = RR = CR = CCR = AAR = None
+from .ToBeGreen import (
+	SD,
+	Ser,
+	Des,
+)
 
 def init():
-	global ER, IR, RR, CR, CCR, AAR
+	def _pgs_ser(x):
+		return Ser([
+			x.get_size(),
+			pg.image.tostring(x, "RGBA"),
+		])
 	
-	class Dict(dict): # https://stackoverflow.com/a/2827664
-		pass
+	def _pgs_des(bobj):
+		[size, raw] = Des(bobj)
+		return pg.image.fromstring(raw, size, "RGBA")
 	
-	ER = incrementable(ResPack( # Entity Resource
-		keyCol = C.E.c.EntID,
-		packager = lambda k, v: { # This is only an example for now
-			"EntID": k
-		}
-	))
-	
-	IR	= incrementable(Dict())
-	
-	RR = incrementable(ResPack( # Rectangle Resource
-		keyCol = C.R.c.RectID,
-		packager = lambda k, v: { # This is only an example for now
-			"RectID": k
-		}
-	))
-	
-	CR	= incrementable(Dict()) # Collision Resource
-	CCR	= incrementable(Dict()) # Continuous Collision Resource
-	AAR	= incrementable(Dict()) # Auxilliary Attribute Resource
+	SD.serers[pg.Surface] = [pg.Surface.__name__, _pgs_ser]
+	SD.desers[pg.Surface.__name__] = _pgs_des
 
 def quit():
-	global ER, IR, RR, CR, CCR, AAR
-	ER = IR = RR = CR = CCR = AAR = None
+	SD.serers[pg.Surface] = None
+	SD.desers[pg.Surface.__name__] = None

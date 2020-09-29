@@ -22,11 +22,20 @@
 
 
 
-import json
+import pygame as pg
 
-from ..Common import SerDes
+from ..Common.ToBeGreen import (
+	Ser,
+	V,
+	Ver,
+	Des,
+)
+
+from ..Common import ExtraSerDes as ESD
 
 def DebugProxy(CLITOSERV):
+	ESD.init()
+	
 	while True:
 		raw = input().strip()
 		commands = raw.split()
@@ -34,15 +43,34 @@ def DebugProxy(CLITOSERV):
 		if "quit" in commands:
 			break
 		
-		CLITOSERV.send_bytes(SerDes.Ser(raw))
+		CLITOSERV.send_bytes(Ser(raw))
 		
 		for command in commands:
 			if command == "echo":
-				CLITOSERV.send_bytes(SerDes.Ser(input().strip()))
-				response = SerDes.Des(CLITOSERV.recv_bytes())
-				assert type(response) == str # TODO: Do something better than this
+				CLITOSERV.send_bytes(Ser(input().strip()))
+				response = Des(CLITOSERV.recv_bytes())
+				assert Ver(response, str), response
 				print(response)
 			elif command == "getdrawn":
-				response = SerDes.Des(CLITOSERV.recv_bytes())
-				assert type(response) == str # TODO: Do something better than this
-				print(json.loads(response))
+				response = Des(CLITOSERV.recv_bytes())
+				assert Ver(response, V.LIST(list)), response
+				print(response)
+			elif command == "getimages":
+				response = Des(CLITOSERV.recv_bytes())
+				assert Ver(response, V.LIST(V.PRODUCT(int, pg.Surface)))
+				print(response)
+			elif command == "getrects":
+				response = Des(CLITOSERV.recv_bytes())
+				assert Ver(response, V.LIST(
+					V.PRODUCT(int, V.PRODUCT(
+						int,
+						int,
+						int,
+						int,
+					))
+				))
+				print(response)
+			else:
+				raise Exception("Command input to DebugProxy was undefined...")
+	
+	ESD.quit()

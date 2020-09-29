@@ -52,6 +52,15 @@ class Rect(pg.Rect):
 	def isValid(self):
 		return 0 < self.width and 0 < self.height
 	
+	@property
+	def params(self):
+		return [
+			self.left,
+			self.top,
+			self.width,
+			self.height,
+		]
+	
 	def crackx(self, other):
 		"""'other' is the rectangle being cracked."""
 		firstLeft = other.left

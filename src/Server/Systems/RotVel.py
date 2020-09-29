@@ -28,7 +28,7 @@ import sqlalchemy as sqa
 import math
 
 from .. import G
-from .. import Misc
+from ...Common import Misc
 from .. import Time
 
 from .. import Component as C

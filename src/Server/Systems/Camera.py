@@ -30,7 +30,7 @@ from .. import Component as C
 from .. import Resource as R
 
 from .. import G
-from ..Misc import Rect
+from ...Common.Misc import Rect
 
 from . import Position
 from . import Velocity

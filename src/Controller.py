@@ -29,7 +29,7 @@ import multiprocessing as mp
 from .Server import Server
 from .DebugProxy.DebugProxy import DebugProxy
 
-from .Common import SerDes
+from .Common.ToBeGreen import Ser
 
 def setMPMethod():
 	startmethods = mp.get_all_start_methods()
@@ -49,10 +49,10 @@ def main():
 	ServerProc.start()
 	
 	[CLITOSERV, SERVTOCLI] = mp.Pipe()
-	CONTTOSERV.send_bytes(SerDes.Ser("addproxy"))
+	CONTTOSERV.send_bytes(Ser("addproxy"))
 	CONTTOSERV.send(SERVTOCLI)
 	
 	DebugProxy(CLITOSERV)
 	
-	CONTTOSERV.send_bytes(SerDes.Ser("quit"))
+	CONTTOSERV.send_bytes(Ser("quit"))
 	ServerProc.join()

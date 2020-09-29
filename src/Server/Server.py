@@ -39,7 +39,8 @@ from . import (
 	Radio,
 )
 
-from .Misc import LevelLoadException
+from ..Common.Misc import LevelLoadException
+from ..Common import ExtraSerDes as ESD
 
 from .Systems import (
 	Camera,
@@ -96,6 +97,7 @@ def update():
 def main(SERVTOCONT):
 	G.SERVTOCONT = SERVTOCONT
 	
+	ESD.init()
 	pg.init()
 	
 	Level.load("./LEVELS/tutorial.json")
@@ -108,5 +110,8 @@ def main(SERVTOCONT):
 			Level.load(e.filename)
 	
 	Level.unload()
+	
 	pg.quit()
+	ESD.quit()
+	
 	sys.exit(0)

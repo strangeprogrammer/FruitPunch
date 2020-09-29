@@ -30,7 +30,7 @@ import pygame as pg
 
 from . import G
 from . import CollHandLib as CHL
-from .Misc import Rect
+from ..Common.Misc import Rect
 from . import Component as C
 from . import Resource as R
 

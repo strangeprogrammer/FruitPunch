@@ -24,12 +24,17 @@
 
 
 
-import json
+import pygame as pg
 from itertools import count
 
-from ..Common import SerDes
+from ..Common.ToBeGreen import (
+	Ser,
+	Ver,
+	Des,
+)
 
 from . import G
+from . import Resource as R
 from .Systems import (
 	Draw,
 )
@@ -39,7 +44,7 @@ proxyGen = count()
 
 def doController():
 	while G.SERVTOCONT.poll():
-		command = SerDes.Des(G.SERVTOCONT.recv_bytes())
+		command = Des(G.SERVTOCONT.recv_bytes())
 		assert type(command) == str # TODO: Do something better than this
 		
 		if command == "addproxy":
@@ -57,21 +62,33 @@ def doProxies():
 	global proxies
 	for [proxy, proxyID] in proxies:
 		while proxy.poll():
-			commands = SerDes.Des(proxy.recv_bytes())
-			assert type(commands) == str # TODO: Do something better than this
+			commands = Des(proxy.recv_bytes())
+			assert Ver(commands, str)
 			
 			for command in commands.split():
 				if command == "echo":
-					response = SerDes.Des(proxy.recv_bytes())
-					assert type(response) == str # TODO: Do something better than this
-					proxy.send_bytes(SerDes.Ser(response))
+					response = Des(proxy.recv_bytes())
+					assert Ver(response, str)
+					proxy.send_bytes(Ser(response))
 				elif command == "getdrawn":
-					proxy.send_bytes(SerDes.Ser(
-						json.dumps(
-							list(map(dict,
-								G.CONN.execute(Draw.drawQuery).fetchall()
-							))
-						)
+					proxy.send_bytes(Ser(
+						list(map(list,
+							G.CONN.execute(Draw.drawQuery).fetchall()
+						))
+					))
+				elif command == "getimages":
+					proxy.send_bytes(Ser(
+						list(map(
+							lambda t: [t[0], t[1]], # Where 't[0]' is the ImageID and 't[1]' is the pygame surface
+							R.IR.items(),
+						))
+					))
+				elif command == "getrects":
+					proxy.send_bytes(Ser(
+						list(map(
+							lambda t: [t[0], t[1].params], # Where 't[0]' is the RectID and 't[1]' is the rectangle
+							R.RR.items(),
+						))
 					))
 				else:
 					raise Exception("Command received from proxy was undefined...")

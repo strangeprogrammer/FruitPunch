@@ -1,0 +1,3 @@
+[submodule "src/Common/ToBeGreen"]
+	path = src/Common/ToBeGreen
+	url = https://github.com/strangeprogrammer/ToBeGreen.git
