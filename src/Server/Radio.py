@@ -72,20 +72,20 @@ def doProxies():
 					proxy.send_bytes(Ser(response))
 				elif command == "getdrawn":
 					proxy.send_bytes(Ser(
-						list(map(list,
+						dict(map(list,
 							G.CONN.execute(Draw.drawQuery).fetchall()
 						))
 					))
 				elif command == "getimages":
 					proxy.send_bytes(Ser(
-						list(map(
+						dict(map(
 							lambda t: [t[0], t[1]], # Where 't[0]' is the ImageID and 't[1]' is the pygame surface
 							R.IR.items(),
 						))
 					))
 				elif command == "getrects":
 					proxy.send_bytes(Ser(
-						list(map(
+						dict(map(
 							lambda t: [t[0], t[1].params], # Where 't[0]' is the RectID and 't[1]' is the rectangle
 							R.RR.items(),
 						))

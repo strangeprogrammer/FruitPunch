@@ -24,26 +24,6 @@
 
 
 
-from . import G
-from . import Radio
+"""'G' for 'Globals'."""
 
-from ..Common import ExtraSerDes as ESD
-
-def main(CLITOSERV):
-	G.CLITOSERV = CLITOSERV
-	
-	ESD.init()
-	
-	while True:
-		raw = input().strip()
-		commands = raw.split()
-		
-		if "quit" in commands:
-			break
-		
-		for command in commands:
-			Radio.cmdqueue.append(command)
-		
-		Radio.update()
-	
-	ESD.quit()
+CLITOSERV = None

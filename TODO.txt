@@ -2,3 +2,4 @@ Add interactive (or whatever) notice that the program is licensed how it is.
 Make database snapshottable and reloadable.
 Add seperate database with player information?
 Apply foreign key constraint to database and check for errors.
+Fix cases where there might be a networking error.
