@@ -24,35 +24,39 @@
 
 
 
-import multiprocessing as mp
+import pygame as pg
 
-from .Server import Server
-from .ClientProxy import ClientProxy
+from . import Resource as R
 
-from .Common.ToBeGreen import Ser
+from . import G
+from ..Common.Misc import Rect
 
-def setMPMethod():
-	startmethods = mp.get_all_start_methods()
-	if "forkserver" in startmethods:
-		startmethod = "forkserver"
-	elif "fork" in startmethods:
-		startmethod = "fork"
-	else:
-		startmethod = "spawn"
-	mp.set_start_method(startmethod)
+Cam = BindID = None
 
-def main():
-	setMPMethod()
+def init():
+	global Cam
 	
-	[CONTTOSERV, SERVTOCONT] = mp.Pipe()
-	ServerProc = mp.Process(target = Server.main, args = [SERVTOCONT])
-	ServerProc.start()
+	G.SCREEN = pg.display.set_mode()
+	Cam = Rect(G.SCREEN.get_rect())
+	(Cam.x, Cam.y) = (0, 0)
+
+def quit():
+	unbind()
 	
-	[CLITOSERV, SERVTOCLI] = mp.Pipe()
-	CONTTOSERV.send_bytes(Ser("addproxy"))
-	CONTTOSERV.send(SERVTOCLI)
+	G.SCREEN = None
 	
-	ClientProxy.main(CLITOSERV)
-	
-	CONTTOSERV.send_bytes(Ser("quit"))
-	ServerProc.join()
+	global Cam
+	Cam = None
+
+def bind(RectID):
+	global BindID
+	BindID = RectID
+
+def unbind():
+	global BindID
+	BindID = None
+
+def update():
+	global Cam, BindID
+	if BindID is not None:
+		Cam.center = R.RR[BindID].center

@@ -35,6 +35,7 @@ from ..Common.ToBeGreen import (
 
 from . import G
 from . import Resource as R
+from . import Player
 from .Systems import (
 	Draw,
 )
@@ -45,7 +46,7 @@ proxyGen = count()
 def doController():
 	while G.SERVTOCONT.poll():
 		command = Des(G.SERVTOCONT.recv_bytes())
-		assert type(command) == str # TODO: Do something better than this
+		assert Ver(command, str)
 		
 		if command == "addproxy":
 			global proxies, proxyGen
@@ -66,13 +67,10 @@ def doProxies():
 			assert Ver(commands, str)
 			
 			for command in commands.split():
-				if command == "echo":
-					response = Des(proxy.recv_bytes())
-					assert Ver(response, str)
-					proxy.send_bytes(Ser(response))
-				elif command == "getdrawn":
+				if command == "getdrawn":
 					proxy.send_bytes(Ser(
-						dict(map(list,
+						list(map(
+							lambda x: [x["RectID"], x["ImageID"], x["Major"], x["SubMajor"], x["Minor"]],
 							G.CONN.execute(Draw.drawQuery).fetchall()
 						))
 					))
@@ -86,13 +84,13 @@ def doProxies():
 				elif command == "getrects":
 					proxy.send_bytes(Ser(
 						dict(map(
-							lambda t: [t[0], t[1].params], # Where 't[0]' is the RectID and 't[1]' is the rectangle
+							lambda t: [t[0], t[1]], # Where 't[0]' is the RectID and 't[1]' is the rectangle
 							R.RR.items(),
 						))
 					))
+				elif command == "getbgd":
+					proxy.send_bytes(Ser(Draw.bgd))
+				elif command == "getplayerid":
+					proxy.send_bytes(Ser(Player.RectID))
 				else:
 					raise Exception("Command received from proxy was undefined...")
-
-def update():
-	doController()
-	doProxies()

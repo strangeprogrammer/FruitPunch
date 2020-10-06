@@ -24,35 +24,61 @@
 
 
 
-import multiprocessing as mp
+import pygame as pg
+import sys
 
-from .Server import Server
-from .ClientProxy import ClientProxy
+from . import (
+	G,
+	Camera,
+	Draw,
+#	Events,
+)
 
-from .Common.ToBeGreen import Ser
+from . import G
+from . import Radio
 
-def setMPMethod():
-	startmethods = mp.get_all_start_methods()
-	if "forkserver" in startmethods:
-		startmethod = "forkserver"
-	elif "fork" in startmethods:
-		startmethod = "fork"
-	else:
-		startmethod = "spawn"
-	mp.set_start_method(startmethod)
+from ..Common import ExtraSerDes as ESD
 
-def main():
-	setMPMethod()
+from . import Resource as R
+
+#from itertools import count
+#cycles = count()
+
+def update():
+	Radio.cmdqueue.append("getrects")
+	Radio.cmdqueue.append("getdrawn")
 	
-	[CONTTOSERV, SERVTOCONT] = mp.Pipe()
-	ServerProc = mp.Process(target = Server.main, args = [SERVTOCONT])
-	ServerProc.start()
+	Radio.update()
 	
-	[CLITOSERV, SERVTOCLI] = mp.Pipe()
-	CONTTOSERV.send_bytes(Ser("addproxy"))
-	CONTTOSERV.send(SERVTOCLI)
+#	Events.update()
+	Camera.update()
+	Draw.update()
 	
-	ClientProxy.main(CLITOSERV)
+#	global cycles
+#	cyclex = next(cycles)
+#	if cyclex % 100 == 0:
+#		import pprint
+#		pprint.pprint(R.RR)
+
+def main(CLITOSERV):
+	G.CLITOSERV = CLITOSERV
 	
-	CONTTOSERV.send_bytes(Ser("quit"))
-	ServerProc.join()
+	pg.init()
+	ESD.init()
+	
+	Camera.init()
+	
+	Radio.cmdqueue.append("getimages")
+	Radio.cmdqueue.append("getbgd")
+	Radio.cmdqueue.append("getplayerid")
+	
+	while G.ALIVE:
+		update()
+	
+	Camera.quit()
+	Draw.quit()
+	
+	ESD.quit()
+	pg.quit()
+	
+	sys.exit(0)

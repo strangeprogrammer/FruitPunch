@@ -24,35 +24,47 @@
 
 
 
-import multiprocessing as mp
+import pygame as pg
 
-from .Server import Server
-from .ClientProxy import ClientProxy
+from . import G
+from ..Common.Misc import Rect
 
-from .Common.ToBeGreen import Ser
+from . import Resource as R
 
-def setMPMethod():
-	startmethods = mp.get_all_start_methods()
-	if "forkserver" in startmethods:
-		startmethod = "forkserver"
-	elif "fork" in startmethods:
-		startmethod = "fork"
-	else:
-		startmethod = "spawn"
-	mp.set_start_method(startmethod)
+from . import Camera as Cam
 
-def main():
-	setMPMethod()
+bgd = None
+
+def quit():
+	global bgd
+	bgd = None
+
+def _blackPad(bgd):
+	badlands = Rect(bgd.get_rect()).cleanCrack(Cam.Cam)
+	badlands = list(map(lambda r: r - Cam.Cam, badlands))
+	outsurfaces = list(map(lambda r: G.SCREEN.subsurface(r), badlands))
 	
-	[CONTTOSERV, SERVTOCONT] = mp.Pipe()
-	ServerProc = mp.Process(target = Server.main, args = [SERVTOCONT])
-	ServerProc.start()
+	for s in outsurfaces:
+		s.fill([0, 0, 0])
+
+def update():
+	global bgd
 	
-	[CLITOSERV, SERVTOCLI] = mp.Pipe()
-	CONTTOSERV.send_bytes(Ser("addproxy"))
-	CONTTOSERV.send(SERVTOCLI)
+	# Draw the background first
+	G.SCREEN.blit(bgd, (0, 0), Cam.Cam)
+	_blackPad(bgd)
 	
-	ClientProxy.main(CLITOSERV)
+	# Draw all entities
+	for [RectID, ImageID, Major, SubMajor, Minor] \
+	in sorted(R.DR, key =
+		lambda x: ".".join(map(str, x[2:]))
+	):
+		rect = R.RR[RectID]
+		if rect.colliderect(Cam.Cam):
+			G.SCREEN.blit(
+				R.IR[ImageID],
+				rect - Cam.Cam,
+				Rect(0, 0, rect.width, rect.height)
+			)
 	
-	CONTTOSERV.send_bytes(Ser("quit"))
-	ServerProc.join()
+	pg.display.flip()

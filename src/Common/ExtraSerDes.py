@@ -26,26 +26,42 @@
 
 import pygame as pg
 
+from .Misc import Rect
+
 from .ToBeGreen import (
 	SD,
 	Ser,
 	Des,
 )
 
+def _pgs_ser(x):
+	return Ser([
+		pg.image.tostring(x, "RGBA"),
+		x.get_size(),
+	])
+
+def _pgs_des(bobj):
+	return pg.image.fromstring(*Des(bobj), "RGBA")
+
+def _rect_ser(x):
+	return Ser([
+		x.left,
+		x.top,
+		x.width,
+		x.height,
+	])
+
+def _rect_des(bobj):
+	return Rect(*Des(bobj))
+
 def init():
-	def _pgs_ser(x):
-		return Ser([
-			x.get_size(),
-			pg.image.tostring(x, "RGBA"),
-		])
-	
-	def _pgs_des(bobj):
-		[size, raw] = Des(bobj)
-		return pg.image.fromstring(raw, size, "RGBA")
-	
 	SD.serers[pg.Surface] = [pg.Surface.__name__, _pgs_ser]
 	SD.desers[pg.Surface.__name__] = _pgs_des
+	SD.serers[Rect] = [Rect.__name__, _rect_ser]
+	SD.desers[Rect.__name__] = _rect_des
 
 def quit():
-	SD.serers[pg.Surface] = None
-	SD.desers[pg.Surface.__name__] = None
+	del SD.serers[pg.Surface]
+	del SD.desers[pg.Surface.__name__]
+	del SD.serers[Rect]
+	del SD.desers[Rect.__name__]

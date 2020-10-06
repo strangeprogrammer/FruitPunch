@@ -33,6 +33,7 @@ from . import CollHandLib as CHL
 from ..Common.Misc import Rect
 from . import Component as C
 from . import Resource as R
+from . import Player
 
 from .Systems import (
 	Image,
@@ -70,7 +71,7 @@ def _makeEntImage(EntID, entity):
 		Image.register(EntID)
 		Image.store(EntID, ImageID)
 		
-		return R.IR[ImageID].get_rect()
+		return Rect(R.IR[ImageID].get_rect())
 	else:
 		return None
 
@@ -85,19 +86,21 @@ def _makeEntRect(EntID, entity, rect = None):
 	Rectangle.register(EntID)
 	Rectangle.store(EntID, RectID)
 	
-	return rect
+	return [rect, RectID]
 
-#def _makeEntPlayer(EntID):
+def _makeEntPlayer(EntID, RectID):
 #	Flip.registerImage(Image.fetch(EntID))
 #	Flip.register(EntID)
-#	
-#	Velocity.register(EntID)
-#	Accel.register(EntID)
-#	Accel.store(EntID, 0, 0.8 / 1000)
+	
+	Velocity.register(EntID)
+	Accel.register(EntID)
+	Accel.store(EntID, 0, 1 / 50000)
 #	Rotation.register(EntID)
 #	RotVel.register(EntID)
-#	
-#	Collision.registerU(EntID)
+	
+	Collision.registerU(EntID)
+	
+	Player.register(RectID)
 
 def _makeEntWall(EntID, entity):
 	eject = entity["eject"]
@@ -134,7 +137,7 @@ def _makeEntity(entity):
 	EntID = R.ER.append(None)
 	
 	rect = _makeEntImage(EntID, entity)
-	rect = _makeEntRect(EntID, entity, rect = rect)
+	[rect, RectID] = _makeEntRect(EntID, entity, rect = rect)
 	
 	Layer.register(EntID)
 	Layer.store(EntID, *entity["z"])
@@ -142,10 +145,10 @@ def _makeEntity(entity):
 	Position.register(EntID)
 	Position.store(EntID, *rect.center)
 	
-#	if entity["type"] == "player":
-#		_makeEntPlayer(EntID)
-#		return
-	if entity["type"] == "wall":
+	if entity["type"] == "player":
+		_makeEntPlayer(EntID, RectID)
+		return
+	elif entity["type"] == "wall":
 		_makeEntWall(EntID, entity)
 		return
 	elif entity["type"] == "platform":

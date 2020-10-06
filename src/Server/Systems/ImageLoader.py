@@ -29,8 +29,6 @@ import sqlalchemy as sqa
 
 from .. import G
 
-renderQuery = None
-
 from .. import Component as C
 from .. import Resource as R
 

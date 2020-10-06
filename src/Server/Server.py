@@ -57,11 +57,11 @@ from .Systems import (
 	Collision,
 )
 
-import itertools
-counter = itertools.count()
+#import itertools
+#counter = itertools.count()
 
 def update():
-	Radio.update()
+	Radio.doController()
 	
 	Accel.update()
 	Velocity.update()
@@ -89,6 +89,8 @@ def update():
 	Rotation.collect()
 	
 	Time.update()
+	
+	Radio.doProxies()
 	
 #	global counter
 #	if next(counter) % 60 == 0:

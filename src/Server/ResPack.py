@@ -29,7 +29,7 @@ from . import G
 class InvalidatingMixin(dict):
 	def invalidate(self, key):
 		self.__setitem__(key, super().__getitem__(key)) # Forcefully flush a cache element
-		if "invalidate" in super().__dict__:
+		if "invalidate" in dir(super()):
 			super().invalidate(key)
 
 class CrudDict(InvalidatingMixin, dict):

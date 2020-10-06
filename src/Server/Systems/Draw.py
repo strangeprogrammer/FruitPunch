@@ -46,6 +46,9 @@ def init():
 	drawQuery = sqa.select([
 		C.RECC.c.RectID,
 		C.DC.c.ImageID,
+		C.LC.c.Major,
+		C.LC.c.SubMajor,
+		C.LC.c.Minor,
 	]).select_from(
 		C.LC.join(C.DC.join(C.RECC,
 			C.DC.c.EntID == C.RECC.c.EntID),

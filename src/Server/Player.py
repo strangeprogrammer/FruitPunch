@@ -24,35 +24,21 @@
 
 
 
-import multiprocessing as mp
+#def init(): pass
+#def quit(): pass
 
-from .Server import Server
-from .ClientProxy import ClientProxy
+RectID = None
 
-from .Common.ToBeGreen import Ser
+def register(EntID):
+	global RectID
+	RectID = EntID
 
-def setMPMethod():
-	startmethods = mp.get_all_start_methods()
-	if "forkserver" in startmethods:
-		startmethod = "forkserver"
-	elif "fork" in startmethods:
-		startmethod = "fork"
-	else:
-		startmethod = "spawn"
-	mp.set_start_method(startmethod)
+#def instances(EntID): pass
 
-def main():
-	setMPMethod()
-	
-	[CONTTOSERV, SERVTOCONT] = mp.Pipe()
-	ServerProc = mp.Process(target = Server.main, args = [SERVTOCONT])
-	ServerProc.start()
-	
-	[CLITOSERV, SERVTOCLI] = mp.Pipe()
-	CONTTOSERV.send_bytes(Ser("addproxy"))
-	CONTTOSERV.send(SERVTOCLI)
-	
-	ClientProxy.main(CLITOSERV)
-	
-	CONTTOSERV.send_bytes(Ser("quit"))
-	ServerProc.join()
+def deregister(EntID):
+	global RectID
+	RectID = None
+
+#def fetch(): pass
+#def store(): pass
+#def update(): pass
