@@ -44,15 +44,19 @@ def setMPMethod():
 def main():
 	setMPMethod()
 	
-	[CONTTOSERV, SERVTOCONT] = mp.Pipe()
-	ServerProc = mp.Process(target = Server.main, args = [SERVTOCONT])
+	[CONTSERVUP, SERVCONTDOWN] = mp.Pipe()
+	[CONTSERVDOWN, SERVCONTUP] = mp.Pipe()
+	
+	ServerProc = mp.Process(target = Server.main, args = [SERVCONTUP, SERVCONTDOWN])
 	ServerProc.start()
 	
-	[CLITOSERV, SERVTOCLI] = mp.Pipe()
-	CONTTOSERV.send_bytes(Ser("addproxy"))
-	CONTTOSERV.send(SERVTOCLI)
+	[CLISERVUP, SERVCLIDOWN] = mp.Pipe()
+	[CLISERVDOWN, SERVCLIUP] = mp.Pipe()
 	
-	ClientProxy.main(CLITOSERV)
+	CONTSERVUP.send_bytes(Ser("addproxy"))
+	CONTSERVUP.send([SERVCLIUP, SERVCLIDOWN])
 	
-	CONTTOSERV.send_bytes(Ser("quit"))
+	ClientProxy.main(CLISERVUP, CLISERVDOWN)
+	
+	CONTSERVUP.send_bytes(Ser("serverquit"))
 	ServerProc.join()

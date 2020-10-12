@@ -63,6 +63,11 @@ from .Systems import (
 def update():
 	Radio.doController()
 	
+	for proxyID in Radio.proxies:
+		Radio.queues[proxyID] = ["dodraw"]
+	
+	Radio.flush()
+	
 	Accel.update()
 	Velocity.update()
 	RotVel.update()
@@ -96,8 +101,9 @@ def update():
 #	if next(counter) % 60 == 0:
 #		print(Time._clock.get_fps())
 
-def main(SERVTOCONT):
-	G.SERVTOCONT = SERVTOCONT
+def main(SERVCONTUP, SERVCONTDOWN):
+	G.SERVCONTUP = SERVCONTUP
+	G.SERVCONTDOWN = SERVCONTDOWN
 	
 	ESD.init()
 	pg.init()

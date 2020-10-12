@@ -26,5 +26,5 @@
 
 """'G' for 'Globals'."""
 
-SCREEN = CLITOSERV = None
+SCREEN = CLISERVUP = CLISERVDOWN = None
 ALIVE = True

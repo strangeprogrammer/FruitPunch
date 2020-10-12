@@ -26,5 +26,5 @@
 
 """'G' for 'Globals'."""
 
-ENGINE = DB = CONN = SCREEN = SERVTOCONT = None
+ENGINE = DB = CONN = SCREEN = SERVCONTUP = SERVCONTDOWN = None
 ALIVE = True

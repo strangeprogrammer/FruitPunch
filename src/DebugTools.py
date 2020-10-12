@@ -24,62 +24,19 @@
 
 
 
-import pygame as pg
-import sys
-
-from . import (
-	G,
-	Camera,
-	Draw,
-#	Events,
-)
-
-from . import G
-from . import Radio
-
-from ..Common import ExtraSerDes as ESD
-
-from . import Resource as R
-
-#from itertools import count
-#cycles = count()
-
-def update():
-	Radio.doServer()
-	Radio.flush()
+class Sniffer():
+	def __init__(self, pipeish, procname):
+		self.pipeish = pipeish
+		self.procname = str(procname)
 	
-#	Events.update()
-	Camera.update()
-	Draw.update()
+	def send_bytes(self, msg, *args, **kwargs):
+		print("send: " + self.procname + ": " + str(msg))
+		self.pipeish.send_bytes(msg, *args, **kwargs)
 	
-#	global cycles
-#	cyclex = next(cycles)
-#	if cyclex % 100 == 0:
-#		print("updated...")
-
-def main(CLISERVUP, CLISERVDOWN):
-	G.CLISERVUP = CLISERVUP
-	G.CLISERVDOWN = CLISERVDOWN
+	def recv_bytes(self, *args, **kwargs):
+		msg = self.pipeish.recv_bytes(*args, **kwargs)
+		print("recv: " + self.procname + ": " + str(msg))
+		return msg
 	
-	pg.init()
-	ESD.init()
-	
-	Camera.init()
-	
-	Radio.cmdqueue.append("getimages")
-	Radio.cmdqueue.append("getbgd")
-	Radio.cmdqueue.append("getplayerid")
-	
-	while not Radio.drawReady:
-		Radio.doServer()
-	
-	while G.ALIVE:
-		update()
-	
-	Camera.quit()
-	Draw.quit()
-	
-	ESD.quit()
-	pg.quit()
-	
-	sys.exit(0)
+	def __getattr__(self, name):
+		return getattr(self.pipeish, name)

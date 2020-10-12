@@ -26,7 +26,7 @@
 
 # Import this file like:
 #
-# from testdb import ENGINE, DB, CONN, t1, t2
+# from testdb import ENGINE, DB, t1, t2, t3
 #
 # And then you will have a simple database with which you can test your ideas.
 

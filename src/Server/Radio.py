@@ -40,57 +40,97 @@ from .Systems import (
 	Draw,
 )
 
-proxies = []
+### Update Routines
+
+proxies = {}
 proxyGen = count()
 
 def doController():
-	while G.SERVTOCONT.poll():
-		command = Des(G.SERVTOCONT.recv_bytes())
-		assert Ver(command, str)
+	while G.SERVCONTDOWN.poll():
+		command = Des(G.SERVCONTDOWN.recv_bytes())
+		assert Ver(command, str), "Error: object received from controller was: " + str(command)
+		_controllerevents[command]()
+
+queues = {}
+
+def flush():
+	global proxies, queues
+	
+	for k in queues:
+		cmdqueue = queues[k]
+		proxyUp = proxies[k][0]
 		
-		if command == "addproxy":
-			global proxies, proxyGen
-			proxies.append([
-				G.SERVTOCONT.recv(), # Receive a pipe to a proxy from the controller - this is a danger point since it uses pickling internally
-				next(proxyGen),
-			])
-		elif command == "quit":
-			G.ALIVE = False
-		else:
-			raise Exception("Command received from controller was undefined...")
+		proxyUp.send_bytes(Ser(" ".join(cmdqueue)))
+		
+		for command in cmdqueue:
+			_servercmds[command](proxyUp)
+	
+	queues = {}
 
 def doProxies():
 	global proxies
-	for [proxy, proxyID] in proxies:
-		while proxy.poll():
-			commands = Des(proxy.recv_bytes())
-			assert Ver(commands, str)
+	
+	for proxyDown in map(lambda t: t[1], proxies.values()):
+		while proxyDown.poll():
+			commands = Des(proxyDown.recv_bytes())
+			assert Ver(commands, str), "Error: object received from proxyDown was: " + str(command)
 			
 			for command in commands.split():
-				if command == "getdrawn":
-					proxy.send_bytes(Ser(
-						list(map(
-							lambda x: [x["RectID"], x["ImageID"], x["Major"], x["SubMajor"], x["Minor"]],
-							G.CONN.execute(Draw.drawQuery).fetchall()
-						))
-					))
-				elif command == "getimages":
-					proxy.send_bytes(Ser(
-						dict(map(
-							lambda t: [t[0], t[1]], # Where 't[0]' is the ImageID and 't[1]' is the pygame surface
-							R.IR.items(),
-						))
-					))
-				elif command == "getrects":
-					proxy.send_bytes(Ser(
-						dict(map(
-							lambda t: [t[0], t[1]], # Where 't[0]' is the RectID and 't[1]' is the rectangle
-							R.RR.items(),
-						))
-					))
-				elif command == "getbgd":
-					proxy.send_bytes(Ser(Draw.bgd))
-				elif command == "getplayerid":
-					proxy.send_bytes(Ser(Player.RectID))
-				else:
-					raise Exception("Command received from proxy was undefined...")
+				_clientevents[command](proxyDown)
+
+### Controller Radio Event Routines
+
+def addproxy():
+	global proxies, proxyGen
+	proxies[next(proxyGen)] = G.SERVCONTDOWN.recv() # Receive a pipe to a proxy from the controller - this is a danger point since it uses pickling internally
+
+def serverquit():
+	G.ALIVE = False
+
+_controllerevents = {
+	"addproxy":	addproxy,
+	"serverquit":	serverquit,
+}
+
+### Server Radio Commands
+
+def dodraw(proxyUp):
+	proxyUp.send_bytes(Ser(
+		list(map(
+			list,
+			G.CONN.execute(Draw.drawQuery).fetchall()
+		))
+	))
+	
+	proxyUp.send_bytes(Ser(
+		dict(map(
+			lambda t: [t[0], t[1]], # Where 't[0]' is the RectID and 't[1]' is the rectangle
+			R.RR.items(),
+		))
+	))
+
+_servercmds = {
+	"dodraw":	dodraw,
+}
+
+### Client Radio Event Routines
+
+def getimages(proxyDown):
+	proxyDown.send_bytes(Ser(
+		dict(map(
+			lambda t: [t[0], t[1]], # Where 't[0]' is the ImageID and 't[1]' is the pygame surface
+			R.IR.items(),
+		))
+	))
+
+def getbgd(proxyDown):
+	proxyDown.send_bytes(Ser(Draw.bgd))
+
+def getplayerid(proxyDown):
+	proxyDown.send_bytes(Ser(Player.RectID))
+
+_clientevents = {
+	"getimages":	getimages,
+	"getbgd":	getbgd,
+	"getplayerid":	getplayerid,
+}

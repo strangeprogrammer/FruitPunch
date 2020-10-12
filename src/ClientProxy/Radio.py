@@ -41,35 +41,38 @@ from ..Common.ToBeGreen import (
 )
 from ..Common.Misc import Rect
 
-### Main loop
+### Update Routines
+
+def doServer():
+	while G.CLISERVDOWN.poll():
+		servercmds = Des(G.CLISERVDOWN.recv_bytes())
+		assert Ver(servercmds, str), "Error: object received from CLISERVDOWN was: " + str(servercmds)
+		for event in servercmds.split():
+			assert event in _serverevents, "Error: invalid server event: " + str(command)
+			_serverevents[event]()
 
 cmdqueue = []
 
-def update():
+def flush():
 	global cmdqueue
 	
 	if cmdqueue:
-		G.CLITOSERV.send_bytes(Ser(' '.join(cmdqueue)))
+		G.CLISERVUP.send_bytes(Ser(" ".join(cmdqueue)))
 	
-	for cmdname in cmdqueue:
-		assert cmdname in _allcmds, "Attempted to call an invalid radio command..."
-		globals()[cmdname]()
+	for command in cmdqueue:
+		_clientcmds[command]()
 	
 	cmdqueue = []
 
-### Radio Commands
+### Server Radio Event Routines
 
-_allcmds = [
-	"getdrawn",
-	"getimages",
-	"getrects",
-	"getbgd",
-	"getplayerid",
-]
+drawReady = False
 
-def getdrawn():
-	response = Des(G.CLITOSERV.recv_bytes())
-	assert Ver(response, V.LIST(
+def dodraw():
+	drawinfo = Des(G.CLISERVDOWN.recv_bytes())
+	rectinfo = Des(G.CLISERVDOWN.recv_bytes())
+	
+	assert Ver(drawinfo, V.LIST(
 		V.PRODUCT(
 			int,
 			int,
@@ -77,25 +80,38 @@ def getdrawn():
 			int,
 			int,
 		)
-	)), "Error: response was: " + str(response)
-	R.DR = response
+	)), "Error: response was: " + str(drawinfo)
+	assert Ver(rectinfo, V.DICT(V.PRODUCT(int, Rect))), "Error: response was: " + str(rectinfo)
+	
+	R.DR = drawinfo
+	R.RR = rectinfo
+	
+	global drawReady
+	drawReady = True
+
+_serverevents = {
+	"dodraw":	dodraw,
+}
+
+### Client Radio Commands
 
 def getimages():
-	response = Des(G.CLITOSERV.recv_bytes())
+	response = Des(G.CLISERVUP.recv_bytes())
 	assert Ver(response, V.DICT(V.PRODUCT(int, pg.Surface))), "Error: response was: " + str(response)
 	R.IR = response
 
-def getrects():
-	response = Des(G.CLITOSERV.recv_bytes())
-	assert Ver(response, V.DICT(V.PRODUCT(int, Rect))), "Error: response was: " + str(response)
-	R.RR = response
-
 def getbgd():
-	response = Des(G.CLITOSERV.recv_bytes())
+	response = Des(G.CLISERVUP.recv_bytes())
 	assert Ver(response, pg.Surface), "Error: response was: " + str(response)
 	Draw.bgd = response
 
 def getplayerid():
-	response = Des(G.CLITOSERV.recv_bytes())
+	response = Des(G.CLISERVUP.recv_bytes())
 	assert Ver(response, int), "Error: response was: " + str(response)
 	Camera.bind(response)
+
+_clientcmds = {
+	"getimages":	getimages,
+	"getbgd":	getbgd,
+	"getplayerid":	getplayerid,
+}
