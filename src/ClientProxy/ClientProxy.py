@@ -27,22 +27,19 @@
 import pygame as pg
 import sys
 
+from .. import DebugTools
+
+from ..Common import ExtraSerDes as ESD
+from ..Common import Time
+
 from . import (
 	G,
 	Camera,
 	Draw,
 #	Events,
+	Radio,
+	Resource as R,
 )
-
-from . import G
-from . import Radio
-
-from ..Common import ExtraSerDes as ESD
-
-from . import Resource as R
-
-#from itertools import count
-#cycles = count()
 
 def update():
 	Radio.doServer()
@@ -50,14 +47,19 @@ def update():
 	
 #	Events.update()
 	Camera.update()
-	Draw.update()
 	
-#	global cycles
-#	cyclex = next(cycles)
-#	if cyclex % 100 == 0:
-#		print("updated...")
+	Draw.update(R.DR.copy(), R.RR.copy(), R.IR.copy()) # Duplicate these resources since they might be overwritten by the Radio
+	
+	Time.update()
 
-def main(CLISERVUP, CLISERVDOWN):
+def mainloop():
+	fps = DebugTools.FPSPrinter(2000, "ClientProxy: ")
+	
+	while G.ALIVE:
+		update()
+		fps.update()
+
+def _main(CLISERVUP, CLISERVDOWN):
 	G.CLISERVUP = CLISERVUP
 	G.CLISERVDOWN = CLISERVDOWN
 	
@@ -70,11 +72,12 @@ def main(CLISERVUP, CLISERVDOWN):
 	Radio.cmdqueue.append("getbgd")
 	Radio.cmdqueue.append("getplayerid")
 	
+	Time.init()
+	
 	while not Radio.drawReady:
 		Radio.doServer()
 	
-	while G.ALIVE:
-		update()
+	mainloop()
 	
 	Camera.quit()
 	Draw.quit()
@@ -83,3 +86,20 @@ def main(CLISERVUP, CLISERVDOWN):
 	pg.quit()
 	
 	sys.exit(0)
+
+### Profiling Specific
+
+import cProfile as cpr
+from ..Config import PROFILING
+
+if PROFILING == True:
+	def main(*args, **kwargs):
+		cpr.runctx(
+			"from src.ClientProxy.ClientProxy import _main;" + \
+			"_main(*args, **kwargs);",
+			globals = globals(),
+			locals = {"args": args, "kwargs": kwargs},
+			filename = "./ClientProxy.stats"
+		)
+else:
+	main = _main

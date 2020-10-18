@@ -26,7 +26,7 @@
 
 from . import Resource as R
 
-from . import Time
+from ..Common import Time
 from ..Common.Misc import LevelLoadException
 
 from .Systems import Position, Velocity

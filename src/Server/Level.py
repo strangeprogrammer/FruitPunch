@@ -27,12 +27,15 @@
 import pygame as pg
 import sqlalchemy as sqa
 
+from ..Common import (
+	Time,
+)
+
 from . import (
 	G,
 	Component,
 	Component as C,
 	Resource,
-	Time,
 	PlayerMove,
 	CollHandLib,
 	LevelLoader,

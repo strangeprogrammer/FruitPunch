@@ -22,49 +22,5 @@
 # Additional terms apply to this file.  Read the file 'LICENSE.txt' for
 # more information.
 
-
-
-import pygame as pg
-
-from ..Common.Misc import Rect
-
-from . import G
-from . import Resource as R
-from . import Camera as Cam
-
-bgd = None
-
-def quit():
-	global bgd
-	bgd = None
-
-def _blackPad(bgd):
-	badlands = Rect(bgd.get_rect()).cleanCrack(Cam.Cam)
-	badlands = list(map(lambda r: r - Cam.Cam, badlands))
-	outsurfaces = list(map(lambda r: G.SCREEN.subsurface(r), badlands))
-	
-	for s in outsurfaces:
-		s.fill([0, 0, 0])
-
-def update(DR, RR, IR):
-	global bgd
-	
-	# Draw the background first
-	G.SCREEN.blit(bgd, (0, 0), Cam.Cam)
-	_blackPad(bgd)
-	
-	# Draw all entities
-	for [rect, image] in map(
-		lambda t: [RR[t[0]], IR[t[1]]],
-		sorted(DR, key =
-			lambda x: ".".join(map(str, x[2:])) # Sort by 'Major.SubMajor.Minor'
-		)
-	):
-		if rect.colliderect(Cam.Cam):
-			G.SCREEN.blit(
-				image,
-				rect - Cam.Cam,
-				Rect(0, 0, rect.width, rect.height)
-			)
-	
-	pg.display.flip()
+PROFILING	= False
+CONSOLEFPS	= False

@@ -26,9 +26,9 @@
 
 import sqlalchemy as sqa
 
-from .. import G
-from .. import Time
+from ...Common import Time
 
+from .. import G
 from .. import Component as C
 
 from . import Position

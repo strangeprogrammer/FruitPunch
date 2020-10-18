@@ -27,10 +27,10 @@
 import sqlalchemy as sqa
 import math
 
-from .. import G
 from ...Common import Misc
-from .. import Time
+from ...Common import Time
 
+from .. import G
 from .. import Component as C
 
 from . import Rotation

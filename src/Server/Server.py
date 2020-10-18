@@ -28,19 +28,21 @@ import pygame as pg
 import sqlalchemy as sqa
 import sys
 
+from .. import DebugTools
+
+from ..Common.Misc import LevelLoadException
+from ..Common import ExtraSerDes as ESD
+from ..Common import Time
+
 from . import (
 	Events,
 	G,
 	Component as C,
 	Resource as R,
 	LevelLoader,
-	Time,
 	Level,
 	Radio,
 )
-
-from ..Common.Misc import LevelLoadException
-from ..Common import ExtraSerDes as ESD
 
 from .Systems import (
 	Camera,
@@ -56,9 +58,6 @@ from .Systems import (
 	Strut,
 	Collision,
 )
-
-#import itertools
-#counter = itertools.count()
 
 def update():
 	Radio.doController()
@@ -96,12 +95,19 @@ def update():
 	Time.update()
 	
 	Radio.doProxies()
-	
-#	global counter
-#	if next(counter) % 60 == 0:
-#		print(Time._clock.get_fps())
 
-def main(SERVCONTUP, SERVCONTDOWN):
+def mainloop():
+	fps = DebugTools.FPSPrinter(2000, "Server:      ")
+	
+	while G.ALIVE:
+		try:
+			update()
+			fps.update()
+		except LevelLoadException as e:
+			Level.unload()
+			Level.load(e.filename)
+
+def _main(SERVCONTUP, SERVCONTDOWN):
 	G.SERVCONTUP = SERVCONTUP
 	G.SERVCONTDOWN = SERVCONTDOWN
 	
@@ -110,12 +116,7 @@ def main(SERVCONTUP, SERVCONTDOWN):
 	
 	Level.load("./LEVELS/tutorial.json")
 	
-	while G.ALIVE:
-		try:
-			update()
-		except LevelLoadException as e:
-			Level.unload()
-			Level.load(e.filename)
+	mainloop()
 	
 	Level.unload()
 	
@@ -123,3 +124,20 @@ def main(SERVCONTUP, SERVCONTDOWN):
 	ESD.quit()
 	
 	sys.exit(0)
+
+### Profiling Specific
+
+import cProfile as cpr
+from ..Config import PROFILING
+
+if PROFILING == True:
+	def main(*args, **kwargs):
+		cpr.runctx(
+			"from src.Server.Server import _main;" + \
+			"_main(*args, **kwargs);",
+			globals = globals(),
+			locals = {"args": args, "kwargs": kwargs},
+			filename = "./Server.stats"
+		)
+else:
+	main = _main

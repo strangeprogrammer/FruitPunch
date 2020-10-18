@@ -4,3 +4,4 @@ Add seperate database with player information?
 Apply foreign key constraint to database and check for errors.
 Fix cases where there might be a networking error.
 Extend the client/server multipipe architecture with muxers and demuxers.
+Make it faster (possibly using async/await)!

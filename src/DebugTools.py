@@ -24,7 +24,13 @@
 
 
 
+from .Common import Time
+
+from . import Config
+
 class Sniffer():
+	"""Wraps pipes and prints messages going through them along with an identifier string given during initialization."""
+	
 	def __init__(self, pipeish, procname):
 		self.pipeish = pipeish
 		self.procname = str(procname)
@@ -40,3 +46,21 @@ class Sniffer():
 	
 	def __getattr__(self, name):
 		return getattr(self.pipeish, name)
+
+if Config.CONSOLEFPS:
+	class FPSPrinter():
+		"""Prints FPS information to the console at roughly regular intervals."""
+		
+		def __init__(self, interval, label = ""):
+			self.interval = interval
+			self.lastupdate = 0
+			self.label = label
+		
+		def update(self):
+			if self.lastupdate + self.interval < Time.now:
+				self.lastupdate = (Time.now // self.interval) * self.interval
+				print(self.label + str(Time._clock.get_fps()))
+else:
+	class FPSPrinter():
+		def __init__(*args, **kwargs):	pass
+		def update(*args, **kwargs):	pass
